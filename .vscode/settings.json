@@ -1,0 +1,12 @@
+{
+  "editor.formatOnSave": true,
+  "editor.suggest.showStatusBar": true,
+  "editor.suggest.insertMode":"insert",
+  "debug.console.closeOnEnd": true,
+  "omnisharp.enableRoslynAnalyzers": true,
+  "omnisharp.enableEditorConfigSupport": true,
+  "omnisharp.organizeImportsOnFormat": true,
+  // "editor.codeActionsOnSave": {
+  //    "source.fixAll": true
+  // }
+}
