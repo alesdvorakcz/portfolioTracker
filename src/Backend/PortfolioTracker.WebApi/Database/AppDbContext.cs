@@ -9,6 +9,14 @@ public class AppDbContext : DbContext
 
     public DbSet<Portfolio> Portfolios { get; set; } = null!;
 
+    public DbSet<Account> Accounts { get; set; } = null!;
+    public DbSet<AccountValueHistory> AccountValueHistory { get; set; } = null!;
+    public DbSet<Currency> Currencies { get; set; } = null!;
+    public DbSet<CurrencyValueHistory> CurrencyValueHistory { get; set; } = null!;
+    public DbSet<EtfInstrument> EtfInstruments { get; set; } = null!;
+    public DbSet<EtfInstrumentValueHistory> EtfInstrumentValueHistory { get; set; } = null!;
+    public DbSet<EtfTradeHistory> EtfTradeHistory { get; set; } = null!;
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
     }
