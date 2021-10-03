@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using PortfolioTracker.WebApi;
 using PortfolioTracker.WebApi.Database;
 using PortfolioTracker.WebApi.Extensions;
 
@@ -19,6 +20,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         });
 });
 
+builder.Services.AddAutoMapper(typeof(AssemblyLocator));
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -26,6 +28,9 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
+
+// TODO: move this to unit tests
+app.Services.GetRequiredService<AutoMapper.IMapper>().ConfigurationProvider.AssertConfigurationIsValid();
 
 // Configure the HTTP request pipeline.
 if (builder.Environment.IsDevelopment())
