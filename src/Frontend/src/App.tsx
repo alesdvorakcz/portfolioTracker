@@ -1,11 +1,13 @@
 import './App.css';
 
 import { Grid, Layout } from 'antd';
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { Route, Switch } from 'react-router-dom';
 
 import { Menu } from './components';
+import { AccountsPage, DashboardPage, EtfsPage } from './pages';
 
-const { Header, Content, Footer, Sider } = Layout;
+const { Footer, Sider } = Layout;
 const { useBreakpoint } = Grid;
 
 function App() {
@@ -35,13 +37,18 @@ function App() {
         <Menu />
       </Sider>
       <Layout>
-        <Header className="app-header" style={{ padding: 0 }} />
-        <Content style={{ margin: '24px 16px 0' }}>
-          <div className="app-content" style={{ padding: 24, minHeight: 360 }}>
-            content
-          </div>
-        </Content>
-        <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer>
+        <Switch>
+          <Route exact path="/">
+            <DashboardPage />
+          </Route>
+          <Route path="/accounts">
+            <AccountsPage />
+          </Route>
+          <Route path="/etfs">
+            <EtfsPage />
+          </Route>
+        </Switch>
+        <Footer style={{ textAlign: 'center' }}>Footer text</Footer>
       </Layout>
     </Layout>
   );
