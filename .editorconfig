@@ -11,6 +11,20 @@ indent_size = 2
 [*.json]
 indent_size = 2
 
+# Javascript files
+[*.js]
+indent_size = 2
+
+[*.jsx]
+indent_size = 2
+
+[*.ts]
+indent_size = 2
+
+[*.tsx]
+indent_size = 2
+
+# C# files
 [*.cs]
 indent_size = 4
 insert_final_newline = true
@@ -51,15 +65,14 @@ dotnet_naming_symbols.non_private_static_fields.required_modifiers = static
 
 dotnet_naming_style.non_private_static_field_style.capitalization = pascal_case
 
-# TODO: allow later
-# # Non-private readonly fields are PascalCase
-# dotnet_naming_rule.non_private_readonly_fields_should_be_pascal_case.severity = suggestion
-# dotnet_naming_rule.non_private_readonly_fields_should_be_pascal_case.symbols = non_private_readonly_fields
-# dotnet_naming_rule.non_private_readonly_fields_should_be_pascal_case.style = non_private_readonly_field_style
+# Non-private readonly fields are PascalCase
+dotnet_naming_rule.non_private_readonly_fields_should_be_pascal_case.severity = suggestion
+dotnet_naming_rule.non_private_readonly_fields_should_be_pascal_case.symbols = non_private_readonly_fields
+dotnet_naming_rule.non_private_readonly_fields_should_be_pascal_case.style = non_private_readonly_field_style
 
-# dotnet_naming_symbols.non_private_readonly_fields.applicable_kinds = field
-# dotnet_naming_symbols.non_private_readonly_fields.applicable_accessibilities = public, protected, internal, protected_internal, private_protected
-# dotnet_naming_symbols.non_private_readonly_fields.required_modifiers = readonly
+dotnet_naming_symbols.non_private_readonly_fields.applicable_kinds = field
+dotnet_naming_symbols.non_private_readonly_fields.applicable_accessibilities = public, protected, internal, protected_internal, private_protected
+dotnet_naming_symbols.non_private_readonly_fields.required_modifiers = readonly
 
 dotnet_naming_style.non_private_readonly_field_style.capitalization = pascal_case
 
@@ -164,7 +177,7 @@ csharp_style_expression_bodied_properties = true:none
 csharp_style_expression_bodied_indexers = true:none
 csharp_style_expression_bodied_accessors = true:none
 
-Suggest more modern language features when available
+# Suggest more modern language features when available
 csharp_style_pattern_matching_over_is_with_cast_check = true:suggestion
 csharp_style_pattern_matching_over_as_with_null_check = true:suggestion
 csharp_style_inlined_variable_declaration = true:suggestion

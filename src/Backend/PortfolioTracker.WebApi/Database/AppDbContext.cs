@@ -1,5 +1,5 @@
-using PortfolioTracker.WebApi.Database.Entity;
 using Microsoft.EntityFrameworkCore;
+using PortfolioTracker.WebApi.Database.Entity;
 
 namespace PortfolioTracker.WebApi.Database;
 

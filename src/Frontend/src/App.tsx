@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { Layout, Grid } from 'antd';
+import './App.css';
 
-import "./App.css";
+import { Grid, Layout } from 'antd';
+import React, { useState } from 'react';
+
 import { Menu } from './components';
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -15,17 +16,22 @@ function App() {
     <Layout style={{ minHeight: '100vh' }}>
       <Sider
         defaultCollapsed={isCollapsed}
-        onCollapse={(collapsed, type) => {
+        onCollapse={(collapsed) => {
           setIsCollapsed(collapsed);
         }}
         collapsible={screens.md}
         breakpoint="md"
         collapsedWidth={!screens.md ? 0 : 50}
       >
-        {isCollapsed 
-          ? <div className="app-logo-collapsed"><span>PT</span></div> 
-          : <div className="app-logo"><span>Portfolio Tracker</span></div>
-        }
+        {isCollapsed ? (
+          <div className="app-logo-collapsed">
+            <span>PT</span>
+          </div>
+        ) : (
+          <div className="app-logo">
+            <span>Portfolio Tracker</span>
+          </div>
+        )}
         <Menu />
       </Sider>
       <Layout>
