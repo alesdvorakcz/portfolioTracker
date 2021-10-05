@@ -1,9 +1,7 @@
-import { getAccounts } from './accounts';
+import accountsClient from './accounts';
 
 const apiClient = {
-  accounts: {
-    getAccounts,
-  },
+  accounts: accountsClient,
 };
 
 export default apiClient;

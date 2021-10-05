@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Route, Switch } from 'react-router-dom';
 
 import { Menu } from './components';
-import { AccountsPage, DashboardPage, EtfsPage } from './pages';
+import { AccountDetailPage, AccountsPage, DashboardPage, EtfsPage } from './pages';
 
 const { Footer, Sider } = Layout;
 const { useBreakpoint } = Grid;
@@ -40,6 +40,9 @@ function App() {
         <Switch>
           <Route exact path="/">
             <DashboardPage />
+          </Route>
+          <Route path="/accounts/:id">
+            <AccountDetailPage />
           </Route>
           <Route path="/accounts">
             <AccountsPage />

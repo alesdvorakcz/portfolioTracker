@@ -9,7 +9,7 @@ using PortfolioTracker.WebApi.Database;
 namespace PortfolioTracker.WebApi.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class AccountController : BaseController
 {
     public AccountController(AppDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
