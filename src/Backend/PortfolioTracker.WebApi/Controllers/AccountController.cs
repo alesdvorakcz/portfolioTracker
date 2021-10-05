@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.ComponentModel.DataAnnotations;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PortfolioTracker.WebApi.Contracts.Input;
@@ -37,7 +38,13 @@ public class AccountController : BaseController
         if (account == null)
             return NotFound();
 
-        //TODO: fill up history
+        var valueHistory = await Mapper.ProjectTo<AccountValueHistory>(
+                DbContext.AccountValueHistory
+                    .Where(x => x.AccountId == id)
+                    .OrderByDescending(x => x.Date)
+            ).ToListAsync();
+
+        account.History = valueHistory;
 
         return Ok(account);
     }
@@ -100,6 +107,76 @@ public class AccountController : BaseController
             return NotFound();
 
         DbContext.Accounts.Remove(entity);
+
+        await DbContext.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    [HttpPost("{accountId}/history")]
+    [ProducesResponseType(typeof(AccountValueHistory), 201)]
+    public async Task<IActionResult> AddValueToHistory([Required] int accountId, [FromBody] AccountValueHistoryToAdd value)
+    {
+        //TODO: validaton
+
+        var account = await DbContext.Accounts.FirstOrDefaultAsync(x => x.Id == accountId);
+
+        if (account == null)
+            return NotFound();
+
+        var entity = new Database.Entity.AccountValueHistory
+        {
+            Date = value.Date,
+            ValueBefore = value.ValueBefore,
+            TransactionCzk = value.TransactionCzk,
+            AccountId = account.Id
+        };
+
+        DbContext.AccountValueHistory.Add(entity);
+
+        await DbContext.SaveChangesAsync();
+
+        //TODO: Query/Command segregation
+        var valueHistoryToReturn = await Mapper.ProjectTo<AccountValueHistory>(
+            DbContext.AccountValueHistory.Where(x => x.Id == entity.Id)
+        ).FirstOrDefaultAsync();
+
+        return Created(valueHistoryToReturn);
+    }
+
+    [HttpPut("{accountId}/history/{valueHistoryId}")]
+    [ProducesResponseType(typeof(AccountValueHistory), 200)]
+    public async Task<IActionResult> EditValueFromHistory([Required] int accountId, [Required] int valueHistoryId, [FromBody] AccountValueHistoryToEdit value)
+    {
+        //TODO: validaton
+
+        var entity = await DbContext.AccountValueHistory.FirstOrDefaultAsync(x => x.Id == valueHistoryId && x.AccountId == accountId);
+
+        if (entity == null)
+            return NotFound();
+
+        entity.Date = value.Date;
+        entity.ValueBefore = value.ValueBefore;
+        entity.TransactionCzk = value.TransactionCzk;
+
+        await DbContext.SaveChangesAsync();
+
+        //TODO: Query/Command segregation
+        var valueHistoryToReturn = Mapper.Map<AccountValueHistory>(entity);
+
+        return Ok(valueHistoryToReturn);
+    }
+
+    [HttpDelete("{accountId}/history/{valueHistoryId}")]
+    [ProducesResponseType(204)]
+    public async Task<IActionResult> DeleteValueFromHistory([Required] int accountId, [Required] int valueHistoryId)
+    {
+        var entity = await DbContext.AccountValueHistory.FirstOrDefaultAsync(x => x.Id == valueHistoryId && x.AccountId == accountId);
+
+        if (entity == null)
+            return NotFound();
+
+        DbContext.AccountValueHistory.Remove(entity);
 
         await DbContext.SaveChangesAsync();
 
