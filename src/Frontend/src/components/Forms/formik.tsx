@@ -1,14 +1,37 @@
 import { useField } from 'formik';
+import moment from 'moment';
 
-import { TextInput } from '.';
+import { requiredValidator } from '../../utils/validators';
+import { DateInput, NumberInput, SelectInput, TextInput } from '.';
+import { SelectInputOption } from './SelectInput';
 
-interface Props {
-  name: string;
-  label: string;
+export interface FormSubmitResult<T> {
+  success: boolean;
+  error?: string;
+  errors: { [Property in keyof T]?: string };
 }
 
-export const FormikTextInput: React.FC<Props> = ({ name, label }) => {
-  const [, meta, helpers] = useField<string | undefined>(name);
+export type FormSubmitFunc<T> = (payload: T) => Promise<FormSubmitResult<T>>;
+
+export type FormikValidateFunc = (value: string | number | undefined) => string | undefined;
+
+interface FormikInputProps {
+  name: string;
+  label: string;
+  required?: boolean;
+  validate?: FormikValidateFunc;
+}
+
+export const FormikTextInput: React.FC<FormikInputProps> = ({
+  name,
+  label,
+  required,
+  validate,
+}) => {
+  const [, meta, helpers] = useField<string | undefined>({
+    name,
+    validate: validate ?? required ? requiredValidator : undefined,
+  });
 
   return (
     <TextInput
@@ -19,6 +42,87 @@ export const FormikTextInput: React.FC<Props> = ({ name, label }) => {
       onBlur={() => helpers.setTouched(true)}
       error={meta.error}
       touched={meta.touched}
+      required={required}
+    />
+  );
+};
+
+export const FormikDateInput: React.FC<FormikInputProps> = ({
+  name,
+  label,
+  required,
+  validate,
+}) => {
+  const [, meta, helpers] = useField<moment.Moment | undefined>({
+    name,
+    validate: validate ?? required ? requiredValidator : undefined,
+  });
+
+  return (
+    <DateInput
+      name={name}
+      label={label}
+      value={meta.value}
+      onChange={helpers.setValue}
+      onBlur={() => helpers.setTouched(true)}
+      error={meta.error}
+      touched={meta.touched}
+      required={required}
+    />
+  );
+};
+
+export const FormikNumberInput: React.FC<FormikInputProps> = ({
+  name,
+  label,
+  required,
+  validate,
+}) => {
+  const [, meta, helpers] = useField<number | undefined>({
+    name,
+    validate: validate ?? required ? requiredValidator : undefined,
+  });
+
+  return (
+    <NumberInput
+      name={name}
+      label={label}
+      value={meta.value}
+      onChange={helpers.setValue}
+      onBlur={() => helpers.setTouched(true)}
+      error={meta.error}
+      touched={meta.touched}
+      required={required}
+    />
+  );
+};
+
+interface FormikSelectInputProps extends FormikInputProps {
+  options: SelectInputOption[];
+}
+
+export const FormikSelectInput: React.FC<FormikSelectInputProps> = ({
+  name,
+  label,
+  options,
+  required,
+  validate,
+}) => {
+  const [, meta, helpers] = useField<number | undefined>({
+    name,
+    validate: validate ?? required ? requiredValidator : undefined,
+  });
+
+  return (
+    <SelectInput
+      label={label}
+      value={meta.value}
+      onChange={helpers.setValue}
+      onBlur={() => helpers.setTouched(true)}
+      error={meta.error}
+      touched={meta.touched}
+      required={required}
+      options={options}
     />
   );
 };

@@ -14,7 +14,7 @@ const AccountCard: React.FC<Props> = ({ account }) => {
 
   return (
     <Card
-      style={{ width: 300, margin: 10 }}
+      style={{ minWidth: 300, margin: 10 }}
       hoverable
       onClick={() => history.push(`/accounts/${account.id}`)}
     >

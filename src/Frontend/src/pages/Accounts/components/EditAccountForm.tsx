@@ -3,21 +3,27 @@ import { Form, Formik, FormikProps } from 'formik';
 import { Ref } from 'react';
 
 import { AccountDetail } from '../../../api/models';
-import { FormikTextInput } from '../../../components/Forms/formik';
-
-interface Props {
-  formRef?: Ref<FormikProps<FormValues>>;
-  hideSubmitButton?: boolean;
-  account: AccountDetail;
-}
+import {
+  FormikSelectInput,
+  FormikTextInput,
+  FormSubmitFunc,
+} from '../../../components/Forms/formik';
 
 export interface FormValues {
   name?: string;
   slug?: string;
   currencyId?: string;
 }
+interface Props {
+  formRef?: Ref<FormikProps<FormValues>>;
+  hideSubmitButton?: boolean;
+  account: AccountDetail;
+  onSubmit: FormSubmitFunc<ValidatedFormValues>;
+}
 
-const EditAccountForm: React.FC<Props> = ({ formRef, account, hideSubmitButton }) => {
+export type ValidatedFormValues = Required<FormValues>;
+
+const EditAccountForm: React.FC<Props> = ({ formRef, account, hideSubmitButton, onSubmit }) => {
   const initialValues: FormValues = {
     name: account.name,
     slug: account.slug,
@@ -25,35 +31,44 @@ const EditAccountForm: React.FC<Props> = ({ formRef, account, hideSubmitButton }
   };
 
   return (
-    <div>
-      <Formik
-        initialValues={initialValues}
-        onSubmit={async (values) => {
-          //TODO
-          await new Promise((r) => setTimeout(r, 500));
-          alert(JSON.stringify(values, null, 2));
-        }}
-        innerRef={formRef}
-      >
-        <Form>
-          <Row gutter={16}>
-            <Col span={12}>
-              <FormikTextInput name="name" label="Name" />
-            </Col>
+    <Formik
+      initialValues={initialValues}
+      onSubmit={async (payload, helpers) => {
+        const result = await onSubmit(payload as ValidatedFormValues);
+        if (!result.success) {
+          helpers.setSubmitting(false);
+          helpers.setErrors(result.errors);
+        }
+      }}
+      innerRef={formRef}
+    >
+      <Form>
+        <Row gutter={16}>
+          <Col span={12}>
+            <FormikTextInput name="name" label="Name" required />
+          </Col>
 
-            <Col span={12}>
-              <FormikTextInput name="slug" label="Slug" />
-            </Col>
-          </Row>
-          <FormikTextInput name="currencyId" label="Currency" />
-          {!hideSubmitButton && (
-            <Button type="primary" htmlType="submit">
-              Save
-            </Button>
-          )}
-        </Form>
-      </Formik>
-    </div>
+          <Col span={12}>
+            <FormikTextInput name="slug" label="Slug" required />
+          </Col>
+        </Row>
+        <FormikSelectInput
+          name="currencyId"
+          label="Currency"
+          options={[
+            { title: 'Koruny (Kč)', value: 'CZK' },
+            { title: 'Euro (€)', value: 'EUR' },
+            { title: 'US Dollar ($)', value: 'USD' },
+          ]}
+          required
+        />
+        {!hideSubmitButton && (
+          <Button type="primary" htmlType="submit">
+            Save
+          </Button>
+        )}
+      </Form>
+    </Formik>
   );
 };
 

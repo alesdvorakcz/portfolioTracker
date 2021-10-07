@@ -27,19 +27,19 @@ export interface AccountToEdit {
 
 export interface AccountValueHistory {
   id: number;
-  date: Date;
+  date: string;
   valueBefore: number;
   transactionCzk: number;
 }
 
 export interface AccountValueHistoryToAdd {
-  date: Date;
+  date: string;
   valueBefore: number;
   transactionCzk: number;
 }
 
 export interface AccountValueHistoryToEdit {
-  date: Date;
+  date: string;
   valueBefore: number;
   transactionCzk: number;
 }

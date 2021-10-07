@@ -15,7 +15,7 @@ const AccountList: React.FC<Props> = () => {
       {query.isLoading && <LoadingIndicator />}
       {query.error && <Alert message={(query.error as any).message} type="error" />}
       {query.isSuccess && (
-        <div style={{ display: 'flex', margin: -10 }}>
+        <div style={{ display: 'flex', margin: -10, flexWrap: 'wrap' }}>
           {query.data?.map((item) => (
             <AccountCard account={item} key={item.id} />
           ))}

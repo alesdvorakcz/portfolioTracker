@@ -1,0 +1,33 @@
+.InputWrapper {
+  margin-bottom: 15px;
+}
+
+.InputWrapper_label {
+  font-weight: 500;
+}
+
+.InputWrapper_asterisk {
+  color: red;
+  margin-left: 5px;
+}
+
+.InputWrapper_inputContainer {
+  margin-top: 8px;
+}
+
+.InputWrapper.error {
+  margin-bottom: 5px;
+}
+
+.InputWrapper.error .ant-input {
+  border-color: red;
+}
+
+.InputWrapper.error .ant-input:focus {
+  box-shadow: 0 0 0 2px rgb(255, 24, 24, 0.2);
+}
+
+.InputWrapper_error-text {
+  color: red;
+  font-size: 12px;
+}

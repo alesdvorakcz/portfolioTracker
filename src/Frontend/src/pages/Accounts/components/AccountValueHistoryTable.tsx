@@ -38,7 +38,7 @@ const AccountValueHistoryTable: React.FC<Props> = ({ account, onEditClick }) => 
     },
   ];
 
-  return <Table bordered columns={columns} dataSource={account.history} />;
+  return <Table bordered columns={columns} dataSource={account.history} rowKey="id" />;
 };
 
 export default AccountValueHistoryTable;

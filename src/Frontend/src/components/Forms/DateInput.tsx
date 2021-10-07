@@ -1,19 +1,20 @@
-import { Input } from 'antd';
+import { DatePicker } from 'antd';
+import moment from 'moment';
 
 import InputWrapper from './InputWrapper';
 
 interface Props {
   label: string;
   name: string;
-  value?: string;
+  value?: moment.Moment;
   required?: boolean;
-  onChange: (value: string) => void;
+  onChange: (value?: moment.Moment) => void;
   onBlur: () => void;
   error?: string;
   touched?: boolean;
 }
 
-const TextInput: React.FC<Props> = ({
+const DateInput: React.FC<Props> = ({
   label,
   name,
   value,
@@ -25,14 +26,16 @@ const TextInput: React.FC<Props> = ({
 }) => {
   return (
     <InputWrapper label={label} error={error} touched={touched} required={required}>
-      <Input
+      <DatePicker
         name={name}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        allowClear={!required}
+        onChange={(e) => onChange(e || undefined)}
         onBlur={() => onBlur()}
+        style={{ width: '100%' }}
       />
     </InputWrapper>
   );
 };
 
-export default TextInput;
+export default DateInput;

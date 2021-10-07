@@ -1,19 +1,19 @@
-import { Input } from 'antd';
+import { InputNumber } from 'antd';
 
 import InputWrapper from './InputWrapper';
 
 interface Props {
   label: string;
   name: string;
-  value?: string;
+  value?: number;
   required?: boolean;
-  onChange: (value: string) => void;
+  onChange: (value: number) => void;
   onBlur: () => void;
   error?: string;
   touched?: boolean;
 }
 
-const TextInput: React.FC<Props> = ({
+const NumberInput: React.FC<Props> = ({
   label,
   name,
   value,
@@ -25,14 +25,15 @@ const TextInput: React.FC<Props> = ({
 }) => {
   return (
     <InputWrapper label={label} error={error} touched={touched} required={required}>
-      <Input
+      <InputNumber
         name={name}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => onChange(e)}
         onBlur={() => onBlur()}
+        style={{ width: '100%' }}
       />
     </InputWrapper>
   );
 };
 
-export default TextInput;
+export default NumberInput;
