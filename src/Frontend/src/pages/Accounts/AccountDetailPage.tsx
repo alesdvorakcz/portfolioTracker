@@ -8,8 +8,10 @@ import AddHistoryValueForm from './components/AddHistoryValueForm';
 import EditAccountForm from './components/EditAccountForm';
 import EditHistoryValueForm from './components/EditHistoryValueForm';
 import { useAccountDetailQuery } from './queries';
+import { useAccountDelete } from './useAccountDelete';
 import { useAccountEdit } from './useAccountEdit';
 import { useAccountValueHistoryAdd } from './useAccountValueHistoryAdd';
+import { useAccountValueHistoryDelete } from './useAccountValueHistoryDelete';
 import { useAccountValueHistoryEdit } from './useAccountValueHistoryEdit';
 
 interface Props {}
@@ -25,8 +27,10 @@ const AccountDetailPage: React.FC<Props> = () => {
   const id = parseInt(params.id, 10);
 
   const accountEdit = useAccountEdit(id);
+  const accountDelete = useAccountDelete(id);
   const accountValueHistoryAdd = useAccountValueHistoryAdd(id);
   const accountValueHistoryEdit = useAccountValueHistoryEdit(id);
+  const accountValueHistoryDelete = useAccountValueHistoryDelete(id);
   const query = useAccountDetailQuery(id);
 
   return (
@@ -39,11 +43,16 @@ const AccountDetailPage: React.FC<Props> = () => {
         query={query}
         render={(account) => (
           <>
-            <AccountInfo account={account} onEditClick={accountEdit.open} />
+            <AccountInfo
+              account={account}
+              onEditClick={accountEdit.open}
+              onDeleteClick={accountDelete.onDelete}
+            />
             <AccountValueHistoryTable
               account={account}
               onAddClick={accountValueHistoryAdd.open}
               onEditClick={accountValueHistoryEdit.open}
+              onDeleteClick={accountValueHistoryDelete.onDelete}
             />
           </>
         )}

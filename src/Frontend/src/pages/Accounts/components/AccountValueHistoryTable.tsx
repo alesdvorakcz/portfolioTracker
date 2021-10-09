@@ -1,17 +1,23 @@
-import { Button, Table } from 'antd';
+import { Button, Space, Table } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import moment from 'moment';
 
 import { AccountDetail, AccountValueHistory } from '../../../api/models';
-import { Box, FlexRow } from '../../../components';
+import { Box, DeleteConfirm, FlexRow } from '../../../components';
 
 interface Props {
   account: AccountDetail;
   onEditClick: (item: AccountValueHistory) => void;
+  onDeleteClick: (item: AccountValueHistory) => Promise<void>;
   onAddClick: () => void;
 }
 
-const AccountValueHistoryTable: React.FC<Props> = ({ account, onAddClick, onEditClick }) => {
+const AccountValueHistoryTable: React.FC<Props> = ({
+  account,
+  onAddClick,
+  onEditClick,
+  onDeleteClick,
+}) => {
   const columns: ColumnType<AccountValueHistory>[] = [
     {
       title: 'Date',
@@ -36,7 +42,14 @@ const AccountValueHistoryTable: React.FC<Props> = ({ account, onAddClick, onEdit
     {
       title: '',
       key: 'action',
-      render: (_text, record) => <Button onClick={() => onEditClick(record)}>Edit</Button>,
+      render: (_text, record) => (
+        <Space>
+          <Button onClick={() => onEditClick(record)}>Edit</Button>
+          <DeleteConfirm onDelete={() => onDeleteClick(record)}>
+            <Button>Delete</Button>
+          </DeleteConfirm>
+        </Space>
+      ),
     },
   ];
 

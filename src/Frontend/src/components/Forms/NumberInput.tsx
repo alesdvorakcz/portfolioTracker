@@ -26,6 +26,8 @@ const NumberInput: React.FC<Props> = ({
   touched,
   min,
   max,
+  prefix,
+  suffix,
   onChange,
   onBlur,
 }) => {
@@ -37,9 +39,8 @@ const NumberInput: React.FC<Props> = ({
         onChange={(e) => onChange(e)}
         onBlur={() => onBlur()}
         style={{ width: '100%' }}
-        // TODO
-        //addonBefore={suffix}
-        //addonAfter={prefix}
+        addonBefore={prefix}
+        addonAfter={suffix}
         min={min}
         max={max}
       />
