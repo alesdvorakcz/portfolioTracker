@@ -15,7 +15,7 @@ const AccountValueHistoryTable: React.FC<Props> = ({ account, onEditClick }) => 
       title: 'Date',
       dataIndex: 'date',
       key: 'date',
-      render: (text: string) => <div>{moment(text).format('MMM yyyy')}</div>,
+      render: (text: string) => <div>{moment.utc(text).format('LL')}</div>,
     },
     {
       title: 'Value Before',

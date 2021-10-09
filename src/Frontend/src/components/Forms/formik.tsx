@@ -72,10 +72,21 @@ export const FormikDateInput: React.FC<FormikInputProps> = ({
   );
 };
 
-export const FormikNumberInput: React.FC<FormikInputProps> = ({
+interface FormikNumberInputProps extends FormikInputProps {
+  min?: number;
+  max?: number;
+  prefix?: string;
+  suffix?: string;
+}
+
+export const FormikNumberInput: React.FC<FormikNumberInputProps> = ({
   name,
   label,
   required,
+  min,
+  max,
+  prefix,
+  suffix,
   validate,
 }) => {
   const [, meta, helpers] = useField<number | undefined>({
@@ -93,6 +104,10 @@ export const FormikNumberInput: React.FC<FormikInputProps> = ({
       error={meta.error}
       touched={meta.touched}
       required={required}
+      min={min}
+      max={max}
+      prefix={prefix}
+      suffix={suffix}
     />
   );
 };

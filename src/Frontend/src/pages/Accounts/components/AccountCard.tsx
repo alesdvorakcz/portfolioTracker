@@ -13,11 +13,7 @@ const AccountCard: React.FC<Props> = ({ account }) => {
   const history = useHistory();
 
   return (
-    <Card
-      style={{ minWidth: 300, margin: 10 }}
-      hoverable
-      onClick={() => history.push(`/accounts/${account.id}`)}
-    >
+    <Card style={{}} hoverable onClick={() => history.push(`/accounts/${account.id}`)}>
       <Meta title={account.name} description={account.currencyId} />
     </Card>
   );

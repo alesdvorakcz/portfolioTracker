@@ -30,7 +30,15 @@ const DateInput: React.FC<Props> = ({
         name={name}
         value={value}
         allowClear={!required}
-        onChange={(e) => onChange(e || undefined)}
+        format="L"
+        onChange={(e) => {
+          const newVal = e || undefined;
+          if (newVal) {
+            //strip date time
+            newVal.startOf('day');
+          }
+          onChange(newVal);
+        }}
         onBlur={() => onBlur()}
         style={{ width: '100%' }}
       />

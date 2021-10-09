@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from 'react-query';
 import apiClient from '../../api';
 import { AccountValueHistory } from '../../api/models';
 import { FormSubmitFunc } from '../../components/Forms/formik';
+import { handleSubmitErrors } from '../../components/Forms/helpers';
 import { FormValues, ValidatedFormValues } from './components/EditHistoryValueForm';
 
 export const useAccountValueHistoryEdit = (accountId: number) => {
@@ -30,7 +31,7 @@ export const useAccountValueHistoryEdit = (accountId: number) => {
         queryClient.invalidateQueries('account', { exact: true });
         return { success: true, errors: {} };
       } catch (error) {
-        //TODO: how to handle errors?
+        return handleSubmitErrors(error);
       }
     }
 

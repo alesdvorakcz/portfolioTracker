@@ -56,7 +56,12 @@ const EditHistoryValueForm: React.FC<Props> = ({
           </Col>
 
           <Col span={12}>
-            <FormikNumberInput name="transactionCzk" label="Transaction in CZK" required />
+            <FormikNumberInput
+              name="transactionCzk"
+              label="Transaction in CZK"
+              suffix=" Kč"
+              required
+            />
           </Col>
         </Row>
         {!hideSubmitButton && (

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using PortfolioTracker.WebApi;
 using PortfolioTracker.WebApi.Database;
 using PortfolioTracker.WebApi.Extensions;
+using PortfolioTracker.WebApi.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,10 +41,8 @@ if (builder.Environment.IsDevelopment())
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PortfolioTracker.WebApi v1"));
 }
 
-app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
+app.UseCustomExceptionHandlerMiddleware();
 app.MapControllers();
 
 app.Run();

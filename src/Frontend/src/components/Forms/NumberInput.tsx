@@ -11,6 +11,10 @@ interface Props {
   onBlur: () => void;
   error?: string;
   touched?: boolean;
+  min?: number;
+  max?: number;
+  prefix?: string;
+  suffix?: string;
 }
 
 const NumberInput: React.FC<Props> = ({
@@ -20,6 +24,8 @@ const NumberInput: React.FC<Props> = ({
   required,
   error,
   touched,
+  min,
+  max,
   onChange,
   onBlur,
 }) => {
@@ -31,6 +37,11 @@ const NumberInput: React.FC<Props> = ({
         onChange={(e) => onChange(e)}
         onBlur={() => onBlur()}
         style={{ width: '100%' }}
+        // TODO
+        //addonBefore={suffix}
+        //addonAfter={prefix}
+        min={min}
+        max={max}
       />
     </InputWrapper>
   );

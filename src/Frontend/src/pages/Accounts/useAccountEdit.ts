@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from 'react-query';
 
 import apiClient from '../../api';
 import { FormSubmitFunc } from '../../components/Forms/formik';
+import { handleSubmitErrors } from '../../components/Forms/helpers';
 import { FormValues, ValidatedFormValues } from './components/EditAccountForm';
 
 export const useAccountEdit = (accountId: number) => {
@@ -23,10 +24,8 @@ export const useAccountEdit = (accountId: number) => {
       queryClient.invalidateQueries('account', { exact: true });
       return { success: true, errors: {} };
     } catch (error) {
-      //TODO: how to handle errors?
+      return handleSubmitErrors(error);
     }
-
-    return { success: false, errors: {}, error: 'Unknown error' };
   };
 
   const open = () => setIsOpen(true);

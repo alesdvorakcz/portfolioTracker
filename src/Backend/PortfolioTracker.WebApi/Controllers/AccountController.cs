@@ -2,6 +2,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PortfolioTracker.WebApi.Common;
 using PortfolioTracker.WebApi.Contracts.Input;
 using PortfolioTracker.WebApi.Contracts.Result;
 using PortfolioTracker.WebApi.Database;
@@ -53,7 +54,17 @@ public class AccountController : BaseController
     [ProducesResponseType(typeof(Account), 201)]
     public async Task<IActionResult> Post([FromBody] AccountToAdd account)
     {
-        //TODO: validaton
+        if (string.IsNullOrEmpty(account.Name))
+            throw new Common.ValidationException(nameof(account.Name), ValidationError.Required);
+
+        if (string.IsNullOrEmpty(account.Slug))
+            throw new Common.ValidationException(nameof(account.Slug), ValidationError.Required);
+
+        var slugExists = await DbContext.Accounts.AnyAsync(x => x.Slug == account.Slug);
+        if (slugExists)
+            throw new Common.ValidationException(nameof(account.Slug), ValidationError.Duplicity);
+
+        //TODO: validate currency id
 
         var entity = new Database.Entity.Account
         {
@@ -78,12 +89,22 @@ public class AccountController : BaseController
     [ProducesResponseType(typeof(Account), 200)]
     public async Task<IActionResult> Put(int id, [FromBody] AccountToEdit account)
     {
-        //TODO: validaton
-
         var entity = await DbContext.Accounts.FirstOrDefaultAsync(x => x.Id == id);
 
         if (entity == null)
             return NotFound();
+
+        if (string.IsNullOrEmpty(account.Name))
+            throw new Common.ValidationException(nameof(account.Name), ValidationError.Required);
+
+        if (string.IsNullOrEmpty(account.Slug))
+            throw new Common.ValidationException(nameof(account.Slug), ValidationError.Required);
+
+        var slugExists = await DbContext.Accounts.AnyAsync(x => x.Slug == account.Slug && x.Id != id);
+        if (slugExists)
+            throw new Common.ValidationException(nameof(account.Slug), ValidationError.Duplicity);
+
+        //TODO: validate currency id
 
         entity.Slug = account.Slug;
         entity.Name = account.Name;
@@ -117,12 +138,14 @@ public class AccountController : BaseController
     [ProducesResponseType(typeof(AccountValueHistory), 201)]
     public async Task<IActionResult> AddValueToHistory([Required] int accountId, [FromBody] AccountValueHistoryToAdd value)
     {
-        //TODO: validaton
-
         var account = await DbContext.Accounts.FirstOrDefaultAsync(x => x.Id == accountId);
 
         if (account == null)
             return NotFound();
+
+        var sameDateEntityExists = await DbContext.AccountValueHistory.AnyAsync(x => x.AccountId == accountId && x.Date == value.Date);
+        if (sameDateEntityExists)
+            throw new Common.ValidationException(nameof(value.Date), ValidationError.Duplicity);
 
         var entity = new Database.Entity.AccountValueHistory
         {
@@ -148,12 +171,14 @@ public class AccountController : BaseController
     [ProducesResponseType(typeof(AccountValueHistory), 200)]
     public async Task<IActionResult> EditValueFromHistory([Required] int accountId, [Required] int valueHistoryId, [FromBody] AccountValueHistoryToEdit value)
     {
-        //TODO: validaton
-
         var entity = await DbContext.AccountValueHistory.FirstOrDefaultAsync(x => x.Id == valueHistoryId && x.AccountId == accountId);
 
         if (entity == null)
             return NotFound();
+
+        var sameDateEntityExists = await DbContext.AccountValueHistory.AnyAsync(x => x.AccountId == accountId && x.Date == value.Date && x.Id != entity.Id);
+        if (sameDateEntityExists)
+            throw new Common.ValidationException(nameof(value.Date), ValidationError.Duplicity);
 
         entity.Date = value.Date;
         entity.ValueBefore = value.ValueBefore;

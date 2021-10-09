@@ -3,6 +3,7 @@ import { Form, Formik, FormikProps } from 'formik';
 import { Ref } from 'react';
 
 import { AccountDetail } from '../../../api/models';
+import { FormError } from '../../../components/Forms';
 import {
   FormikSelectInput,
   FormikTextInput,
@@ -38,6 +39,7 @@ const EditAccountForm: React.FC<Props> = ({ formRef, account, hideSubmitButton, 
         if (!result.success) {
           helpers.setSubmitting(false);
           helpers.setErrors(result.errors);
+          helpers.setStatus(result.error);
         }
       }}
       innerRef={formRef}
@@ -62,6 +64,7 @@ const EditAccountForm: React.FC<Props> = ({ formRef, account, hideSubmitButton, 
           ]}
           required
         />
+        <FormError />
         {!hideSubmitButton && (
           <Button type="primary" htmlType="submit">
             Save

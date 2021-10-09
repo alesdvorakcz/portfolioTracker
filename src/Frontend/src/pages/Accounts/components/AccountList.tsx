@@ -1,4 +1,4 @@
-import { Alert } from 'antd';
+import { Alert, List } from 'antd';
 import { useQuery } from 'react-query';
 
 import apiClient from '../../../api';
@@ -15,11 +15,24 @@ const AccountList: React.FC<Props> = () => {
       {query.isLoading && <LoadingIndicator />}
       {query.error && <Alert message={(query.error as any).message} type="error" />}
       {query.isSuccess && (
-        <div style={{ display: 'flex', margin: -10, flexWrap: 'wrap' }}>
-          {query.data?.map((item) => (
-            <AccountCard account={item} key={item.id} />
-          ))}
-        </div>
+        <List
+          grid={{
+            gutter: 16,
+            xs: 1,
+            sm: 2,
+            md: 2,
+            lg: 3,
+            xl: 4,
+            xxl: 5,
+          }}
+          dataSource={query.data}
+          rowKey="id"
+          renderItem={(item) => (
+            <List.Item>
+              <AccountCard account={item} />
+            </List.Item>
+          )}
+        />
       )}
     </Box>
   );
