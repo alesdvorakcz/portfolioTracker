@@ -1,8 +1,9 @@
-import { Button, Col, Row } from 'antd';
+import { Button } from 'antd';
 import { Form, Formik, FormikProps } from 'formik';
 import moment from 'moment';
 import { Ref } from 'react';
 
+import { CurrencyValueHistory } from '../../../api/models';
 import {
   FormikDateInput,
   FormikNumberInput,
@@ -11,19 +12,25 @@ import {
 
 export interface FormValues {
   date?: moment.Moment;
-  valueBefore?: number;
-  transactionCzk?: number;
+  conversionRate?: number;
 }
 interface Props {
   formRef?: Ref<FormikProps<FormValues>>;
   hideSubmitButton?: boolean;
+  valueHistory: CurrencyValueHistory;
   onSubmit: FormSubmitFunc<ValidatedFormValues>;
 }
 export type ValidatedFormValues = Required<FormValues>;
 
-const AddHistoryValueForm: React.FC<Props> = ({ formRef, hideSubmitButton, onSubmit }) => {
+const EditHistoryValueForm: React.FC<Props> = ({
+  formRef,
+  valueHistory,
+  hideSubmitButton,
+  onSubmit,
+}) => {
   const initialValues: FormValues = {
-    date: moment.utc().startOf('day'),
+    date: moment.utc(valueHistory.date),
+    conversionRate: valueHistory.conversionRate,
   };
 
   return (
@@ -40,21 +47,14 @@ const AddHistoryValueForm: React.FC<Props> = ({ formRef, hideSubmitButton, onSub
     >
       <Form>
         <FormikDateInput name="date" label="Date" required />
+        <FormikNumberInput
+          name="conversionRate"
+          label="Conversion Rate"
+          suffix=" Kč"
+          allowDecimal
+          required
+        />
 
-        <Row gutter={16}>
-          <Col span={12}>
-            <FormikNumberInput name="valueBefore" label="Value Before" allowDecimal required />
-          </Col>
-
-          <Col span={12}>
-            <FormikNumberInput
-              name="transactionCzk"
-              label="Transaction in CZK"
-              suffix=" Kč"
-              required
-            />
-          </Col>
-        </Row>
         {!hideSubmitButton && (
           <Button type="primary" htmlType="submit">
             Save
@@ -65,4 +65,4 @@ const AddHistoryValueForm: React.FC<Props> = ({ formRef, hideSubmitButton, onSub
   );
 };
 
-export default AddHistoryValueForm;
+export default EditHistoryValueForm;

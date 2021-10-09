@@ -3,13 +3,15 @@ import { ColumnType } from 'antd/lib/table';
 import moment from 'moment';
 
 import { CurrencyDetail, CurrencyValueHistory } from '../../../api/models';
+import { Box, FlexRow } from '../../../components';
 
 interface Props {
   currency: CurrencyDetail;
   onEditClick: (item: CurrencyValueHistory) => void;
+  onAddClick: () => void;
 }
 
-const CurrencyValueHistoryTable: React.FC<Props> = ({ currency, onEditClick }) => {
+const CurrencyValueHistoryTable: React.FC<Props> = ({ currency, onAddClick, onEditClick }) => {
   const columns: ColumnType<CurrencyValueHistory>[] = [
     {
       title: 'Date',
@@ -22,7 +24,9 @@ const CurrencyValueHistoryTable: React.FC<Props> = ({ currency, onEditClick }) =
       dataIndex: 'conversionRate',
       key: 'conversionRate',
       align: 'right',
-      render: (text: string) => <div>{parseInt(text, 10).toLocaleString('cs-CZ')}</div>,
+      render: (text: string) => (
+        <div>{Intl.NumberFormat('cs-CZ', { style: 'decimal' }).format(parseFloat(text))}</div>
+      ),
     },
     {
       title: '',
@@ -31,7 +35,16 @@ const CurrencyValueHistoryTable: React.FC<Props> = ({ currency, onEditClick }) =
     },
   ];
 
-  return <Table bordered columns={columns} dataSource={currency.history} rowKey="id" />;
+  return (
+    <Box>
+      <FlexRow align="right" marginBottom>
+        <Button type="primary" onClick={onAddClick}>
+          Add Value
+        </Button>
+      </FlexRow>
+      <Table bordered columns={columns} dataSource={currency.history} rowKey="id" />
+    </Box>
+  );
 };
 
 export default CurrencyValueHistoryTable;

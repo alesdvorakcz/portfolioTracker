@@ -6,18 +6,17 @@ import apiClient from '../../api';
 import { FormSubmitFunc } from '../../components/Forms/formik';
 import { handleSubmitErrors } from '../../components/Forms/helpers';
 import { FormValues, ValidatedFormValues } from './components/AddHistoryValueForm';
-import { accountDetailQueryKeyBuilder, accountsQueryKeyBuilder } from './queries';
+import { currenciesQueryKeyBuilder, currencyDetailQueryKeyBuilder } from './queries';
 
-export const useAccountValueHistoryAdd = (accountId: number) => {
+export const useCurrencyValueHistoryAdd = (currencyId: string) => {
   const [isOpen, setIsOpen] = useState(false);
   const formRef = useRef<FormikProps<FormValues>>(null);
   const queryClient = useQueryClient();
 
   const mutation = useMutation((payload: ValidatedFormValues) => {
-    return apiClient.accounts.addValueToAccountHistory(accountId, {
+    return apiClient.currencies.addValueToHistory(currencyId, {
       date: payload.date.toJSON(),
-      valueBefore: payload.valueBefore,
-      transactionCzk: payload.transactionCzk,
+      conversionRate: payload.conversionRate,
     });
   });
 
@@ -25,8 +24,8 @@ export const useAccountValueHistoryAdd = (accountId: number) => {
     try {
       await mutation.mutateAsync(payload);
       setIsOpen(false);
-      queryClient.invalidateQueries(accountDetailQueryKeyBuilder(accountId));
-      queryClient.invalidateQueries(accountsQueryKeyBuilder(), { exact: true });
+      queryClient.invalidateQueries(currencyDetailQueryKeyBuilder(currencyId));
+      queryClient.invalidateQueries(currenciesQueryKeyBuilder(), { exact: true });
       return { success: true, errors: {} };
     } catch (error) {
       return handleSubmitErrors(error);

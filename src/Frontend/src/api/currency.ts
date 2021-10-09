@@ -1,7 +1,13 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 
 import { ROOT } from './config';
-import { Currency, CurrencyDetail } from './models';
+import {
+  Currency,
+  CurrencyDetail,
+  CurrencyValueHistory,
+  CurrencyValueHistoryToAdd,
+  CurrencyValueHistoryToEdit,
+} from './models';
 
 const getCurrencies = async () => {
   const result = await axios.get<Currency[]>(`${ROOT}Currency`);
@@ -13,9 +19,38 @@ const getCurrencyDetail = async (id: string) => {
   return result.data;
 };
 
+const addValueToHistory = async (currencyId: string, value: CurrencyValueHistoryToAdd) => {
+  const result = await axios.post<CurrencyValueHistoryToAdd, AxiosResponse<CurrencyValueHistory>>(
+    `${ROOT}Currency/${currencyId}/History`,
+    value
+  );
+  return result.data;
+};
+
+const editValueToHistory = async (
+  currencyId: string,
+  valueHistoryId: number,
+  value: CurrencyValueHistoryToEdit
+) => {
+  const result = await axios.put<CurrencyValueHistoryToEdit, AxiosResponse<CurrencyValueHistory>>(
+    `${ROOT}Currency/${currencyId}/History/${valueHistoryId}`,
+    value
+  );
+  return result.data;
+};
+
+const loadHistory = async (currencyId: string, from: string, to: string) => {
+  await axios.put<CurrencyValueHistoryToEdit, AxiosResponse<CurrencyValueHistory>>(
+    `${ROOT}Currency/${currencyId}/History/load?from=${from}&to=${to}`
+  );
+};
+
 const currenciesClient = {
   getCurrencies,
   getCurrencyDetail,
+  addValueToHistory,
+  editValueToHistory,
+  loadHistory,
 };
 
 export default currenciesClient;

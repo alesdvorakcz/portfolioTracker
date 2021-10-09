@@ -1,4 +1,4 @@
-import { Button, Col, Row } from 'antd';
+import { Button } from 'antd';
 import { Form, Formik, FormikProps } from 'formik';
 import moment from 'moment';
 import { Ref } from 'react';
@@ -11,8 +11,7 @@ import {
 
 export interface FormValues {
   date?: moment.Moment;
-  valueBefore?: number;
-  transactionCzk?: number;
+  conversionRate?: number;
 }
 interface Props {
   formRef?: Ref<FormikProps<FormValues>>;
@@ -40,21 +39,13 @@ const AddHistoryValueForm: React.FC<Props> = ({ formRef, hideSubmitButton, onSub
     >
       <Form>
         <FormikDateInput name="date" label="Date" required />
-
-        <Row gutter={16}>
-          <Col span={12}>
-            <FormikNumberInput name="valueBefore" label="Value Before" allowDecimal required />
-          </Col>
-
-          <Col span={12}>
-            <FormikNumberInput
-              name="transactionCzk"
-              label="Transaction in CZK"
-              suffix=" Kč"
-              required
-            />
-          </Col>
-        </Row>
+        <FormikNumberInput
+          name="conversionRate"
+          label="Conversion Rate"
+          suffix=" Kč"
+          allowDecimal
+          required
+        />
         {!hideSubmitButton && (
           <Button type="primary" htmlType="submit">
             Save

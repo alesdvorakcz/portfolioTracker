@@ -52,7 +52,7 @@ const EditHistoryValueForm: React.FC<Props> = ({
 
         <Row gutter={16}>
           <Col span={12}>
-            <FormikNumberInput name="valueBefore" label="Value Before" required />
+            <FormikNumberInput name="valueBefore" label="Value Before" allowDecimal required />
           </Col>
 
           <Col span={12}>

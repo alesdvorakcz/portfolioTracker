@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from 'react-query';
 
 import apiClient from '../../api';
 import { AccountValueHistory } from '../../api/models';
+import { accountDetailQueryKeyBuilder, accountsQueryKeyBuilder } from './queries';
 
 export const useAccountValueHistoryDelete = (accountId: number) => {
   const queryClient = useQueryClient();
@@ -12,8 +13,8 @@ export const useAccountValueHistoryDelete = (accountId: number) => {
 
   const onDelete = async (historyValue: AccountValueHistory) => {
     await mutation.mutateAsync(historyValue.id);
-    queryClient.invalidateQueries(['account', accountId]);
-    queryClient.invalidateQueries('account', { exact: true });
+    queryClient.invalidateQueries(accountDetailQueryKeyBuilder(accountId));
+    queryClient.invalidateQueries(accountsQueryKeyBuilder(), { exact: true });
   };
 
   return {

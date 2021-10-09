@@ -77,6 +77,7 @@ interface FormikNumberInputProps extends FormikInputProps {
   max?: number;
   prefix?: string;
   suffix?: string;
+  allowDecimal?: boolean;
 }
 
 export const FormikNumberInput: React.FC<FormikNumberInputProps> = ({
@@ -87,6 +88,7 @@ export const FormikNumberInput: React.FC<FormikNumberInputProps> = ({
   max,
   prefix,
   suffix,
+  allowDecimal,
   validate,
 }) => {
   const [, meta, helpers] = useField<number | undefined>({
@@ -106,6 +108,7 @@ export const FormikNumberInput: React.FC<FormikNumberInputProps> = ({
       required={required}
       min={min}
       max={max}
+      allowDecimal={allowDecimal}
       prefix={prefix}
       suffix={suffix}
     />

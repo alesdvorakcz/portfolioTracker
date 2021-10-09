@@ -59,3 +59,13 @@ export interface CurrencyValueHistory {
   date: string;
   conversionRate: number;
 }
+
+export interface CurrencyValueHistoryToAdd {
+  date: string;
+  conversionRate: number;
+}
+
+export interface CurrencyValueHistoryToEdit {
+  date: string;
+  conversionRate: number;
+}

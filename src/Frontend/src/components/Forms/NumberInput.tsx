@@ -15,6 +15,7 @@ interface Props {
   max?: number;
   prefix?: string;
   suffix?: string;
+  allowDecimal?: boolean;
 }
 
 const NumberInput: React.FC<Props> = ({
@@ -28,6 +29,7 @@ const NumberInput: React.FC<Props> = ({
   max,
   prefix,
   suffix,
+  allowDecimal,
   onChange,
   onBlur,
 }) => {
@@ -43,6 +45,7 @@ const NumberInput: React.FC<Props> = ({
         addonAfter={suffix}
         min={min}
         max={max}
+        decimalSeparator={allowDecimal ? ',' : undefined}
       />
     </InputWrapper>
   );

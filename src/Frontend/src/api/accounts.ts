@@ -51,7 +51,7 @@ const editValueFromAccountHistory = async (
   valueHistoryId: number,
   value: AccountValueHistoryToEdit
 ) => {
-  const result = await axios.put<AccountValueHistoryToEdit, AxiosResponse<Account>>(
+  const result = await axios.put<AccountValueHistoryToEdit, AxiosResponse<AccountValueHistory>>(
     `${ROOT}Account/${accountId}/History/${valueHistoryId}`,
     value
   );
