@@ -12,7 +12,9 @@ function QueryWrapper<T>({ query, render }: Props<T>) {
   return (
     <>
       {query.isLoading && <LoadingIndicator inBox />}
-      {query.error && <Alert message={(query.error as any).message} type="error" />}
+      {!query.isLoading && query.error && (
+        <Alert message={(query.error as any).message} type="error" />
+      )}
       {query.isSuccess && <>{render(query.data)}</>}
     </>
   );

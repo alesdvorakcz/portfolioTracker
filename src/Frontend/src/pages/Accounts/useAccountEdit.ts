@@ -6,6 +6,7 @@ import apiClient from '../../api';
 import { FormSubmitFunc } from '../../components/Forms/formik';
 import { handleSubmitErrors } from '../../components/Forms/helpers';
 import { FormValues, ValidatedFormValues } from './components/EditAccountForm';
+import { accountDetailQueryKeyBuilder, accountsQueryKeyBuilder } from './queries';
 
 export const useAccountEdit = (accountId: number) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,8 +21,8 @@ export const useAccountEdit = (accountId: number) => {
     try {
       await mutation.mutateAsync(payload);
       setIsOpen(false);
-      queryClient.invalidateQueries(['account', accountId]);
-      queryClient.invalidateQueries('account', { exact: true });
+      queryClient.invalidateQueries(accountDetailQueryKeyBuilder(accountId));
+      queryClient.invalidateQueries(accountsQueryKeyBuilder(), { exact: true });
       return { success: true, errors: {} };
     } catch (error) {
       return handleSubmitErrors(error);

@@ -5,7 +5,8 @@ import { useState } from 'react';
 import { Route, Switch } from 'react-router-dom';
 
 import { Menu } from './components';
-import { AccountDetailPage, AccountsPage, DashboardPage, EtfsPage } from './pages';
+import { AccountDetailPage, AccountsPage, CurrenciesPage, DashboardPage, EtfsPage } from './pages';
+import CurrencyDetailPage from './pages/Currencies/CurrencyDetailPage';
 
 const { Footer, Sider } = Layout;
 const { useBreakpoint } = Grid;
@@ -49,6 +50,12 @@ function App() {
           </Route>
           <Route path="/etfs">
             <EtfsPage />
+          </Route>
+          <Route path="/currencies/:id">
+            <CurrencyDetailPage />
+          </Route>
+          <Route path="/currencies">
+            <CurrenciesPage />
           </Route>
         </Switch>
         <Footer style={{ textAlign: 'center' }}>Footer text</Footer>

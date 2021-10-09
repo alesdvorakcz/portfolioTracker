@@ -30,7 +30,7 @@ const DateInput: React.FC<Props> = ({
         name={name}
         value={value}
         allowClear={!required}
-        format="L"
+        format="l"
         onChange={(e) => {
           const newVal = e || undefined;
           if (newVal) {

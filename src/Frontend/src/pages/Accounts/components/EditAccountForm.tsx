@@ -1,4 +1,4 @@
-import { Button, Col, Row } from 'antd';
+import { Alert, Button, Col, Row } from 'antd';
 import { Form, Formik, FormikProps } from 'formik';
 import { Ref } from 'react';
 
@@ -9,6 +9,7 @@ import {
   FormikTextInput,
   FormSubmitFunc,
 } from '../../../components/Forms/formik';
+import { useCurrenciesQuery } from '../../Currencies/queries';
 
 export interface FormValues {
   name?: string;
@@ -30,6 +31,8 @@ const EditAccountForm: React.FC<Props> = ({ formRef, account, hideSubmitButton, 
     slug: account.slug,
     currencyId: account.currencyId,
   };
+
+  const currenciesQuery = useCurrenciesQuery();
 
   return (
     <Formik
@@ -54,14 +57,14 @@ const EditAccountForm: React.FC<Props> = ({ formRef, account, hideSubmitButton, 
             <FormikTextInput name="slug" label="Slug" required />
           </Col>
         </Row>
+        {!currenciesQuery.isLoading && currenciesQuery.error && (
+          <Alert type="error" message={(currenciesQuery.error as any).message} />
+        )}
         <FormikSelectInput
           name="currencyId"
           label="Currency"
-          options={[
-            { title: 'Koruny (Kč)', value: 'CZK' },
-            { title: 'Euro (€)', value: 'EUR' },
-            { title: 'US Dollar ($)', value: 'USD' },
-          ]}
+          loading={currenciesQuery.isLoading}
+          options={currenciesQuery.data?.map((x) => ({ value: x.id, label: x.name })) ?? []}
           required
         />
         <FormError />

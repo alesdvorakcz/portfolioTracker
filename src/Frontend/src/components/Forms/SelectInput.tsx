@@ -11,10 +11,11 @@ interface Props {
   error?: string;
   touched?: boolean;
   options: SelectInputOption[];
+  loading?: boolean;
 }
 
 export interface SelectInputOption {
-  title: string;
+  label: string;
   value: string;
   disabled?: boolean;
 }
@@ -26,6 +27,7 @@ const SelectInput: React.FC<Props> = ({
   error,
   touched,
   options,
+  loading,
   onChange,
   onBlur,
 }) => {
@@ -39,6 +41,7 @@ const SelectInput: React.FC<Props> = ({
         style={{ width: '100%' }}
         showSearch
         allowClear={!required}
+        loading={loading}
       />
     </InputWrapper>
   );

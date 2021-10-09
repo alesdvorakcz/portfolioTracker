@@ -1,5 +1,8 @@
 import './index.css';
+import 'moment/locale/cs';
 
+import { ConfigProvider } from 'antd';
+import csLocale from 'antd/lib/locale/cs_CZ';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { QueryClient, QueryClientProvider } from 'react-query';
@@ -13,12 +16,14 @@ const queryClient = new QueryClient();
 
 ReactDOM.render(
   <React.StrictMode>
-    <Router>
-      <QueryClientProvider client={queryClient}>
-        <App />
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
-    </Router>
+    <ConfigProvider locale={csLocale}>
+      <Router>
+        <QueryClientProvider client={queryClient}>
+          <App />
+          <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
+      </Router>
+    </ConfigProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

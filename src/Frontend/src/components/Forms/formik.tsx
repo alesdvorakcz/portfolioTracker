@@ -114,6 +114,7 @@ export const FormikNumberInput: React.FC<FormikNumberInputProps> = ({
 
 interface FormikSelectInputProps extends FormikInputProps {
   options: SelectInputOption[];
+  loading?: boolean;
 }
 
 export const FormikSelectInput: React.FC<FormikSelectInputProps> = ({
@@ -121,6 +122,7 @@ export const FormikSelectInput: React.FC<FormikSelectInputProps> = ({
   label,
   options,
   required,
+  loading,
   validate,
 }) => {
   const [, meta, helpers] = useField<number | undefined>({
@@ -138,6 +140,7 @@ export const FormikSelectInput: React.FC<FormikSelectInputProps> = ({
       touched={meta.touched}
       required={required}
       options={options}
+      loading={loading}
     />
   );
 };

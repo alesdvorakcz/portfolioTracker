@@ -3,6 +3,7 @@ import { Button, Descriptions } from 'antd';
 
 import { AccountDetail } from '../../../api/models';
 import { Box } from '../../../components';
+import { useCurrenciesQuery } from '../../Currencies/queries';
 
 interface Props {
   account: AccountDetail;
@@ -10,6 +11,10 @@ interface Props {
 }
 
 const AccountInfo: React.FC<Props> = ({ account, onEditClick }) => {
+  const currenciesQuery = useCurrenciesQuery();
+
+  const currency = currenciesQuery.data?.find((x) => x.id === account.currencyId);
+
   return (
     <Box>
       <Descriptions
@@ -23,7 +28,7 @@ const AccountInfo: React.FC<Props> = ({ account, onEditClick }) => {
       >
         <Descriptions.Item label="Name">{account.name}</Descriptions.Item>
         <Descriptions.Item label="Slug">{account.slug}</Descriptions.Item>
-        <Descriptions.Item label="Currency">{account.currencyId}</Descriptions.Item>
+        <Descriptions.Item label="Currency">{currency?.name}</Descriptions.Item>
       </Descriptions>
     </Box>
   );

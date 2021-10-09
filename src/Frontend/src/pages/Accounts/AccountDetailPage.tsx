@@ -1,31 +1,30 @@
 import { Button, Drawer, Space } from 'antd';
-import { useQuery } from 'react-query';
 import { useHistory, useParams } from 'react-router-dom';
 
-import apiClient from '../../api';
 import { FlexRow, PageWrapper, QueryWrapper } from '../../components';
 import AccountInfo from './components/AccountInfo';
 import AccountValueHistoryTable from './components/AccountValueHistoryTable';
 import EditAccountForm from './components/EditAccountForm';
 import EditHistoryValueForm from './components/EditHistoryValueForm';
+import { useAccountDetailQuery } from './queries';
 import { useAccountEdit } from './useAccountEdit';
 import { useAccountValueHistoryEdit } from './useAccountValueHistoryEdit';
 
 interface Props {}
 
 interface PageParams {
-  id?: string;
+  id: string;
 }
 
 const AccountDetailPage: React.FC<Props> = () => {
   const params = useParams<PageParams>();
   const history = useHistory();
 
-  const id = parseInt(params.id!, 10);
+  const id = parseInt(params.id, 10);
 
   const accountEdit = useAccountEdit(id);
   const accountValueHistoryEdit = useAccountValueHistoryEdit(id);
-  const query = useQuery(['account', id], () => apiClient.accounts.getAccountDetail(id));
+  const query = useAccountDetailQuery(id);
 
   return (
     <PageWrapper

@@ -43,3 +43,19 @@ export interface AccountValueHistoryToEdit {
   valueBefore: number;
   transactionCzk: number;
 }
+
+export interface Currency {
+  id: string;
+  name: string;
+}
+export interface CurrencyDetail {
+  id: string;
+  name: string;
+  history: CurrencyValueHistory[];
+}
+
+export interface CurrencyValueHistory {
+  id: number;
+  date: string;
+  conversionRate: number;
+}
