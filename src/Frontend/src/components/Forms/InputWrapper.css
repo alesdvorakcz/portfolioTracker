@@ -20,12 +20,16 @@
 }
 
 .InputWrapper.error .ant-input,
-.InputWrapper.error .ant-input-number {
+.InputWrapper.error .ant-input-number,
+.InputWrapper.error .ant-select-selector,
+.InputWrapper.error .ant-picker {
   border-color: red;
 }
 
 .InputWrapper.error .ant-input:focus,
-.InputWrapper.error .ant-input-number:focus {
+.InputWrapper.error .ant-input-number:focus,
+.InputWrapper.error .ant-select-selector:focus,
+.InputWrapper.error .ant-picker:focus {
   box-shadow: 0 0 0 2px rgb(255, 24, 24, 0.2);
 }
 

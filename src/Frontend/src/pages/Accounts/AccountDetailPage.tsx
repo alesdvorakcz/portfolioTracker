@@ -4,10 +4,12 @@ import { useHistory, useParams } from 'react-router-dom';
 import { FlexRow, PageWrapper, QueryWrapper } from '../../components';
 import AccountInfo from './components/AccountInfo';
 import AccountValueHistoryTable from './components/AccountValueHistoryTable';
+import AddHistoryValueForm from './components/AddHistoryValueForm';
 import EditAccountForm from './components/EditAccountForm';
 import EditHistoryValueForm from './components/EditHistoryValueForm';
 import { useAccountDetailQuery } from './queries';
 import { useAccountEdit } from './useAccountEdit';
+import { useAccountValueHistoryAdd } from './useAccountValueHistoryAdd';
 import { useAccountValueHistoryEdit } from './useAccountValueHistoryEdit';
 
 interface Props {}
@@ -23,6 +25,7 @@ const AccountDetailPage: React.FC<Props> = () => {
   const id = parseInt(params.id, 10);
 
   const accountEdit = useAccountEdit(id);
+  const accountValueHistoryAdd = useAccountValueHistoryAdd(id);
   const accountValueHistoryEdit = useAccountValueHistoryEdit(id);
   const query = useAccountDetailQuery(id);
 
@@ -39,11 +42,40 @@ const AccountDetailPage: React.FC<Props> = () => {
             <AccountInfo account={account} onEditClick={accountEdit.open} />
             <AccountValueHistoryTable
               account={account}
+              onAddClick={accountValueHistoryAdd.open}
               onEditClick={accountValueHistoryEdit.open}
             />
           </>
         )}
       />
+      <Drawer
+        width={640}
+        onClose={accountValueHistoryAdd.close}
+        maskClosable={false}
+        title="Add Value"
+        visible={accountValueHistoryAdd.isOpen}
+        destroyOnClose
+        footer={
+          <FlexRow align="right">
+            <Space>
+              <Button onClick={accountValueHistoryAdd.close}>Cancel</Button>
+              <Button
+                loading={accountValueHistoryAdd.isLoading}
+                type="primary"
+                onClick={() => accountValueHistoryAdd.formRef.current?.submitForm()}
+              >
+                Save
+              </Button>
+            </Space>
+          </FlexRow>
+        }
+      >
+        <AddHistoryValueForm
+          formRef={accountValueHistoryAdd.formRef}
+          onSubmit={accountValueHistoryAdd.onSubmit}
+          hideSubmitButton
+        />
+      </Drawer>
       <Drawer
         width={640}
         onClose={accountValueHistoryEdit.close}

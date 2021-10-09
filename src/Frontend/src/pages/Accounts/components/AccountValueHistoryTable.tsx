@@ -3,13 +3,15 @@ import { ColumnType } from 'antd/lib/table';
 import moment from 'moment';
 
 import { AccountDetail, AccountValueHistory } from '../../../api/models';
+import { Box, FlexRow } from '../../../components';
 
 interface Props {
   account: AccountDetail;
   onEditClick: (item: AccountValueHistory) => void;
+  onAddClick: () => void;
 }
 
-const AccountValueHistoryTable: React.FC<Props> = ({ account, onEditClick }) => {
+const AccountValueHistoryTable: React.FC<Props> = ({ account, onAddClick, onEditClick }) => {
   const columns: ColumnType<AccountValueHistory>[] = [
     {
       title: 'Date',
@@ -38,7 +40,16 @@ const AccountValueHistoryTable: React.FC<Props> = ({ account, onEditClick }) => 
     },
   ];
 
-  return <Table bordered columns={columns} dataSource={account.history} rowKey="id" />;
+  return (
+    <Box>
+      <FlexRow align="right" marginBottom>
+        <Button type="primary" onClick={onAddClick}>
+          Add Value
+        </Button>
+      </FlexRow>
+      <Table bordered columns={columns} dataSource={account.history} rowKey="id" />
+    </Box>
+  );
 };
 
 export default AccountValueHistoryTable;
