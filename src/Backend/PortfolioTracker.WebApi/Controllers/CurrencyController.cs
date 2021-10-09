@@ -6,6 +6,7 @@ using PortfolioTracker.WebApi.Common;
 using PortfolioTracker.WebApi.Contracts.Input;
 using PortfolioTracker.WebApi.Contracts.Result;
 using PortfolioTracker.WebApi.Database;
+using PortfolioTracker.WebApi.Services;
 
 namespace PortfolioTracker.WebApi.Controllers;
 
@@ -110,8 +111,48 @@ public class CurrencyController : BaseController
     [ProducesResponseType(204)]
     public async Task<IActionResult> LoadHistory([Required] string currencyId, [Required] DateTime from, [Required] DateTime to)
     {
-        await Task.Delay(500);
+        var currency = await DbContext.Currencies.FirstOrDefaultAsync(x => x.Id == currencyId);
+        if (currency == null)
+            return NotFound();
+
+        var historyValues = await DbContext.CurrencyValueHistory
+            .Where(x => x.CurrencyId == currencyId && x.Date >= from && x.Date <= to)
+            .ToListAsync();
+
+        var dates = GetListOfDates(from, to);
+        foreach (var value in historyValues)
+        {
+            dates.RemoveAll(x => x.Date == value.Date);
+        }
+
+        var loadCurrencyValueHistoryService = new LoadCurrencyValueHistoryService();
+        var result = await loadCurrencyValueHistoryService.LoadHistory(currencyId, dates.Take(5));
+
+        foreach (var row in result)
+        {
+            DbContext.CurrencyValueHistory.Add(new Database.Entity.CurrencyValueHistory
+            {
+                CurrencyId = row.CurrencyId,
+                Date = row.Date,
+                ConversionRate = row.ConversionRate
+            });
+        }
+
+        await DbContext.SaveChangesAsync();
 
         return NoContent();
+    }
+
+    private static List<DateTime> GetListOfDates(DateTime from, DateTime to)
+    {
+        var list = new List<DateTime>();
+        var day = from;
+        while (day <= to)
+        {
+            list.Add(day);
+            day = day.AddDays(1);
+        }
+
+        return list;
     }
 }
