@@ -17,7 +17,7 @@ export const useCurrencyValueHistoryEdit = (currencyId: string) => {
 
   const mutation = useMutation((params: { id: number; payload: ValidatedFormValues }) => {
     return apiClient.currencies.editValueToHistory(currencyId, params.id, {
-      date: params.payload.date.toJSON(),
+      date: params.payload.date.toISOString(),
       conversionRate: params.payload.conversionRate,
     });
   });

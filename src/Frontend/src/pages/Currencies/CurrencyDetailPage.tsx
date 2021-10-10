@@ -1,5 +1,4 @@
 import { Button, Drawer, Space } from 'antd';
-import moment from 'moment';
 import { useHistory, useParams } from 'react-router-dom';
 
 import { FlexRow, PageWrapper, QueryWrapper } from '../../components';
@@ -10,7 +9,6 @@ import EditHistoryValueForm from './components/EditHistoryValueForm';
 import { useCurrencyDetailQuery } from './queries';
 import { useCurrencyValueHistoryAdd } from './useCurrencyValueHistoryAdd';
 import { useCurrencyValueHistoryEdit } from './useCurrencyValueHistoryEdit';
-import { useLoadHistory } from './useLoadHistory';
 
 interface Props {}
 
@@ -25,25 +23,12 @@ const CurrencyDetailPage: React.FC<Props> = () => {
   const query = useCurrencyDetailQuery(id);
   const currencyValueHistoryAdd = useCurrencyValueHistoryAdd(id);
   const currencyValueHistoryEdit = useCurrencyValueHistoryEdit(id);
-  const loadHistory = useLoadHistory(id);
-
-  const from = moment.utc().startOf('month');
-  const to = moment.utc().endOf('month').startOf('day');
 
   return (
     <PageWrapper
       title={query.data?.name || 'Currency Detail'}
       subtitle="Currency Detail"
       goBack={() => history.goBack()}
-      extra={
-        <Button
-          type="primary"
-          onClick={() => loadHistory.onLoad(from.toISOString(), to.toISOString())}
-          loading={loadHistory.loading}
-        >
-          Load Data
-        </Button>
-      }
     >
       <QueryWrapper
         query={query}

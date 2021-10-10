@@ -4,9 +4,9 @@ import InputWrapper from './InputWrapper';
 
 interface Props {
   label: string;
-  value?: string;
+  value?: string[];
   required?: boolean;
-  onChange: (value: string) => void;
+  onChange: (value: string[]) => void;
   onBlur: () => void;
   error?: string;
   touched?: boolean;
@@ -20,7 +20,7 @@ export interface SelectInputOption {
   disabled?: boolean;
 }
 
-const SelectInput: React.FC<Props> = ({
+const MultiSelectInput: React.FC<Props> = ({
   label,
   value,
   required,
@@ -42,9 +42,10 @@ const SelectInput: React.FC<Props> = ({
         showSearch
         allowClear={!required}
         loading={loading}
+        mode="multiple"
       />
     </InputWrapper>
   );
 };
 
-export default SelectInput;
+export default MultiSelectInput;

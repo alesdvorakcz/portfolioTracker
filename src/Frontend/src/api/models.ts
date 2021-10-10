@@ -69,3 +69,9 @@ export interface CurrencyValueHistoryToEdit {
   date: string;
   conversionRate: number;
 }
+
+export interface CurrencyHistoryImportRequest {
+  currencyIds: string[];
+  from: string;
+  to: string;
+}

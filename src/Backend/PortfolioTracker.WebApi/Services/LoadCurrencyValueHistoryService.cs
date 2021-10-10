@@ -7,7 +7,7 @@ public class LoadCurrencyValueHistoryService
 {
     private const string Url = "https://www.cnb.cz/cs/financni-trhy/devizovy-trh/kurzy-devizoveho-trhu/kurzy-devizoveho-trhu/denni_kurz.txt?date={0}";
 
-    public async Task<IEnumerable<CNBCurrencyValueHistory>> LoadHistory(string currencyId, IEnumerable<DateTime> dates)
+    public async Task<IEnumerable<CNBCurrencyValueHistory>> LoadHistory(IEnumerable<string> currencyIds, IEnumerable<DateTime> dates)
     {
         using var httpClient = new HttpClient();
 
@@ -18,18 +18,30 @@ public class LoadCurrencyValueHistoryService
             var response = await httpClient.GetStringAsync(string.Format(Url, day.ToString("dd.MM.yyyy")));
             var data = ParseResult(response);
 
-            var currencyData = data.FirstOrDefault(x => x.CurrencyCode == currencyId);
-            if (currencyData == null)
+            foreach (var row in data)
             {
-                throw new BusinessException($"Currency {currencyId} was not found");
+                var currencyId = currencyIds.FirstOrDefault(x => row.CurrencyCode == x);
+                if (currencyId != null)
+                {
+                    result.Add(new CNBCurrencyValueHistory
+                    {
+                        Date = day,
+                        CurrencyId = currencyId,
+                        ConversionRate = row.ConversionRate
+                    });
+                }
             }
 
-            result.Add(new CNBCurrencyValueHistory
+            var czkCurrency = currencyIds.FirstOrDefault(x => x == "CZK");
+            if (czkCurrency != null)
             {
-                Date = day,
-                CurrencyId = currencyId,
-                ConversionRate = currencyData.ConversionRate
-            });
+                result.Add(new CNBCurrencyValueHistory
+                {
+                    Date = day,
+                    CurrencyId = czkCurrency,
+                    ConversionRate = 1
+                });
+            }
 
             await Task.Delay(50);
         }

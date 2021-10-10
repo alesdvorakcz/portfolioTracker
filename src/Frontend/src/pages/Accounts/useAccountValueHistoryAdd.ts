@@ -15,7 +15,7 @@ export const useAccountValueHistoryAdd = (accountId: number) => {
 
   const mutation = useMutation((payload: ValidatedFormValues) => {
     return apiClient.accounts.addValueToAccountHistory(accountId, {
-      date: payload.date.toJSON(),
+      date: payload.date.toISOString(),
       valueBefore: payload.valueBefore,
       transactionCzk: payload.transactionCzk,
     });

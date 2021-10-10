@@ -107,35 +107,67 @@ public class CurrencyController : BaseController
         return Ok(valueHistoryToReturn);
     }
 
-    [HttpPut("{currencyId}/history/load")]
+    [HttpPut("history/import")]
     [ProducesResponseType(204)]
-    public async Task<IActionResult> LoadHistory([Required] string currencyId, [Required] DateTime from, [Required] DateTime to)
+    public async Task<IActionResult> ImportHistory([FromBody] CurrencyHistoryImportRequest requestData)
     {
-        var currency = await DbContext.Currencies.FirstOrDefaultAsync(x => x.Id == currencyId);
-        if (currency == null)
-            return NotFound();
+        if (requestData.From > requestData.To)
+            throw new Common.ValidationException(nameof(requestData.From), "From needs to be before To");
 
-        var historyValues = await DbContext.CurrencyValueHistory
-            .Where(x => x.CurrencyId == currencyId && x.Date >= from && x.Date <= to)
+        if (requestData.To > DateTime.UtcNow.Date)
+            throw new Common.ValidationException(nameof(requestData.To), "Date Range cannot go to future");
+
+        if ((requestData.To - requestData.From).TotalDays > 10)
+            throw new Common.ValidationException(nameof(requestData.To), "Date Range can be maximum of 10 days");
+
+        var currencies = await DbContext.Currencies
+            .Where(x => requestData.CurrencyIds.Contains(x.Id))
             .ToListAsync();
 
-        var dates = GetListOfDates(from, to);
-        foreach (var value in historyValues)
-        {
-            dates.RemoveAll(x => x.Date == value.Date);
-        }
+        if (currencies.Count < requestData.CurrencyIds.Length)
+            return NotFound();
+
+        var historyValues =
+            (
+                await DbContext.CurrencyValueHistory
+                    .Where(x => requestData.CurrencyIds.Contains(x.CurrencyId) && x.Date >= requestData.From && x.Date <= requestData.To)
+                    .ToListAsync()
+            )
+            .GroupBy(x => x.Date)
+            .Select(x => new { Date = x.Key, Values = x })
+            .ToList();
+
+        var dates = GetListOfDates(requestData.From, requestData.To);
+        foreach (var valuesPerDay in historyValues)
+            dates.RemoveAll(x => x.Date == valuesPerDay.Date && valuesPerDay.Values.Count() == currencies.Count);
 
         var loadCurrencyValueHistoryService = new LoadCurrencyValueHistoryService();
-        var result = await loadCurrencyValueHistoryService.LoadHistory(currencyId, dates.Take(5));
+        var result = await loadCurrencyValueHistoryService.LoadHistory(requestData.CurrencyIds, dates);
 
         foreach (var row in result)
         {
-            DbContext.CurrencyValueHistory.Add(new Database.Entity.CurrencyValueHistory
+            var toAdd = true;
+
+            var day = historyValues.FirstOrDefault(x => x.Date == row.Date);
+            if (day != null)
             {
-                CurrencyId = row.CurrencyId,
-                Date = row.Date,
-                ConversionRate = row.ConversionRate
-            });
+                var value = day.Values.FirstOrDefault(x => x.CurrencyId == row.CurrencyId);
+                if (value != null)
+                {
+                    value.ConversionRate = row.ConversionRate;
+                    toAdd = false;
+                }
+            }
+
+            if (toAdd)
+            {
+                DbContext.CurrencyValueHistory.Add(new Database.Entity.CurrencyValueHistory
+                {
+                    CurrencyId = row.CurrencyId,
+                    Date = row.Date,
+                    ConversionRate = row.ConversionRate
+                });
+            }
         }
 
         await DbContext.SaveChangesAsync();

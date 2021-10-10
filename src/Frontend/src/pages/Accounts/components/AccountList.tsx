@@ -1,12 +1,14 @@
 import { Alert, List } from 'antd';
 
 import { Box, LoadingIndicator } from '../../../components';
+import { useCurrenciesQuery } from '../../Currencies/queries';
 import { useAccountsQuery } from '../queries';
 import AccountCard from './AccountCard';
 
 interface Props {}
 
 const AccountList: React.FC<Props> = () => {
+  const currenciesQuery = useCurrenciesQuery();
   const query = useAccountsQuery();
 
   return (
@@ -28,7 +30,7 @@ const AccountList: React.FC<Props> = () => {
           rowKey="id"
           renderItem={(item) => (
             <List.Item>
-              <AccountCard account={item} />
+              <AccountCard account={item} currencies={currenciesQuery.data} />
             </List.Item>
           )}
         />

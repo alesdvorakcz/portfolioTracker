@@ -3,18 +3,20 @@ import moment from 'moment';
 
 import InputWrapper from './InputWrapper';
 
+const { RangePicker } = DatePicker;
+
 interface Props {
   label: string;
   name: string;
-  value?: moment.Moment;
+  value?: [moment.Moment, moment.Moment];
   required?: boolean;
-  onChange: (value?: moment.Moment) => void;
+  onChange: (value?: [moment.Moment, moment.Moment]) => void;
   onBlur: () => void;
   error?: string;
   touched?: boolean;
 }
 
-const DateInput: React.FC<Props> = ({
+const DateRangeInput: React.FC<Props> = ({
   label,
   name,
   value,
@@ -26,16 +28,16 @@ const DateInput: React.FC<Props> = ({
 }) => {
   return (
     <InputWrapper label={label} error={error} touched={touched} required={required}>
-      <DatePicker
+      <RangePicker
         name={name}
         value={value}
         allowClear={!required}
         format="l"
         onChange={(e) => {
-          const newVal = e || undefined;
-          if (newVal) {
+          let newVal: [moment.Moment, moment.Moment] | undefined = undefined;
+          if (e && e[0] && e[1]) {
             //strip date time
-            moment.utc(newVal).startOf('day');
+            newVal = [moment.utc(e[0]).startOf('day'), moment.utc(e[1]).startOf('day')];
           }
           onChange(newVal);
         }}
@@ -46,4 +48,4 @@ const DateInput: React.FC<Props> = ({
   );
 };
 
-export default DateInput;
+export default DateRangeInput;

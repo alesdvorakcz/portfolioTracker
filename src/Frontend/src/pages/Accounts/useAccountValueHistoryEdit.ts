@@ -17,7 +17,7 @@ export const useAccountValueHistoryEdit = (accountId: number) => {
 
   const mutation = useMutation((params: { id: number; payload: ValidatedFormValues }) => {
     return apiClient.accounts.editValueFromAccountHistory(accountId, params.id, {
-      date: params.payload.date.toJSON(),
+      date: params.payload.date.toISOString(),
       valueBefore: params.payload.valueBefore,
       transactionCzk: params.payload.transactionCzk,
     });
