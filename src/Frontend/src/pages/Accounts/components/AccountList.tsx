@@ -28,11 +28,15 @@ const AccountList: React.FC<Props> = () => {
           }}
           dataSource={query.data}
           rowKey="id"
-          renderItem={(item) => (
-            <List.Item>
-              <AccountCard account={item} currencies={currenciesQuery.data} />
-            </List.Item>
-          )}
+          renderItem={(item) => {
+            const currency = currenciesQuery.data?.find((x) => x.id === item.currencyId);
+
+            return (
+              <List.Item>
+                <AccountCard account={item} currency={currency} />
+              </List.Item>
+            );
+          }}
         />
       )}
     </Box>

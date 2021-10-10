@@ -2,15 +2,16 @@ import { Card } from 'antd';
 import { useHistory } from 'react-router';
 
 import { Account, Currency } from '../../../api/models';
+import { DEFAULT_CURRENCY, DEFAULT_LOCALE } from '../../../i18n';
 
 const { Meta } = Card;
 
 interface Props {
   account: Account;
-  currencies?: Currency[];
+  currency?: Currency;
 }
 
-const AccountCard: React.FC<Props> = ({ account, currencies }) => {
+const AccountCard: React.FC<Props> = ({ account, currency }) => {
   const history = useHistory();
 
   return (
@@ -18,9 +19,20 @@ const AccountCard: React.FC<Props> = ({ account, currencies }) => {
       <Meta
         title={account.name}
         description={
-          currencies
-            ? currencies.find((x) => x.id === account.currencyId)?.name
-            : account.currencyId
+          <div>
+            <div>
+              {account.valueAfter?.toLocaleString(DEFAULT_LOCALE, {
+                style: 'currency',
+                currency: currency?.id ?? DEFAULT_CURRENCY,
+              })}
+            </div>
+            <div>
+              {account.valueAfterCZK?.toLocaleString(DEFAULT_LOCALE, {
+                style: 'currency',
+                currency: DEFAULT_CURRENCY,
+              })}
+            </div>
+          </div>
         }
       />
     </Card>

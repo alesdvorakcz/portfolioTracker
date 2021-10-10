@@ -3,6 +3,12 @@ export interface Account {
   slug: string;
   name: string;
   currencyId: string;
+  date?: string;
+  transactionCzk?: number;
+  valueBefore?: number;
+  valueAfter?: number;
+  valueAfterCZK?: number;
+  conversionRate?: number;
 }
 
 export interface AccountDetail {
@@ -10,6 +16,12 @@ export interface AccountDetail {
   slug: string;
   name: string;
   currencyId: string;
+  date?: string;
+  transactionCzk?: number;
+  valueBefore?: number;
+  valueAfter?: number;
+  valueAfterCZK?: number;
+  conversionRate?: number;
   history: AccountValueHistory[];
 }
 

@@ -22,7 +22,7 @@ public class AccountController : BaseController
     public async Task<IActionResult> GetAll()
     {
         var accounts = await Mapper.ProjectTo<Account>(
-                DbContext.Accounts
+                DbContext.AccountsEnhanced
             ).ToListAsync();
 
         return Ok(accounts);
@@ -33,7 +33,7 @@ public class AccountController : BaseController
     public async Task<IActionResult> Get(int id)
     {
         var account = await Mapper.ProjectTo<AccountDetail>(
-                DbContext.Accounts.Where(x => x.Id == id)
+                DbContext.AccountsEnhanced.Where(x => x.Id == id)
             ).FirstOrDefaultAsync();
 
         if (account == null)
