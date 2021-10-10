@@ -28,8 +28,12 @@ export interface AccountToEdit {
 export interface AccountValueHistory {
   id: number;
   date: string;
+  conversionRate?: number;
   valueBefore: number;
+  valueBeforeCZK?: number;
   transactionCzk: number;
+  valueAfter?: number;
+  valueAfterCZK?: number;
 }
 
 export interface AccountValueHistoryToAdd {

@@ -52,7 +52,7 @@ public class CurrencyController : BaseController
     }
 
     [HttpPost("{currencyId}/history")]
-    [ProducesResponseType(typeof(CurrencyValueHistory), 201)]
+    [ProducesResponseType(201)]
     public async Task<IActionResult> AddValueToHistory([Required] string currencyId, [FromBody] CurrencyValueHistoryToAdd value)
     {
         var currency = await DbContext.Currencies.FirstOrDefaultAsync(x => x.Id == currencyId);
@@ -75,16 +75,11 @@ public class CurrencyController : BaseController
 
         await DbContext.SaveChangesAsync();
 
-        //TODO: Query/Command segregation
-        var valueHistoryToReturn = await Mapper.ProjectTo<CurrencyValueHistory>(
-            DbContext.CurrencyValueHistory.Where(x => x.Id == entity.Id)
-        ).FirstOrDefaultAsync();
-
-        return Created(valueHistoryToReturn);
+        return Created();
     }
 
     [HttpPut("{currencyId}/history/{valueHistoryId}")]
-    [ProducesResponseType(typeof(CurrencyValueHistory), 200)]
+    [ProducesResponseType(204)]
     public async Task<IActionResult> EditValueFromHistory([Required] string currencyId, [Required] int valueHistoryId, [FromBody] CurrencyValueHistoryToEdit value)
     {
         var entity = await DbContext.CurrencyValueHistory.FirstOrDefaultAsync(x => x.Id == valueHistoryId && x.CurrencyId == currencyId);
@@ -101,10 +96,7 @@ public class CurrencyController : BaseController
 
         await DbContext.SaveChangesAsync();
 
-        //TODO: Query/Command segregation
-        var valueHistoryToReturn = Mapper.Map<CurrencyValueHistory>(entity);
-
-        return Ok(valueHistoryToReturn);
+        return NoContent();
     }
 
     [HttpPut("history/import")]
@@ -117,8 +109,8 @@ public class CurrencyController : BaseController
         if (requestData.To > DateTime.UtcNow.Date)
             throw new Common.ValidationException(nameof(requestData.To), "Date Range cannot go to future");
 
-        if ((requestData.To - requestData.From).TotalDays > 10)
-            throw new Common.ValidationException(nameof(requestData.To), "Date Range can be maximum of 10 days");
+        if ((requestData.To - requestData.From).TotalDays > 31)
+            throw new Common.ValidationException(nameof(requestData.To), "Date Range can be maximum of 31 days");
 
         var currencies = await DbContext.Currencies
             .Where(x => requestData.CurrencyIds.Contains(x.Id))

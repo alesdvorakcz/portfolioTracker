@@ -9,7 +9,8 @@ public class MappingProfile : Profile
         CreateMap<Database.Entity.Account, Result.Account>();
         CreateMap<Database.Entity.Account, Result.AccountDetail>()
             .ForMember(d => d.History, opt => opt.Ignore());
-        CreateMap<Database.Entity.AccountValueHistory, Result.AccountValueHistory>();
+
+        CreateMap<Database.Views.AccountValueHistoryEnhanced, Result.AccountValueHistory>();
 
         CreateMap<Database.Entity.Currency, Result.Currency>();
         CreateMap<Database.Entity.Currency, Result.CurrencyDetail>()

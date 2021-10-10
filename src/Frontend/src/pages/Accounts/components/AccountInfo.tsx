@@ -1,21 +1,17 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Button, Descriptions, Space } from 'antd';
 
-import { AccountDetail } from '../../../api/models';
+import { AccountDetail, Currency } from '../../../api/models';
 import { Box, DeleteConfirm } from '../../../components';
-import { useCurrenciesQuery } from '../../Currencies/queries';
 
 interface Props {
   account: AccountDetail;
+  currency?: Currency;
   onEditClick: () => void;
   onDeleteClick: () => Promise<void>;
 }
 
-const AccountInfo: React.FC<Props> = ({ account, onEditClick, onDeleteClick }) => {
-  const currenciesQuery = useCurrenciesQuery();
-
-  const currency = currenciesQuery.data?.find((x) => x.id === account.currencyId);
-
+const AccountInfo: React.FC<Props> = ({ account, currency, onEditClick, onDeleteClick }) => {
   return (
     <Box>
       <Descriptions

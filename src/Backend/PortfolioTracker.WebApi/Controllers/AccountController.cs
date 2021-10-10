@@ -40,7 +40,7 @@ public class AccountController : BaseController
             return NotFound();
 
         var valueHistory = await Mapper.ProjectTo<AccountValueHistory>(
-                DbContext.AccountValueHistory
+                DbContext.AccountValueHistoryEnhanced
                     .Where(x => x.AccountId == id)
                     .OrderByDescending(x => x.Date)
             ).ToListAsync();
@@ -51,7 +51,7 @@ public class AccountController : BaseController
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(Account), 201)]
+    [ProducesResponseType(201)]
     public async Task<IActionResult> Post([FromBody] AccountToAdd account)
     {
         if (string.IsNullOrEmpty(account.Name))
@@ -77,16 +77,11 @@ public class AccountController : BaseController
 
         await DbContext.SaveChangesAsync();
 
-        //TODO: Query/Command segregation
-        var accountToReturn = await Mapper.ProjectTo<Account>(
-            DbContext.Accounts.Where(x => x.Id == entity.Id)
-        ).FirstOrDefaultAsync();
-
-        return Created(accountToReturn);
+        return Created();
     }
 
     [HttpPut("{id}")]
-    [ProducesResponseType(typeof(Account), 200)]
+    [ProducesResponseType(204)]
     public async Task<IActionResult> Put(int id, [FromBody] AccountToEdit account)
     {
         var entity = await DbContext.Accounts.FirstOrDefaultAsync(x => x.Id == id);
@@ -112,10 +107,7 @@ public class AccountController : BaseController
 
         await DbContext.SaveChangesAsync();
 
-        //TODO: Query/Command segregation
-        var accountToReturn = Mapper.Map<Account>(entity);
-
-        return Ok(accountToReturn);
+        return NoContent();
     }
 
     [HttpDelete("{id}")]
@@ -135,7 +127,7 @@ public class AccountController : BaseController
     }
 
     [HttpPost("{accountId}/history")]
-    [ProducesResponseType(typeof(AccountValueHistory), 201)]
+    [ProducesResponseType(201)]
     public async Task<IActionResult> AddValueToHistory([Required] int accountId, [FromBody] AccountValueHistoryToAdd value)
     {
         var account = await DbContext.Accounts.FirstOrDefaultAsync(x => x.Id == accountId);
@@ -159,16 +151,11 @@ public class AccountController : BaseController
 
         await DbContext.SaveChangesAsync();
 
-        //TODO: Query/Command segregation
-        var valueHistoryToReturn = await Mapper.ProjectTo<AccountValueHistory>(
-            DbContext.AccountValueHistory.Where(x => x.Id == entity.Id)
-        ).FirstOrDefaultAsync();
-
-        return Created(valueHistoryToReturn);
+        return Created();
     }
 
     [HttpPut("{accountId}/history/{valueHistoryId}")]
-    [ProducesResponseType(typeof(AccountValueHistory), 200)]
+    [ProducesResponseType(204)]
     public async Task<IActionResult> EditValueFromHistory([Required] int accountId, [Required] int valueHistoryId, [FromBody] AccountValueHistoryToEdit value)
     {
         var entity = await DbContext.AccountValueHistory.FirstOrDefaultAsync(x => x.Id == valueHistoryId && x.AccountId == accountId);
@@ -186,10 +173,7 @@ public class AccountController : BaseController
 
         await DbContext.SaveChangesAsync();
 
-        //TODO: Query/Command segregation
-        var valueHistoryToReturn = Mapper.Map<AccountValueHistory>(entity);
-
-        return Ok(valueHistoryToReturn);
+        return NoContent();
     }
 
     [HttpDelete("{accountId}/history/{valueHistoryId}")]

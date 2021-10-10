@@ -2,6 +2,7 @@ import { Button, Drawer, Space } from 'antd';
 import { useHistory, useParams } from 'react-router-dom';
 
 import { FlexRow, PageWrapper, QueryWrapper } from '../../components';
+import { useCurrenciesQuery } from '../Currencies/queries';
 import AccountInfo from './components/AccountInfo';
 import AccountValueHistoryTable from './components/AccountValueHistoryTable';
 import AddHistoryValueForm from './components/AddHistoryValueForm';
@@ -26,12 +27,15 @@ const AccountDetailPage: React.FC<Props> = () => {
 
   const id = parseInt(params.id, 10);
 
+  const currenciesQuery = useCurrenciesQuery();
   const accountEdit = useAccountEdit(id);
   const accountDelete = useAccountDelete(id);
   const accountValueHistoryAdd = useAccountValueHistoryAdd(id);
   const accountValueHistoryEdit = useAccountValueHistoryEdit(id);
   const accountValueHistoryDelete = useAccountValueHistoryDelete(id);
   const query = useAccountDetailQuery(id);
+
+  const currency = query.data && currenciesQuery.data?.find((x) => x.id === query.data.currencyId);
 
   return (
     <PageWrapper
@@ -45,11 +49,13 @@ const AccountDetailPage: React.FC<Props> = () => {
           <>
             <AccountInfo
               account={account}
+              currency={currency}
               onEditClick={accountEdit.open}
               onDeleteClick={accountDelete.onDelete}
             />
             <AccountValueHistoryTable
               account={account}
+              currency={currency}
               onAddClick={accountValueHistoryAdd.open}
               onEditClick={accountValueHistoryEdit.open}
               onDeleteClick={accountValueHistoryDelete.onDelete}

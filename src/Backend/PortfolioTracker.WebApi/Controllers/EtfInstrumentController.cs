@@ -43,7 +43,7 @@ public class EtfInstrumentController : BaseController
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(EtfInstrument), 201)]
+    [ProducesResponseType(201)]
     public async Task<IActionResult> Post([FromBody] EtfInstrumentToAdd etfInstrument)
     {
         //TODO: validaton
@@ -60,16 +60,11 @@ public class EtfInstrumentController : BaseController
 
         await DbContext.SaveChangesAsync();
 
-        //TODO: Query/Command segregation
-        var etfInstrumentToReturn = await Mapper.ProjectTo<EtfInstrument>(
-            DbContext.EtfInstruments.Where(x => x.Id == entity.Id)
-        ).FirstOrDefaultAsync();
-
-        return Created(etfInstrumentToReturn);
+        return Created();
     }
 
     [HttpPut("{id}")]
-    [ProducesResponseType(typeof(EtfInstrument), 200)]
+    [ProducesResponseType(204)]
     public async Task<IActionResult> Put(int id, [FromBody] EtfInstrumentToEdit etfInstrument)
     {
         //TODO: validaton
@@ -86,10 +81,7 @@ public class EtfInstrumentController : BaseController
 
         await DbContext.SaveChangesAsync();
 
-        //TODO: Query/Command segregation
-        var etfInstrumentToReturn = Mapper.Map<EtfInstrument>(entity);
-
-        return Ok(etfInstrumentToReturn);
+        return NoContent();
     }
 
     [HttpDelete("{id}")]

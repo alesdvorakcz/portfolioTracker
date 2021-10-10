@@ -2,11 +2,13 @@ import { Button, Space, Table } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import moment from 'moment';
 
-import { AccountDetail, AccountValueHistory } from '../../../api/models';
+import { AccountDetail, AccountValueHistory, Currency } from '../../../api/models';
 import { Box, DeleteConfirm, FlexRow } from '../../../components';
+import { DEFAULT_CURRENCY, DEFAULT_LOCALE } from '../../../i18n';
 
 interface Props {
   account: AccountDetail;
+  currency?: Currency;
   onEditClick: (item: AccountValueHistory) => void;
   onDeleteClick: (item: AccountValueHistory) => Promise<void>;
   onAddClick: () => void;
@@ -14,6 +16,7 @@ interface Props {
 
 const AccountValueHistoryTable: React.FC<Props> = ({
   account,
+  currency,
   onAddClick,
   onEditClick,
   onDeleteClick,
@@ -29,15 +32,75 @@ const AccountValueHistoryTable: React.FC<Props> = ({
       title: 'Value Before',
       dataIndex: 'valueBefore',
       key: 'valueBefore',
+      colSpan: 2,
       align: 'right',
-      render: (text: string) => <div>{parseInt(text, 10).toLocaleString('cs-CZ')}</div>,
+      render: (text: string) => (
+        <div>
+          {parseFloat(text).toLocaleString(DEFAULT_LOCALE, {
+            style: 'currency',
+            currency: currency?.id ?? DEFAULT_CURRENCY,
+          })}
+        </div>
+      ),
     },
     {
-      title: 'Transaction CZK',
+      title: 'Value Before CZK',
+      dataIndex: 'valueBeforeCZK',
+      key: 'valueBeforeCZK',
+      colSpan: 0,
+      align: 'right',
+      render: (text: string) => (
+        <div>
+          {parseInt(text, 10).toLocaleString(DEFAULT_LOCALE, {
+            style: 'currency',
+            currency: DEFAULT_CURRENCY,
+          })}
+        </div>
+      ),
+    },
+    {
+      title: 'Transaction',
       dataIndex: 'transactionCzk',
       key: 'transactionCzk',
       align: 'right',
-      render: (text: string) => <div>{parseInt(text, 10).toLocaleString('cs-CZ')} Kč</div>,
+      render: (text: string) => (
+        <div>
+          {parseInt(text, 10).toLocaleString(DEFAULT_LOCALE, {
+            style: 'currency',
+            currency: DEFAULT_CURRENCY,
+          })}
+        </div>
+      ),
+    },
+    {
+      title: 'Value After',
+      dataIndex: 'valueAfter',
+      key: 'valueAfter',
+      colSpan: 2,
+      align: 'right',
+      render: (text: string) => (
+        <div>
+          {parseInt(text, 10).toLocaleString(DEFAULT_LOCALE, {
+            style: 'currency',
+            currency: currency?.id ?? DEFAULT_CURRENCY,
+          })}
+        </div>
+      ),
+    },
+    {
+      title: 'Value After CZK',
+      dataIndex: 'valueAfterCZK',
+      key: 'valueAfterCZK',
+      colSpan: 0,
+      align: 'right',
+      render: (text: string) => (
+        <div>
+          {parseInt(text, 10).toLocaleString(DEFAULT_LOCALE, {
+            style: 'currency',
+            currency: DEFAULT_CURRENCY,
+          })}
+        </div>
+      ),
     },
     {
       title: '',

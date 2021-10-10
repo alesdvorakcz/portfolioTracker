@@ -1,11 +1,12 @@
+namespace PortfolioTracker.WebApi.Database.Views;
 
-namespace PortfolioTracker.WebApi.Contracts.Result;
-
-public class AccountValueHistory
+public class AccountValueHistoryEnhanced
 {
     public int Id { get; set; }
+    public int AccountId { get; set; }
+    public string AccountName { get; set; } = string.Empty;
     public DateTime Date { get; set; }
-
+    public string CurrencyId { get; set; } = string.Empty;
     public decimal? ConversionRate { get; set; }
     public decimal ValueBefore { get; set; }
     public decimal? ValueBeforeCZK { get; set; }
