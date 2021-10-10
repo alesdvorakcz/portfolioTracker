@@ -1,7 +1,7 @@
-import { Button, Drawer, Space } from 'antd';
+import { Button, Drawer, Space, Tabs } from 'antd';
 import { useHistory, useParams } from 'react-router-dom';
 
-import { FlexRow, PageWrapper, QueryWrapper } from '../../components';
+import { Box, FlexRow, PageWrapper, QueryWrapper } from '../../components';
 import { useCurrenciesQuery } from '../Currencies/queries';
 import AccountInfo from './components/AccountInfo';
 import AccountValueHistoryTable from './components/AccountValueHistoryTable';
@@ -14,6 +14,8 @@ import { useAccountEdit } from './useAccountEdit';
 import { useAccountValueHistoryAdd } from './useAccountValueHistoryAdd';
 import { useAccountValueHistoryDelete } from './useAccountValueHistoryDelete';
 import { useAccountValueHistoryEdit } from './useAccountValueHistoryEdit';
+
+const { TabPane } = Tabs;
 
 interface Props {}
 
@@ -53,13 +55,22 @@ const AccountDetailPage: React.FC<Props> = () => {
               onEditClick={accountEdit.open}
               onDeleteClick={accountDelete.onDelete}
             />
-            <AccountValueHistoryTable
-              account={account}
-              currency={currency}
-              onAddClick={accountValueHistoryAdd.open}
-              onEditClick={accountValueHistoryEdit.open}
-              onDeleteClick={accountValueHistoryDelete.onDelete}
-            />
+            <Box>
+              <Tabs defaultActiveKey="1">
+                <TabPane tab="Table" key="1">
+                  <AccountValueHistoryTable
+                    account={account}
+                    currency={currency}
+                    onAddClick={accountValueHistoryAdd.open}
+                    onEditClick={accountValueHistoryEdit.open}
+                    onDeleteClick={accountValueHistoryDelete.onDelete}
+                  />
+                </TabPane>
+                <TabPane tab="Chart" key="2">
+                  Here will be dragons
+                </TabPane>
+              </Tabs>
+            </Box>
           </>
         )}
       />

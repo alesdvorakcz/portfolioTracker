@@ -3,7 +3,7 @@ import { ColumnType } from 'antd/lib/table';
 import moment from 'moment';
 
 import { AccountDetail, AccountValueHistory, Currency } from '../../../api/models';
-import { Box, DeleteConfirm, FlexRow } from '../../../components';
+import { DeleteConfirm, FlexRow } from '../../../components';
 import { DEFAULT_CURRENCY, DEFAULT_LOCALE } from '../../../i18n';
 
 interface Props {
@@ -117,14 +117,14 @@ const AccountValueHistoryTable: React.FC<Props> = ({
   ];
 
   return (
-    <Box>
+    <>
       <FlexRow align="right" marginBottom>
         <Button type="primary" onClick={onAddClick}>
           Add Value
         </Button>
       </FlexRow>
       <Table bordered columns={columns} dataSource={account.history} rowKey="id" />
-    </Box>
+    </>
   );
 };
 
