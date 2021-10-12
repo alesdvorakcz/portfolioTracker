@@ -3,6 +3,7 @@ import { useHistory, useParams } from 'react-router-dom';
 
 import { Box, FlexRow, PageWrapper, QueryWrapper } from '../../components';
 import { useCurrenciesQuery } from '../Currencies/queries';
+import AccountDetailChart from './components/AccountDetailChart';
 import AccountInfo from './components/AccountInfo';
 import AccountValueHistoryTable from './components/AccountValueHistoryTable';
 import AddHistoryValueForm from './components/AddHistoryValueForm';
@@ -67,7 +68,7 @@ const AccountDetailPage: React.FC<Props> = () => {
                   />
                 </TabPane>
                 <TabPane tab="Chart" key="2">
-                  Here will be dragons
+                  <AccountDetailChart account={account} currency={currency} />
                 </TabPane>
               </Tabs>
             </Box>
