@@ -13,16 +13,17 @@ interface Props {
 const AccountDetailChart: React.FC<Props> = ({ account, currency }) => {
   const data: Serie[] = [
     {
-      id: 'first',
-      color: 'hsl(61, 70%, 50%)',
-      //   data: [
-      //     { x: '2021-02-01', y: 155 },
-      //     { x: '2021-03-01', y: 100 },
-      //     { x: '2021-09-09', y: 150 },
-      //   ],
+      id: 'value',
       data: account.history.map((item) => ({
         x: moment.utc(item.date).format('YYYY-MM-DD'),
         y: item.valueAfterCZK,
+      })),
+    },
+    {
+      id: 'transactions',
+      data: account.history.map((item) => ({
+        x: moment.utc(item.date).format('YYYY-MM-DD'),
+        y: item.cumulativeTransactionsCZK,
       })),
     },
   ];
@@ -42,13 +43,9 @@ const AccountDetailChart: React.FC<Props> = ({ account, currency }) => {
         }
         // yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: true, reverse: false }}
         axisBottom={{
-          format: '%b %d',
+          format: '%b %y',
         }}
         curve="linear"
-        pointSize={10}
-        pointBorderWidth={2}
-        pointBorderColor={{ from: 'serieColor' }}
-        pointLabelYOffset={-12}
         useMesh={true}
         enableCrosshair={false}
         enableArea={true}

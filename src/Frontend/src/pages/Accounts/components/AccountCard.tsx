@@ -32,6 +32,13 @@ const AccountCard: React.FC<Props> = ({ account, currency }) => {
                 currency: DEFAULT_CURRENCY,
               })}
             </div>
+            <div>
+              <span>Transactions: </span>
+              {account.transactionsCZKTotal?.toLocaleString(DEFAULT_LOCALE, {
+                style: 'currency',
+                currency: DEFAULT_CURRENCY,
+              })}
+            </div>
           </div>
         }
       />

@@ -12,4 +12,6 @@ public class AccountValueHistory
     public decimal TransactionCzk { get; set; }
     public decimal? ValueAfter { get; set; }
     public decimal? ValueAfterCZK { get; set; }
+
+    public decimal CumulativeTransactionsCZK { get; set; }
 }

@@ -25,6 +25,21 @@ public class AccountController : BaseController
                 DbContext.AccountsEnhanced
             ).ToListAsync();
 
+        var transactionSums = await DbContext.AccountValueHistory
+            .GroupBy(x => x.AccountId)
+            .Select(x => new
+            {
+                AccountId = x.Key,
+                TransactionsCZKTotal = x.Sum(y => y.TransactionCzk)
+            })
+            .ToListAsync();
+
+        foreach (var sum in transactionSums)
+        {
+            var account = accounts.First(x => x.Id == sum.AccountId);
+            account.TransactionsCZKTotal = sum.TransactionsCZKTotal;
+        }
+
         return Ok(accounts);
     }
 
@@ -45,6 +60,15 @@ public class AccountController : BaseController
                     .OrderByDescending(x => x.Date)
             ).ToListAsync();
 
+
+        var cumulativeTransactionsCZK = 0m;
+        foreach (var item in valueHistory.OrderBy(x => x.Date))
+        {
+            cumulativeTransactionsCZK += item.TransactionCzk;
+            item.CumulativeTransactionsCZK = cumulativeTransactionsCZK;
+        }
+
+        account.TransactionsCZKTotal = cumulativeTransactionsCZK;
         account.History = valueHistory;
 
         return Ok(account);

@@ -14,5 +14,7 @@ public class AccountDetail
     public decimal? ValueAfterCZK { get; set; }
     public decimal? ConversionRate { get; set; }
 
+    public decimal TransactionsCZKTotal { get; set; }
+
     public IEnumerable<AccountValueHistory> History { get; set; } = Array.Empty<AccountValueHistory>();
 }

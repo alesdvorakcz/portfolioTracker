@@ -9,6 +9,7 @@ export interface Account {
   valueAfter?: number;
   valueAfterCZK?: number;
   conversionRate?: number;
+  transactionsCZKTotal?: number;
 }
 
 export interface AccountDetail {
@@ -22,6 +23,7 @@ export interface AccountDetail {
   valueAfter?: number;
   valueAfterCZK?: number;
   conversionRate?: number;
+  transactionsCZKTotal?: number;
   history: AccountValueHistory[];
 }
 
@@ -46,6 +48,7 @@ export interface AccountValueHistory {
   transactionCzk: number;
   valueAfter?: number;
   valueAfterCZK?: number;
+  cumulativeTransactionsCZK: number;
 }
 
 export interface AccountValueHistoryToAdd {

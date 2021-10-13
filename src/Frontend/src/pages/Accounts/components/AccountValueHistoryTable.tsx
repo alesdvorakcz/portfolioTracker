@@ -72,6 +72,21 @@ const AccountValueHistoryTable: React.FC<Props> = ({
         </div>
       ),
     },
+
+    {
+      title: 'Cumulative Transactions',
+      dataIndex: 'cumulativeTransactionsCZK',
+      key: 'cumulativeTransactionsCZK',
+      align: 'right',
+      render: (text: string) => (
+        <div>
+          {parseInt(text, 10).toLocaleString(DEFAULT_LOCALE, {
+            style: 'currency',
+            currency: DEFAULT_CURRENCY,
+          })}
+        </div>
+      ),
+    },
     {
       title: 'Value After',
       dataIndex: 'valueAfter',

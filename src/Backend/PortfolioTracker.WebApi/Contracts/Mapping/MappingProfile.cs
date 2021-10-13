@@ -12,6 +12,7 @@ public class MappingProfile : Profile
             .ForMember(d => d.ValueBefore, opt => opt.Ignore())
             .ForMember(d => d.ValueAfter, opt => opt.Ignore())
             .ForMember(d => d.ValueAfterCZK, opt => opt.Ignore())
+            .ForMember(d => d.TransactionsCZKTotal, opt => opt.Ignore())
             .ForMember(d => d.ConversionRate, opt => opt.Ignore());
         CreateMap<Database.Entity.Account, Result.AccountDetail>()
             .ForMember(d => d.Date, opt => opt.Ignore())
@@ -20,12 +21,16 @@ public class MappingProfile : Profile
             .ForMember(d => d.ValueAfter, opt => opt.Ignore())
             .ForMember(d => d.ValueAfterCZK, opt => opt.Ignore())
             .ForMember(d => d.ConversionRate, opt => opt.Ignore())
+            .ForMember(d => d.TransactionsCZKTotal, opt => opt.Ignore())
             .ForMember(d => d.History, opt => opt.Ignore());
 
-        CreateMap<Database.Views.AccountEnhanced, Result.Account>();
+        CreateMap<Database.Views.AccountEnhanced, Result.Account>()
+            .ForMember(d => d.TransactionsCZKTotal, opt => opt.Ignore());
         CreateMap<Database.Views.AccountEnhanced, Result.AccountDetail>()
+            .ForMember(d => d.TransactionsCZKTotal, opt => opt.Ignore())
             .ForMember(d => d.History, opt => opt.Ignore());
-        CreateMap<Database.Views.AccountValueHistoryEnhanced, Result.AccountValueHistory>();
+        CreateMap<Database.Views.AccountValueHistoryEnhanced, Result.AccountValueHistory>()
+            .ForMember(d => d.CumulativeTransactionsCZK, opt => opt.Ignore());
 
         CreateMap<Database.Entity.Currency, Result.Currency>();
         CreateMap<Database.Entity.Currency, Result.CurrencyDetail>()

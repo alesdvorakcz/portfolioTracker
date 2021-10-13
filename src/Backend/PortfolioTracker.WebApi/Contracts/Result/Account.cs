@@ -13,4 +13,6 @@ public class Account
     public decimal? ValueAfter { get; set; }
     public decimal? ValueAfterCZK { get; set; }
     public decimal? ConversionRate { get; set; }
+
+    public decimal TransactionsCZKTotal { get; set; }
 }

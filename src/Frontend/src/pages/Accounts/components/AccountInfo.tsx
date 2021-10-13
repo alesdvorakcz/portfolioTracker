@@ -46,6 +46,13 @@ const AccountInfo: React.FC<Props> = ({ account, currency, onEditClick, onDelete
               currency: currency?.id ?? DEFAULT_CURRENCY,
             })}
         </Descriptions.Item>
+        <Descriptions.Item label="Total Transaction">
+          {account.transactionsCZKTotal &&
+            account.transactionsCZKTotal.toLocaleString(DEFAULT_LOCALE, {
+              style: 'currency',
+              currency: DEFAULT_CURRENCY,
+            })}
+        </Descriptions.Item>
       </Descriptions>
     </Box>
   );
