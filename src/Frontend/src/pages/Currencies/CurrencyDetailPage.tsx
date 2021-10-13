@@ -1,14 +1,17 @@
-import { Button, Drawer, Space } from 'antd';
+import { Button, Drawer, Space, Tabs } from 'antd';
 import { useHistory, useParams } from 'react-router-dom';
 
 import { FlexRow, PageWrapper, QueryWrapper } from '../../components';
 import AddHistoryValueForm from './components/AddHistoryValueForm';
+import CurrencyDetailChart from './components/CurrencyDetailChart';
 import CurrencyInfo from './components/CurrencyInfo';
 import CurrencyValueHistoryTable from './components/CurrencyValueHistoryTable';
 import EditHistoryValueForm from './components/EditHistoryValueForm';
 import { useCurrencyDetailQuery } from './queries';
 import { useCurrencyValueHistoryAdd } from './useCurrencyValueHistoryAdd';
 import { useCurrencyValueHistoryEdit } from './useCurrencyValueHistoryEdit';
+
+const { TabPane } = Tabs;
 
 interface Props {}
 
@@ -35,11 +38,19 @@ const CurrencyDetailPage: React.FC<Props> = () => {
         render={(currency) => (
           <>
             <CurrencyInfo currency={currency} />
-            <CurrencyValueHistoryTable
-              currency={currency}
-              onAddClick={currencyValueHistoryAdd.open}
-              onEditClick={currencyValueHistoryEdit.open}
-            />
+
+            <Tabs defaultActiveKey="1">
+              <TabPane tab="Table" key="1">
+                <CurrencyValueHistoryTable
+                  currency={currency}
+                  onAddClick={currencyValueHistoryAdd.open}
+                  onEditClick={currencyValueHistoryEdit.open}
+                />
+              </TabPane>
+              <TabPane tab="Chart" key="2">
+                <CurrencyDetailChart currency={currency} />
+              </TabPane>
+            </Tabs>
           </>
         )}
       />
