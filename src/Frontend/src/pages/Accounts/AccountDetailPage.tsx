@@ -9,6 +9,7 @@ import AccountValueHistoryTable from './components/AccountValueHistoryTable';
 import AddHistoryValueForm from './components/AddHistoryValueForm';
 import EditAccountForm from './components/EditAccountForm';
 import EditHistoryValueForm from './components/EditHistoryValueForm';
+import MissingCurrencyRateWarning from './components/MissingCurrencyRateWarning';
 import { useAccountDetailQuery } from './queries';
 import { useAccountDelete } from './useAccountDelete';
 import { useAccountEdit } from './useAccountEdit';
@@ -56,6 +57,7 @@ const AccountDetailPage: React.FC<Props> = () => {
               onEditClick={accountEdit.open}
               onDeleteClick={accountDelete.onDelete}
             />
+            <MissingCurrencyRateWarning account={account} currency={currency} />
             <Box>
               <Tabs defaultActiveKey="1">
                 <TabPane tab="Table" key="1">
