@@ -18,7 +18,7 @@ public class AccountController : BaseController
     }
 
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<Account>), 200)]
+    [ProducesResponseType(typeof(GetAllAccountsResult), 200)]
     public async Task<IActionResult> GetAll()
     {
         var accounts = await Mapper.ProjectTo<Account>(
@@ -40,7 +40,14 @@ public class AccountController : BaseController
             account.TransactionsCZKTotal = sum.TransactionsCZKTotal;
         }
 
-        return Ok(accounts);
+        var result = new GetAllAccountsResult
+        {
+            Accounts = accounts,
+            TotalValueCZK = accounts.Sum(x => x.ValueAfterCZK),
+            TotalTransactionsCZK = accounts.Sum(x => x.TransactionsCZKTotal)
+        };
+
+        return Ok(result);
     }
 
     [HttpGet("{id}")]

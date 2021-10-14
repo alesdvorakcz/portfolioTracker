@@ -1,7 +1,8 @@
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Button, Drawer, Space, Tabs } from 'antd';
 import { useHistory, useParams } from 'react-router-dom';
 
-import { Box, FlexRow, PageWrapper, QueryWrapper } from '../../components';
+import { Box, DeleteConfirm, FlexRow, PageWrapper, QueryWrapper } from '../../components';
 import { useCurrenciesQuery } from '../Currencies/queries';
 import AccountDetailChart from './components/AccountDetailChart';
 import AccountInfo from './components/AccountInfo';
@@ -46,17 +47,22 @@ const AccountDetailPage: React.FC<Props> = () => {
       title={query.data?.name || 'Account Detail'}
       subtitle="Account Detail"
       goBack={() => history.goBack()}
+      extra={
+        <Space>
+          <Button type="primary" icon={<EditOutlined />} onClick={accountEdit.open}>
+            Edit
+          </Button>
+          <DeleteConfirm onDelete={accountDelete.onDelete}>
+            <Button icon={<DeleteOutlined />}>Delete</Button>
+          </DeleteConfirm>
+        </Space>
+      }
     >
       <QueryWrapper
         query={query}
         render={(account) => (
           <>
-            <AccountInfo
-              account={account}
-              currency={currency}
-              onEditClick={accountEdit.open}
-              onDeleteClick={accountDelete.onDelete}
-            />
+            <AccountInfo account={account} currency={currency} />
             <MissingCurrencyRateWarning account={account} currency={currency} />
             <Box>
               <Tabs defaultActiveKey="1">

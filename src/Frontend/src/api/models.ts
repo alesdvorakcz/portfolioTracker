@@ -1,3 +1,9 @@
+export interface GetAllAccountsResult {
+  accounts: Account[];
+  totalValueCZK?: number;
+  totalTransactionsCZK?: number;
+}
+
 export interface Account {
   id: number;
   slug: string;

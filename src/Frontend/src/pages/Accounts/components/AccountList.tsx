@@ -1,44 +1,39 @@
-import { Alert, List } from 'antd';
+import { List } from 'antd';
 
-import { Box, LoadingIndicator } from '../../../components';
-import { useCurrenciesQuery } from '../../Currencies/queries';
-import { useAccountsQuery } from '../queries';
+import { Account, Currency } from '../../../api/models';
+import { Box } from '../../../components';
 import AccountCard from './AccountCard';
 
-interface Props {}
+interface Props {
+  accounts: Account[];
+  currencies?: Currency[];
+}
 
-const AccountList: React.FC<Props> = () => {
-  const currenciesQuery = useCurrenciesQuery();
-  const query = useAccountsQuery();
-
+const AccountList: React.FC<Props> = ({ accounts, currencies }) => {
   return (
     <Box>
-      {query.isLoading && <LoadingIndicator />}
-      {query.error && <Alert message={(query.error as any).message} type="error" />}
-      {query.isSuccess && (
-        <List
-          grid={{
-            gutter: 16,
-            xs: 1,
-            sm: 2,
-            md: 2,
-            lg: 3,
-            xl: 4,
-            xxl: 5,
-          }}
-          dataSource={query.data}
-          rowKey="id"
-          renderItem={(item) => {
-            const currency = currenciesQuery.data?.find((x) => x.id === item.currencyId);
+      <List
+        grid={{
+          gutter: 16,
+          xs: 1,
+          sm: 2,
+          md: 2,
+          lg: 3,
+          xl: 4,
+          xxl: 5,
+        }}
+        dataSource={accounts}
+        rowKey="id"
+        renderItem={(item) => {
+          const currency = currencies?.find((x) => x.id === item.currencyId);
 
-            return (
-              <List.Item>
-                <AccountCard account={item} currency={currency} />
-              </List.Item>
-            );
-          }}
-        />
-      )}
+          return (
+            <List.Item>
+              <AccountCard account={item} currency={currency} />
+            </List.Item>
+          );
+        }}
+      />
     </Box>
   );
 };

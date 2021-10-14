@@ -9,10 +9,11 @@ import {
   AccountValueHistory,
   AccountValueHistoryToAdd,
   AccountValueHistoryToEdit,
+  GetAllAccountsResult,
 } from './models';
 
 const getAccounts = async () => {
-  const result = await axios.get<Account[]>(`${ROOT}Account`);
+  const result = await axios.get<GetAllAccountsResult>(`${ROOT}Account`);
   return result.data;
 };
 
