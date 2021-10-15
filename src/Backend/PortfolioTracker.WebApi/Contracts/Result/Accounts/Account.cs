@@ -1,5 +1,5 @@
 
-using static PortfolioTracker.WebApi.Database.AppDbContext;
+using PortfolioTracker.WebApi.Database;
 
 namespace PortfolioTracker.WebApi.Contracts.Result;
 

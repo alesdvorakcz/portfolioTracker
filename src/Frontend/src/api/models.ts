@@ -111,3 +111,19 @@ export interface CurrencyHistoryImportRequest {
   from: string;
   to: string;
 }
+
+export interface GetDataForDashboardResult {
+  totalTransactionsCZK?: number;
+  totalValueCZK?: number;
+  accounts: DashboardAccount[];
+}
+
+export interface DashboardAccount {
+  id: number;
+  name: string;
+  category: AssetClass;
+  currencyId: string;
+  totalTransactionsCZK?: number;
+  totalValueCZK?: number;
+  history: AccountValueHistory[];
+}

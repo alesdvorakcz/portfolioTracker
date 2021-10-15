@@ -3,7 +3,7 @@ using PortfolioTracker.WebApi.Database.Entity;
 
 namespace PortfolioTracker.WebApi.Database;
 
-public partial class AppDbContext : DbContext
+public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 

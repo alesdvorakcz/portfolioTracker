@@ -1,9 +1,9 @@
 
-using static PortfolioTracker.WebApi.Database.AppDbContext;
+using PortfolioTracker.WebApi.Database;
 
 namespace PortfolioTracker.WebApi.Contracts.Input;
 
-public class AccountToAdd
+public class AccountToEdit
 {
     public string Slug { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
