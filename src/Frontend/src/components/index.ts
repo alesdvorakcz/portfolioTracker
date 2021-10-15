@@ -1,4 +1,6 @@
 export { default as Box } from './Box/Box';
+export { default as LineChart } from './Charts/LineChart';
+export { default as PieChart } from './Charts/PieChart';
 export { default as FlexRow } from './FlexRow/FlexRow';
 export { default as LoadingIndicator } from './LoadingIndicator/LoadingIndicator';
 export { default as Menu } from './Menu/Menu';
