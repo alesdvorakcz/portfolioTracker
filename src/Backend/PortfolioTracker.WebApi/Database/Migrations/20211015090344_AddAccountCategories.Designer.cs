@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PortfolioTracker.WebApi.Database;
 
 namespace PortfolioTracker.WebApi.Database.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211015090344_AddAccountCategories")]
+    partial class AddAccountCategories
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -218,9 +220,6 @@ namespace PortfolioTracker.WebApi.Database.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("Category")
-                        .HasColumnType("int");
-
                     b.Property<decimal?>("ConversionRate")
                         .HasColumnType("decimal(18,4)");
 
@@ -228,7 +227,7 @@ namespace PortfolioTracker.WebApi.Database.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("Date")
+                    b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
@@ -239,7 +238,7 @@ namespace PortfolioTracker.WebApi.Database.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal?>("TransactionCzk")
+                    b.Property<decimal>("TransactionCzk")
                         .HasColumnType("decimal(18,4)");
 
                     b.Property<decimal?>("ValueAfter")
@@ -248,7 +247,7 @@ namespace PortfolioTracker.WebApi.Database.Migrations
                     b.Property<decimal?>("ValueAfterCZK")
                         .HasColumnType("decimal(18,4)");
 
-                    b.Property<decimal?>("ValueBefore")
+                    b.Property<decimal>("ValueBefore")
                         .HasColumnType("decimal(18,4)");
 
                     b.HasKey("Id");
@@ -297,26 +296,6 @@ namespace PortfolioTracker.WebApi.Database.Migrations
                     b.HasKey("Id");
 
                     b.ToView("View_AccountValueHistoryEnhanced");
-                });
-
-            modelBuilder.Entity("PortfolioTracker.WebApi.Database.Views.CurrencyEnhanced", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<decimal?>("ConversionRate")
-                        .HasColumnType("decimal(18,4)");
-
-                    b.Property<DateTime?>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToView("View_CurrenciesEnhanced");
                 });
 
             modelBuilder.Entity("PortfolioTracker.WebApi.Database.Entity.Account", b =>

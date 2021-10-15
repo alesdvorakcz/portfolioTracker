@@ -1,3 +1,6 @@
+export type AssetClass = 'Stocks' | 'Bonds' | 'Cash' | 'RealEstates' | 'Commodities' | 'Crypto';
+export const AssetClasses = ['Stocks', 'Bonds', 'Cash', 'RealEstates', 'Commodities', 'Crypto'];
+
 export interface GetAllAccountsResult {
   accounts: Account[];
   totalValueCZK?: number;
@@ -8,6 +11,7 @@ export interface Account {
   id: number;
   slug: string;
   name: string;
+  category: AssetClass;
   currencyId: string;
   date?: string;
   transactionCzk?: number;
@@ -22,6 +26,7 @@ export interface AccountDetail {
   id: number;
   slug: string;
   name: string;
+  category: AssetClass;
   currencyId: string;
   date?: string;
   transactionCzk?: number;
@@ -36,12 +41,14 @@ export interface AccountDetail {
 export interface AccountToAdd {
   slug: string;
   name: string;
+  category: AssetClass;
   currencyId: string;
 }
 
 export interface AccountToEdit {
   slug: string;
   name: string;
+  category: AssetClass;
   currencyId: string;
 }
 
@@ -72,10 +79,14 @@ export interface AccountValueHistoryToEdit {
 export interface Currency {
   id: string;
   name: string;
+  date?: string;
+  conversionRate?: number;
 }
 export interface CurrencyDetail {
   id: string;
   name: string;
+  date?: string;
+  conversionRate?: number;
   history: CurrencyValueHistory[];
 }
 

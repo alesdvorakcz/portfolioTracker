@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using static PortfolioTracker.WebApi.Database.AppDbContext;
 
 namespace PortfolioTracker.WebApi.Database.Views;
 
@@ -7,14 +8,15 @@ public class AccountEnhanced
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Slug { get; set; } = string.Empty;
+    public AssetClass Category { get; set; }
     public string CurrencyId { get; set; } = string.Empty;
-    public DateTime Date { get; set; }
+    public DateTime? Date { get; set; }
 
     [Column(TypeName = "decimal(18,4)")]
-    public decimal TransactionCzk { get; set; }
+    public decimal? TransactionCzk { get; set; }
 
     [Column(TypeName = "decimal(18,4)")]
-    public decimal ValueBefore { get; set; }
+    public decimal? ValueBefore { get; set; }
 
     [Column(TypeName = "decimal(18,4)")]
     public decimal? ValueAfter { get; set; }

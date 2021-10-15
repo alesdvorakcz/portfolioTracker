@@ -101,6 +101,7 @@ public class AccountController : BaseController
         {
             Slug = account.Slug,
             Name = account.Name,
+            Category = account.Category,
             CurrencyId = account.CurrencyId
         };
 
@@ -134,6 +135,7 @@ public class AccountController : BaseController
 
         entity.Slug = account.Slug;
         entity.Name = account.Name;
+        entity.Category = account.Category;
         entity.CurrencyId = account.CurrencyId;
 
         await DbContext.SaveChangesAsync();

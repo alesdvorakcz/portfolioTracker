@@ -45,7 +45,7 @@ const AccountDetailPage: React.FC<Props> = () => {
   return (
     <PageWrapper
       title={query.data?.name || 'Account Detail'}
-      subtitle="Account Detail"
+      subtitle={query.data?.category}
       goBack={() => history.goBack()}
       extra={
         <Space>

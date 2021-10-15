@@ -29,7 +29,7 @@ namespace PortfolioTracker.WebApi.Database.Migrations
                         ON  [CurrencyValueHistory].[CurrencyId] = [Accounts].[CurrencyId] AND 
                             [CurrencyValueHistory].[Date] = ValueHistory.[Date]
                     WHERE
-                        ValueHistory2.[Id] is null;");
+                        ValueHistory2.[Id] is null");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

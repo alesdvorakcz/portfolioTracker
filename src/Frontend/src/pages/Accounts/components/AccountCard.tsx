@@ -34,7 +34,12 @@ const AccountCard: React.FC<Props> = ({ account, currency }) => {
   const isGainPositive = gain && gain > 0;
 
   return (
-    <Card title={account.name} hoverable onClick={() => history.push(`/accounts/${account.id}`)}>
+    <Card
+      title={account.name}
+      extra={account.category}
+      hoverable
+      onClick={() => history.push(`/accounts/${account.id}`)}
+    >
       <div>
         <Statistic title="Value" value={valueText} />
         <Statistic

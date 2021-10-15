@@ -2,6 +2,7 @@ import { Alert, Button, Col, Row } from 'antd';
 import { Form, Formik, FormikProps } from 'formik';
 import { Ref } from 'react';
 
+import { AssetClass, AssetClasses } from '../../../api/models';
 import { FormError } from '../../../components/Forms';
 import {
   FormikSelectInput,
@@ -13,6 +14,7 @@ import { useCurrenciesQuery } from '../../Currencies/queries';
 export interface FormValues {
   name?: string;
   slug?: string;
+  category?: AssetClass;
   currencyId?: string;
 }
 interface Props {
@@ -51,6 +53,12 @@ const AddAccountForm: React.FC<Props> = ({ formRef, hideSubmitButton, onSubmit }
             <FormikTextInput name="slug" label="Slug" required />
           </Col>
         </Row>
+        <FormikSelectInput
+          name="category"
+          label="Asset Class"
+          options={AssetClasses.map((x) => ({ value: x, label: x }))}
+          required
+        />
         {!currenciesQuery.isLoading && currenciesQuery.error && (
           <Alert type="error" message={(currenciesQuery.error as any).message} />
         )}

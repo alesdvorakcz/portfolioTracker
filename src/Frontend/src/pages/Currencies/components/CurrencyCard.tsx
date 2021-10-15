@@ -2,6 +2,7 @@ import { Card } from 'antd';
 import { useHistory } from 'react-router';
 
 import { Currency } from '../../../api/models';
+import { DEFAULT_CURRENCY, DEFAULT_LOCALE } from '../../../i18n';
 
 const { Meta } = Card;
 
@@ -14,7 +15,13 @@ const CurrencyCard: React.FC<Props> = ({ currency }) => {
 
   return (
     <Card style={{}} hoverable onClick={() => history.push(`/currencies/${currency.id}`)}>
-      <Meta title={currency.name} />
+      <Meta
+        title={currency.name}
+        description={currency.conversionRate?.toLocaleString(DEFAULT_LOCALE, {
+          style: 'currency',
+          currency: DEFAULT_CURRENCY,
+        })}
+      />
     </Card>
   );
 };

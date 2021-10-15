@@ -23,7 +23,7 @@ public class CurrencyController : BaseController
     public async Task<IActionResult> GetAll()
     {
         var currencies = await Mapper.ProjectTo<Currency>(
-                DbContext.Currencies
+                DbContext.CurrenciesEnhanced
             ).ToListAsync();
 
         return Ok(currencies);
@@ -34,7 +34,7 @@ public class CurrencyController : BaseController
     public async Task<IActionResult> Get(string id)
     {
         var currency = await Mapper.ProjectTo<CurrencyDetail>(
-                DbContext.Currencies.Where(x => x.Id == id)
+                DbContext.CurrenciesEnhanced.Where(x => x.Id == id)
             ).FirstOrDefaultAsync();
 
         if (currency == null)

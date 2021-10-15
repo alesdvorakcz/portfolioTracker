@@ -3,7 +3,7 @@ using PortfolioTracker.WebApi.Database.Entity;
 
 namespace PortfolioTracker.WebApi.Database;
 
-public class AppDbContext : DbContext
+public partial class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -19,13 +19,25 @@ public class AppDbContext : DbContext
 
     public DbSet<Views.AccountValueHistoryEnhanced> AccountValueHistoryEnhanced { get; set; } = null!;
     public DbSet<Views.AccountEnhanced> AccountsEnhanced { get; set; } = null!;
+    public DbSet<Views.CurrencyEnhanced> CurrenciesEnhanced { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Account>()
+            .Property(x => x.Category)
+            .HasConversion<string>();
+
         modelBuilder.Entity<Views.AccountValueHistoryEnhanced>(
             x => x.ToView("View_AccountValueHistoryEnhanced"));
 
         modelBuilder.Entity<Views.AccountEnhanced>(
             x => x.ToView("View_AccountsEnhanced"));
+
+        modelBuilder.Entity<Views.AccountEnhanced>()
+            .Property(x => x.Category)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<Views.CurrencyEnhanced>(
+            x => x.ToView("View_CurrenciesEnhanced"));
     }
 }

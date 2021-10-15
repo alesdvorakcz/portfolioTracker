@@ -32,8 +32,16 @@ public class MappingProfile : Profile
         CreateMap<Database.Views.AccountValueHistoryEnhanced, Result.AccountValueHistory>()
             .ForMember(d => d.CumulativeTransactionsCZK, opt => opt.Ignore());
 
-        CreateMap<Database.Entity.Currency, Result.Currency>();
+        CreateMap<Database.Entity.Currency, Result.Currency>()
+            .ForMember(d => d.Date, opt => opt.Ignore())
+            .ForMember(d => d.ConversionRate, opt => opt.Ignore());
         CreateMap<Database.Entity.Currency, Result.CurrencyDetail>()
+            .ForMember(d => d.Date, opt => opt.Ignore())
+            .ForMember(d => d.ConversionRate, opt => opt.Ignore())
+            .ForMember(d => d.History, opt => opt.Ignore());
+
+        CreateMap<Database.Views.CurrencyEnhanced, Result.Currency>();
+        CreateMap<Database.Views.CurrencyEnhanced, Result.CurrencyDetail>()
             .ForMember(d => d.History, opt => opt.Ignore());
         CreateMap<Database.Entity.CurrencyValueHistory, Result.CurrencyValueHistory>();
 
