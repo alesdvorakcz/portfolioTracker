@@ -4,6 +4,7 @@ namespace PortfolioTracker.WebApi.Contracts.Result;
 public class AccountValueHistory
 {
     public int Id { get; set; }
+    public int AccountId { get; set; }
     public DateTime Date { get; set; }
 
     public decimal? ConversionRate { get; set; }

@@ -24,6 +24,8 @@ function PieChart<RawDatum>({ data, height, tooltip }: Props<RawDatum>): React.R
         arcLinkLabelsThickness={2}
         arcLinkLabelsColor={{ from: 'color' }}
         valueFormat=" ^-.1%"
+        arcLabelsSkipAngle={5}
+        arcLinkLabelsSkipAngle={5}
       />
     </div>
   );

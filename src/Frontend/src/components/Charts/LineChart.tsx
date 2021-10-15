@@ -31,7 +31,7 @@ const LineChart: React.FC<Props> = ({ data, yScale, height, tooltip }) => {
           'rgba(249,199,79, 1)',
           'rgba(249,199,79, .6)',
         ]}
-        margin={{ top: 50, right: 50, bottom: 50, left: 60 }}
+        margin={{ top: 50, right: 0, bottom: 50, left: 50 }}
         xScale={{ type: 'time', format: '%Y-%m-%d', precision: 'day' }}
         enableGridX={false}
         xFormat="time:%d.%m.%Y"

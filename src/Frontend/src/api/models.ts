@@ -54,6 +54,7 @@ export interface AccountToEdit {
 
 export interface AccountValueHistory {
   id: number;
+  accountId: number;
   date: string;
   conversionRate?: number;
   valueBefore: number;
@@ -116,6 +117,7 @@ export interface GetDataForDashboardResult {
   totalTransactionsCZK?: number;
   totalValueCZK?: number;
   accounts: DashboardAccount[];
+  allAccountsHistory: AllAccountsHistoryValue[];
 }
 
 export interface DashboardAccount {
@@ -126,4 +128,10 @@ export interface DashboardAccount {
   totalTransactionsCZK?: number;
   totalValueCZK?: number;
   history: AccountValueHistory[];
+}
+
+export interface AllAccountsHistoryValue {
+  date: string;
+  totalTransactionsCZK: number;
+  totalValueCZK: number;
 }
