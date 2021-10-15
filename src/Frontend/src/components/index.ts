@@ -1,4 +1,6 @@
 export { default as Box } from './Box/Box';
+export { default as ChartTooltip } from './Charts/ChartTooltip';
+export { default as ChartTooltipItem } from './Charts/ChartTooltipItem';
 export { default as LineChart } from './Charts/LineChart';
 export { default as PieChart } from './Charts/PieChart';
 export { default as FlexRow } from './FlexRow/FlexRow';

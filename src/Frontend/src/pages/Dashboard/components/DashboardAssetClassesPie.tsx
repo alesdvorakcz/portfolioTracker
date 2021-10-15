@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { GetDataForDashboardResult } from '../../../api/models';
-import { PieChart } from '../../../components';
+import { ChartTooltip, ChartTooltipItem, PieChart } from '../../../components';
 import { DEFAULT_CURRENCY, DEFAULT_LOCALE } from '../../../i18n';
 
 interface Props {
@@ -42,18 +42,15 @@ const DashboardAssedClassesPie: React.FC<Props> = ({ dashboardData }) => {
       data={data}
       height={500}
       tooltip={(p) => (
-        <div style={{ backgroundColor: '#fff', padding: 5 }}>
-          <div>
-            <span style={{ marginRight: 10 }}>{p.datum.label}:</span>
-            <span style={{ fontWeight: 'bold' }}>{p.datum.formattedValue}</span>
-          </div>
-          <div style={{ fontWeight: 'bold' }}>
-            {p.datum.data.valueTotal?.toLocaleString(DEFAULT_LOCALE, {
+        <ChartTooltip>
+          <ChartTooltipItem label={p.datum.label.toString()} value={p.datum.formattedValue} />
+          <ChartTooltipItem
+            value={p.datum.data.valueTotal?.toLocaleString(DEFAULT_LOCALE, {
               style: 'currency',
               currency: DEFAULT_CURRENCY,
             })}
-          </div>
-        </div>
+          />
+        </ChartTooltip>
       )}
     />
   );

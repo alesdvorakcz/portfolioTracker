@@ -3,7 +3,7 @@ import moment from 'moment';
 import React from 'react';
 
 import { GetDataForDashboardResult } from '../../../api/models';
-import { LineChart } from '../../../components';
+import { ChartTooltip, ChartTooltipItem, LineChart } from '../../../components';
 import { DEFAULT_CURRENCY, DEFAULT_LOCALE } from '../../../i18n';
 
 interface Props {
@@ -47,34 +47,24 @@ const DashboardHistoryChart: React.FC<Props> = ({ dashboardData }) => {
         const transaction = account.transactionsData[index].y;
 
         return (
-          <div style={{ backgroundColor: '#fff', padding: 5 }}>
-            <div>
-              <span style={{ marginRight: 5 }}>Account:</span>
-              <span style={{ fontWeight: 'bold' }}>{account.name}</span>
-            </div>
-            <div>
-              <span style={{ marginRight: 5 }}>Date:</span>
-              <span style={{ fontWeight: 'bold' }}>{point.data.xFormatted}</span>
-            </div>
-            <div>
-              <span style={{ marginRight: 5 }}>Value:</span>
-              <span style={{ fontWeight: 'bold' }}>
-                {value?.toLocaleString(DEFAULT_LOCALE, {
-                  style: 'currency',
-                  currency: DEFAULT_CURRENCY,
-                })}
-              </span>
-            </div>
-            <div>
-              <span style={{ marginRight: 5 }}>Transactions:</span>
-              <span style={{ fontWeight: 'bold' }}>
-                {transaction?.toLocaleString(DEFAULT_LOCALE, {
-                  style: 'currency',
-                  currency: DEFAULT_CURRENCY,
-                })}
-              </span>
-            </div>
-          </div>
+          <ChartTooltip>
+            <ChartTooltipItem label="Account: " value={account.name} />
+            <ChartTooltipItem label="Date: " value={point.data.xFormatted} />
+            <ChartTooltipItem
+              label="Value: "
+              value={value?.toLocaleString(DEFAULT_LOCALE, {
+                style: 'currency',
+                currency: DEFAULT_CURRENCY,
+              })}
+            />
+            <ChartTooltipItem
+              label="Transactions: "
+              value={transaction?.toLocaleString(DEFAULT_LOCALE, {
+                style: 'currency',
+                currency: DEFAULT_CURRENCY,
+              })}
+            />
+          </ChartTooltip>
         );
       }}
     />
