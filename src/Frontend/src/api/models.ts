@@ -135,3 +135,49 @@ export interface AllAccountsHistoryValue {
   totalTransactionsCZK: number;
   totalValueCZK: number;
 }
+
+export interface EtfInstrument {
+  id: number;
+  slug: string;
+  name: string;
+  isin: string;
+  currencyId: string;
+}
+
+export interface EtfInstrumentDetail {
+  id: number;
+  slug: string;
+  name: string;
+  isin: string;
+  currencyId: string;
+
+  //ValueHistory
+  //TradeHistory
+}
+
+export interface EtfInstrumentToAdd {
+  slug: string;
+  name: string;
+  isin: string;
+  currencyId: string;
+}
+
+export interface EtfInstrumentToEdit {
+  slug: string;
+  name: string;
+  isin: string;
+  currencyId: string;
+}
+
+export interface EtfInstrumentValueHistory {
+  id: number;
+  date: string;
+  value: number;
+}
+
+export interface EtfTradeHistory {
+  id: number;
+  date: string;
+  amount: number;
+  unitPrice: number;
+}

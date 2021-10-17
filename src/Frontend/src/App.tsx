@@ -7,6 +7,7 @@ import { Route, Switch } from 'react-router-dom';
 import { Menu } from './components';
 import { AccountDetailPage, AccountsPage, CurrenciesPage, DashboardPage, EtfsPage } from './pages';
 import CurrencyDetailPage from './pages/Currencies/CurrencyDetailPage';
+import EtfInstrumentDetailPage from './pages/Etfs/EtfInstrumentDetailPage';
 
 const { Footer, Sider } = Layout;
 const { useBreakpoint } = Grid;
@@ -47,6 +48,9 @@ function App() {
           </Route>
           <Route path="/accounts">
             <AccountsPage />
+          </Route>
+          <Route path="/etfs/:id">
+            <EtfInstrumentDetailPage />
           </Route>
           <Route path="/etfs">
             <EtfsPage />

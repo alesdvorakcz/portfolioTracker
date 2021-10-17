@@ -8,7 +8,7 @@ using PortfolioTracker.WebApi.Database;
 namespace PortfolioTracker.WebApi.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class EtfInstrumentController : BaseController
 {
     public EtfInstrumentController(AppDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
