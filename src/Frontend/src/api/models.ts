@@ -150,9 +150,8 @@ export interface EtfInstrumentDetail {
   name: string;
   isin: string;
   currencyId: string;
-
-  //ValueHistory
-  //TradeHistory
+  valueHistory: EtfInstrumentValueHistory[];
+  tradeHistory: EtfTradeHistory[];
 }
 
 export interface EtfInstrumentToAdd {
@@ -175,8 +174,30 @@ export interface EtfInstrumentValueHistory {
   value: number;
 }
 
+export interface EtfInstrumentValueHistoryToAdd {
+  date: string;
+  value: number;
+}
+
+export interface EtfInstrumentValueHistoryToEdit {
+  date: string;
+  value: number;
+}
+
 export interface EtfTradeHistory {
   id: number;
+  date: string;
+  amount: number;
+  unitPrice: number;
+}
+
+export interface EtfTradeHistoryToAdd {
+  date: string;
+  amount: number;
+  unitPrice: number;
+}
+
+export interface EtfTradeHistoryToEdit {
   date: string;
   amount: number;
   unitPrice: number;

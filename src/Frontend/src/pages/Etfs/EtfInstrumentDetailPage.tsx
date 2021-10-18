@@ -1,14 +1,28 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { Button, Drawer, Space } from 'antd';
+import { Button, Drawer, Space, Tabs } from 'antd';
 import { useHistory, useParams } from 'react-router-dom';
 
-import { DeleteConfirm, FlexRow, PageWrapper, QueryWrapper } from '../../components';
+import { Box, DeleteConfirm, FlexRow, PageWrapper, QueryWrapper } from '../../components';
 import { useCurrenciesQuery } from '../Currencies/queries';
+import AddHistoryValueForm from './components/AddHistoryValueForm';
+import AddTradeForm from './components/AddTradeForm';
 import EditEtfInstrumentForm from './components/EditEtfInstrumentForm';
+import EditHistoryValueForm from './components/EditHistoryValueForm';
+import EditTradeForm from './components/EditTradeForm';
 import EtfInstrumentInfo from './components/EtfInstrumentInfo';
+import TradeHistoryTable from './components/TradeHistoryTable';
+import ValueHistoryTable from './components/ValueHistoryTable';
 import { useEtfInstrumentDetailQuery } from './queries';
 import { useEtfInstrumentDelete } from './useEtfInstrumentDelete';
 import { useEtfInstrumentEdit } from './useEtfInstrumentEdit';
+import { useEtfInstrumentValueHistoryAdd } from './useEtfInstrumentValueHistoryAdd';
+import { useEtfInstrumentValueHistoryDelete } from './useEtfInstrumentValueHistoryDelete';
+import { useEtfInstrumentValueHistoryEdit } from './useEtfInstrumentValueHistoryEdit';
+import { useEtfTradeHistoryAdd } from './useEtfTradeHistoryAdd';
+import { useEtfTradeHistoryDelete } from './useEtfTradeHistoryDelete';
+import { useEtfTradeHistoryEdit } from './useEtfTradeHistoryEdit';
+
+const { TabPane } = Tabs;
 
 interface Props {}
 
@@ -25,6 +39,12 @@ const EtfInstrumentDetailPage: React.FC<Props> = () => {
   const currenciesQuery = useCurrenciesQuery();
   const etfInstrumentEdit = useEtfInstrumentEdit(id);
   const etfInstrumentDelete = useEtfInstrumentDelete(id);
+  const valueHistoryAdd = useEtfInstrumentValueHistoryAdd(id);
+  const valueHistoryEdit = useEtfInstrumentValueHistoryEdit(id);
+  const valueHistoryDelete = useEtfInstrumentValueHistoryDelete(id);
+  const tradeHistoryAdd = useEtfTradeHistoryAdd(id);
+  const tradeHistoryEdit = useEtfTradeHistoryEdit(id);
+  const tradeHistoryDelete = useEtfTradeHistoryDelete(id);
   const query = useEtfInstrumentDetailQuery(id);
 
   const currency = query.data && currenciesQuery.data?.find((x) => x.id === query.data.currencyId);
@@ -50,40 +70,49 @@ const EtfInstrumentDetailPage: React.FC<Props> = () => {
         render={(etf) => (
           <>
             <EtfInstrumentInfo etfInstrument={etf} currency={currency} />
-            {/*<Box>
+            <Box>
               <Tabs defaultActiveKey="1">
-                <TabPane tab="Table" key="1">
-                  <AccountValueHistoryTable
-                    account={account}
+                <TabPane tab="History Values" key="1">
+                  <ValueHistoryTable
+                    etfInstrument={etf}
                     currency={currency}
-                    onAddClick={accountValueHistoryAdd.open}
-                    onEditClick={accountValueHistoryEdit.open}
-                    onDeleteClick={accountValueHistoryDelete.onDelete}
+                    onAddClick={valueHistoryAdd.open}
+                    onEditClick={valueHistoryEdit.open}
+                    onDeleteClick={valueHistoryDelete.onDelete}
                   />
                 </TabPane>
-                <TabPane tab="Chart" key="2">
-                  <AccountDetailChart account={account} currency={currency} />
+                <TabPane tab="Trades" key="2">
+                  <TradeHistoryTable
+                    etfInstrument={etf}
+                    currency={currency}
+                    onAddClick={tradeHistoryAdd.open}
+                    onEditClick={tradeHistoryEdit.open}
+                    onDeleteClick={tradeHistoryDelete.onDelete}
+                  />
+                </TabPane>
+                <TabPane tab="Chart" key="3">
+                  TODO
                 </TabPane>
               </Tabs>
-            </Box> */}
+            </Box>
           </>
         )}
       />
-      {/* <Drawer
+      <Drawer
         width={640}
-        onClose={accountValueHistoryAdd.close}
+        onClose={valueHistoryAdd.close}
         maskClosable={false}
         title="Add Value"
-        visible={accountValueHistoryAdd.isOpen}
+        visible={valueHistoryAdd.isOpen}
         destroyOnClose
         footer={
           <FlexRow align="right">
             <Space>
-              <Button onClick={accountValueHistoryAdd.close}>Cancel</Button>
+              <Button onClick={valueHistoryAdd.close}>Cancel</Button>
               <Button
-                loading={accountValueHistoryAdd.isLoading}
+                loading={valueHistoryAdd.isLoading}
                 type="primary"
-                onClick={() => accountValueHistoryAdd.formRef.current?.submitForm()}
+                onClick={() => valueHistoryAdd.formRef.current?.submitForm()}
               >
                 Save
               </Button>
@@ -92,26 +121,26 @@ const EtfInstrumentDetailPage: React.FC<Props> = () => {
         }
       >
         <AddHistoryValueForm
-          formRef={accountValueHistoryAdd.formRef}
-          onSubmit={accountValueHistoryAdd.onSubmit}
+          formRef={valueHistoryAdd.formRef}
+          onSubmit={valueHistoryAdd.onSubmit}
           hideSubmitButton
         />
       </Drawer>
       <Drawer
         width={640}
-        onClose={accountValueHistoryEdit.close}
+        onClose={valueHistoryEdit.close}
         maskClosable={false}
         title="Edit Value"
-        visible={accountValueHistoryEdit.isOpen}
+        visible={valueHistoryEdit.isOpen}
         destroyOnClose
         footer={
           <FlexRow align="right">
             <Space>
-              <Button onClick={accountValueHistoryEdit.close}>Cancel</Button>
+              <Button onClick={valueHistoryEdit.close}>Cancel</Button>
               <Button
-                loading={accountValueHistoryEdit.isLoading}
+                loading={valueHistoryEdit.isLoading}
                 type="primary"
-                onClick={() => accountValueHistoryEdit.formRef.current?.submitForm()}
+                onClick={() => valueHistoryEdit.formRef.current?.submitForm()}
               >
                 Save
               </Button>
@@ -119,15 +148,74 @@ const EtfInstrumentDetailPage: React.FC<Props> = () => {
           </FlexRow>
         }
       >
-        {accountValueHistoryEdit.selectedHistoryValue && (
+        {valueHistoryEdit.selectedHistoryValue && (
           <EditHistoryValueForm
-            valueHistory={accountValueHistoryEdit.selectedHistoryValue}
-            formRef={accountValueHistoryEdit.formRef}
-            onSubmit={accountValueHistoryEdit.onSubmit}
+            valueHistory={valueHistoryEdit.selectedHistoryValue}
+            formRef={valueHistoryEdit.formRef}
+            onSubmit={valueHistoryEdit.onSubmit}
             hideSubmitButton
           />
         )}
-      </Drawer> */}
+      </Drawer>
+      <Drawer
+        width={640}
+        onClose={tradeHistoryAdd.close}
+        maskClosable={false}
+        title="Add Trade"
+        visible={tradeHistoryAdd.isOpen}
+        destroyOnClose
+        footer={
+          <FlexRow align="right">
+            <Space>
+              <Button onClick={tradeHistoryAdd.close}>Cancel</Button>
+              <Button
+                loading={tradeHistoryAdd.isLoading}
+                type="primary"
+                onClick={() => tradeHistoryAdd.formRef.current?.submitForm()}
+              >
+                Save
+              </Button>
+            </Space>
+          </FlexRow>
+        }
+      >
+        <AddTradeForm
+          formRef={tradeHistoryAdd.formRef}
+          onSubmit={tradeHistoryAdd.onSubmit}
+          hideSubmitButton
+        />
+      </Drawer>
+      <Drawer
+        width={640}
+        onClose={tradeHistoryEdit.close}
+        maskClosable={false}
+        title="Edit Trade"
+        visible={tradeHistoryEdit.isOpen}
+        destroyOnClose
+        footer={
+          <FlexRow align="right">
+            <Space>
+              <Button onClick={tradeHistoryEdit.close}>Cancel</Button>
+              <Button
+                loading={tradeHistoryEdit.isLoading}
+                type="primary"
+                onClick={() => tradeHistoryEdit.formRef.current?.submitForm()}
+              >
+                Save
+              </Button>
+            </Space>
+          </FlexRow>
+        }
+      >
+        {tradeHistoryEdit.selectedHistoryValue && (
+          <EditTradeForm
+            trade={tradeHistoryEdit.selectedHistoryValue}
+            formRef={tradeHistoryEdit.formRef}
+            onSubmit={tradeHistoryEdit.onSubmit}
+            hideSubmitButton
+          />
+        )}
+      </Drawer>
       <Drawer
         width={640}
         onClose={etfInstrumentEdit.close}
