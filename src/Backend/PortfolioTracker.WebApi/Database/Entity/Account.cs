@@ -12,4 +12,6 @@ public class Account
 
     public string CurrencyId { get; set; } = string.Empty;
     public Currency Currency { get; set; } = null!;
+
+    public List<AccountValueHistory> History { get; set; } = null!;
 }

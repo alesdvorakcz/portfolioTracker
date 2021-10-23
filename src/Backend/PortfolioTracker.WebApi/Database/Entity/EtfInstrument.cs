@@ -10,4 +10,7 @@ public class EtfInstrument
 
     public string CurrencyId { get; set; } = string.Empty;
     public Currency Currency { get; set; } = null!;
+
+    public List<EtfInstrumentValueHistory> ValueHistory { get; set; } = null!;
+    public List<EtfTradeHistory> TradeHistory { get; set; } = null!;
 }

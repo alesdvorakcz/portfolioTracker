@@ -6,6 +6,7 @@ using PortfolioTracker.WebApi.Common;
 using PortfolioTracker.WebApi.Contracts.Input;
 using PortfolioTracker.WebApi.Contracts.Result;
 using PortfolioTracker.WebApi.Database;
+using PortfolioTracker.WebApi.Services;
 
 namespace PortfolioTracker.WebApi.Controllers;
 
@@ -13,8 +14,12 @@ namespace PortfolioTracker.WebApi.Controllers;
 [Route("api/[controller]")]
 public class EtfInstrumentController : BaseController
 {
-    public EtfInstrumentController(AppDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
+    private readonly string loadEtfValueHistoryServiceApiKey;
+
+    public EtfInstrumentController(AppDbContext dbContext, IMapper mapper, IConfiguration configuration) : base(dbContext, mapper)
     {
+        var alphavantageConfig = configuration.GetSection("Alphavantage");
+        loadEtfValueHistoryServiceApiKey = alphavantageConfig.GetValue<string>("ApiKey");
     }
 
     [HttpGet]
@@ -239,6 +244,44 @@ public class EtfInstrumentController : BaseController
             return NotFound();
 
         DbContext.EtfInstrumentValueHistory.Remove(entity);
+
+        await DbContext.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    [HttpPut("{etfInstrumentId}/history/import")]
+    [ProducesResponseType(204)]
+    public async Task<IActionResult> ImportHistory([Required] int etfInstrumentId)
+    {
+        var entity = await DbContext.EtfInstruments
+            .Include(x => x.ValueHistory)
+            .FirstOrDefaultAsync(x => x.Id == etfInstrumentId);
+
+        if (entity == null)
+            return NotFound();
+
+        var loadEtfValueHistoryService = new LoadEtfValueHistoryService(loadEtfValueHistoryServiceApiKey);
+
+        var result = await loadEtfValueHistoryService.LoadHistory(entity.Isin);
+
+        foreach (var day in result)
+        {
+            var historyValue = entity.ValueHistory.FirstOrDefault(x => x.Date == day.Day);
+            if (historyValue == null)
+            {
+                historyValue = new Database.Entity.EtfInstrumentValueHistory
+                {
+                    Date = day.Day,
+                    Value = day.AdjustedClose
+                };
+                entity.ValueHistory.Add(historyValue);
+            }
+            else
+            {
+                historyValue.Value = day.AdjustedClose;
+            }
+        }
 
         await DbContext.SaveChangesAsync();
 

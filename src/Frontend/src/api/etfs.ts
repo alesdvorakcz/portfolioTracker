@@ -77,6 +77,10 @@ const deleteValueFromEtfHistory = async (etfInstrumentId: number, valueId: numbe
   await axios.delete(`${ROOT}EtfInstrument/${etfInstrumentId}/history/${valueId}`);
 };
 
+const historyImport = async (etfInstrumentId: number) => {
+  await axios.put(`${ROOT}EtfInstrument/${etfInstrumentId}/history/import`);
+};
+
 const etfsClient = {
   getEtfInstruments,
   getEtfInstrumentDetail,
@@ -89,6 +93,7 @@ const etfsClient = {
   addValueToEtfHistory,
   editValueFromEtfHistory,
   deleteValueFromEtfHistory,
+  historyImport,
 };
 
 export default etfsClient;
