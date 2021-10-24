@@ -45,8 +45,19 @@ public class MappingProfile : Profile
             .ForMember(d => d.History, opt => opt.Ignore());
         CreateMap<Database.Entity.CurrencyValueHistory, Result.CurrencyValueHistory>();
 
-        CreateMap<Database.Entity.EtfInstrument, Result.EtfInstrument>();
+        CreateMap<Database.Entity.EtfInstrument, Result.EtfInstrument>()
+            .ForMember(d => d.Value, opt => opt.Ignore())
+            .ForMember(d => d.ValueCZK, opt => opt.Ignore())
+            .ForMember(d => d.TotalAmount, opt => opt.Ignore())
+            .ForMember(d => d.CumulativeTransactions, opt => opt.Ignore())
+            .ForMember(d => d.CumulativeTransactionsCZK, opt => opt.Ignore());
+        CreateMap<Database.Views.EtfInstrumentEnhanced, Result.EtfInstrument>();
         CreateMap<Database.Entity.EtfInstrument, Result.EtfInstrumentDetail>()
+            .ForMember(d => d.Value, opt => opt.Ignore())
+            .ForMember(d => d.ValueCZK, opt => opt.Ignore())
+            .ForMember(d => d.TotalAmount, opt => opt.Ignore())
+            .ForMember(d => d.CumulativeTransactions, opt => opt.Ignore())
+            .ForMember(d => d.CumulativeTransactionsCZK, opt => opt.Ignore())
             .ForMember(d => d.TradeHistory, opt => opt.Ignore())
             .ForMember(d => d.TradeHistoryEnhanced, opt => opt.Ignore())
             .ForMember(d => d.ValueHistory, opt => opt.Ignore());

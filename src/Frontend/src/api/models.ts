@@ -142,6 +142,11 @@ export interface EtfInstrument {
   name: string;
   isin: string;
   currencyId: string;
+  value: number;
+  valueCZK: number;
+  totalAmount: number;
+  cumulativeTransactions: number;
+  cumulativeTransactionsCZK: number;
 }
 
 export interface EtfInstrumentDetail {
@@ -153,6 +158,11 @@ export interface EtfInstrumentDetail {
   valueHistory: EtfInstrumentValueHistory[];
   tradeHistory: EtfTradeHistory[];
   tradeHistoryEnhanced: EtfTradeHistoryEnhanced[];
+  value: number;
+  valueCZK: number;
+  totalAmount: number;
+  cumulativeTransactions: number;
+  cumulativeTransactionsCZK: number;
 }
 
 export interface EtfInstrumentToAdd {

@@ -27,7 +27,7 @@ public class EtfInstrumentController : BaseController
     public async Task<IActionResult> GetAll()
     {
         var instruments = await Mapper.ProjectTo<EtfInstrument>(
-                DbContext.EtfInstruments
+                DbContext.EtfInstrumentEnhanced
             ).ToListAsync();
 
         return Ok(instruments);
@@ -96,6 +96,13 @@ public class EtfInstrumentController : BaseController
         etfInstrument.TradeHistory = tradeHistory;
         etfInstrument.TradeHistoryEnhanced = tradeHistoryEnhanced;
         etfInstrument.ValueHistory = valueHistory;
+
+        var lastValue = tradeHistoryEnhanced.OrderByDescending(x => x.Date).FirstOrDefault();
+        etfInstrument.Value = lastValue?.ValueAfter ?? 0m;
+        etfInstrument.ValueCZK = lastValue?.ValueAfterCZK ?? 0m;
+        etfInstrument.TotalAmount = lastValue?.AmountTotal ?? 0;
+        etfInstrument.CumulativeTransactions = lastValue?.CumulativeTransactions ?? 0m;
+        etfInstrument.CumulativeTransactionsCZK = lastValue?.CumulativeTransactionsCZK ?? 0m;
 
         return Ok(etfInstrument);
     }

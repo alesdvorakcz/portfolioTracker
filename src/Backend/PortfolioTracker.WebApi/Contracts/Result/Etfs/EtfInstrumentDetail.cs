@@ -12,4 +12,10 @@ public class EtfInstrumentDetail
     public IEnumerable<EtfInstrumentValueHistory> ValueHistory { get; set; } = Array.Empty<EtfInstrumentValueHistory>();
     public IEnumerable<EtfTradeHistory> TradeHistory { get; set; } = Array.Empty<EtfTradeHistory>();
     public IEnumerable<EtfTradeHistoryEnhanced> TradeHistoryEnhanced { get; set; } = Array.Empty<EtfTradeHistoryEnhanced>();
+
+    public decimal Value { get; set; }
+    public decimal? ValueCZK { get; set; }
+    public int TotalAmount { get; set; }
+    public decimal CumulativeTransactions { get; set; }
+    public decimal? CumulativeTransactionsCZK { get; set; }
 }
