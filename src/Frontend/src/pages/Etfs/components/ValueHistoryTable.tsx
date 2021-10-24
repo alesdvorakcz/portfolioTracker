@@ -34,7 +34,6 @@ const ValueHistoryTable: React.FC<Props> = ({
       title: 'Value',
       dataIndex: 'value',
       key: 'value',
-      colSpan: 2,
       align: 'right',
       render: (text: string) => (
         <div>

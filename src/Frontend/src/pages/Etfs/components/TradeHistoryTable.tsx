@@ -32,7 +32,6 @@ const ValueHistoryTable: React.FC<Props> = ({
       title: 'Unit Price',
       dataIndex: 'unitPrice',
       key: 'unitPrice',
-      colSpan: 2,
       align: 'right',
       render: (text: string) => (
         <div>
@@ -47,7 +46,6 @@ const ValueHistoryTable: React.FC<Props> = ({
       title: 'Amount',
       dataIndex: 'amount',
       key: 'amount',
-      colSpan: 2,
       align: 'right',
       render: (text: string) => <div>{parseInt(text).toLocaleString(DEFAULT_LOCALE)}</div>,
     },
