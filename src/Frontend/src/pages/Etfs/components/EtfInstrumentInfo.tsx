@@ -30,17 +30,17 @@ const EtfInstrumentInfo: React.FC<Props> = ({ etfInstrument }) => {
           />
         </Col>
         <Col xs={12} md={6}>
-          <Statistic
-            title="Profit"
-            prefix={isGainPositiveCZK ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
-            valueStyle={{ color: isGainPositiveCZK ? 'green' : 'red' }}
-            value={
-              gainCZK?.toLocaleString(DEFAULT_LOCALE, {
+          {!isNaN(gain) && (
+            <Statistic
+              title="Profit"
+              prefix={isGainPositiveCZK ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
+              valueStyle={{ color: isGainPositiveCZK ? 'green' : 'red' }}
+              value={gainCZK.toLocaleString(DEFAULT_LOCALE, {
                 style: 'percent',
                 minimumFractionDigits: 2,
-              }) ?? '???'
-            }
-          />
+              })}
+            />
+          )}
         </Col>
         <Col xs={12} md={3}>
           <Statistic
@@ -69,17 +69,17 @@ const EtfInstrumentInfo: React.FC<Props> = ({ etfInstrument }) => {
           />
         </Col>
         <Col xs={12} md={6}>
-          <Statistic
-            title="Profit"
-            prefix={isGainPositive ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
-            valueStyle={{ color: isGainPositive ? 'green' : 'red' }}
-            value={
-              gain?.toLocaleString(DEFAULT_LOCALE, {
+          {!isNaN(gain) && (
+            <Statistic
+              title="Profit"
+              prefix={isGainPositive ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
+              valueStyle={{ color: isGainPositive ? 'green' : 'red' }}
+              value={gain.toLocaleString(DEFAULT_LOCALE, {
                 style: 'percent',
                 minimumFractionDigits: 2,
-              }) ?? '???'
-            }
-          />
+              })}
+            />
+          )}
         </Col>
         <Col xs={12} md={3}>
           <Statistic

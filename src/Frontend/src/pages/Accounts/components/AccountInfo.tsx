@@ -50,7 +50,7 @@ const AccountInfo: React.FC<Props> = ({ account, currency }) => {
             }
           />
         </Col>
-        <Col xs={12} md={6}>
+        <Col xs={12} md={6} style={{ textAlign: 'right' }}>
           <Statistic
             title="Total Transaction"
             value={

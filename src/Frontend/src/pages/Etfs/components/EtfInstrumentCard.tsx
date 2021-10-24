@@ -19,7 +19,7 @@ const EtfInstrumentCard: React.FC<Props> = ({ etfInstrument, currency }) => {
     currency: currency?.id ?? DEFAULT_CURRENCY,
   });
 
-  if (!isSameCurrency) {
+  if (!isSameCurrency && !!etfInstrument.valueCZK) {
     valueText += ` / ${etfInstrument.valueCZK?.toLocaleString(DEFAULT_LOCALE, {
       style: 'currency',
       currency: DEFAULT_CURRENCY,
@@ -46,12 +46,10 @@ const EtfInstrumentCard: React.FC<Props> = ({ etfInstrument, currency }) => {
           title="Profit"
           prefix={isGainPositive ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
           valueStyle={{ color: isGainPositive ? 'green' : 'red' }}
-          value={
-            gain?.toLocaleString(DEFAULT_LOCALE, {
-              style: 'percent',
-              minimumFractionDigits: 2,
-            }) ?? '???'
-          }
+          value={(gain ?? 0).toLocaleString(DEFAULT_LOCALE, {
+            style: 'percent',
+            minimumFractionDigits: 2,
+          })}
         />
       </div>
     </Card>
