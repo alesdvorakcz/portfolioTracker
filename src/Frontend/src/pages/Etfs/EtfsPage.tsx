@@ -6,6 +6,7 @@ import { DEFAULT_CURRENCY, DEFAULT_LOCALE } from '../../i18n';
 import { useCurrenciesQuery } from '../Currencies/queries';
 import AddEtfInstrumentForm from './components/AddEtfInstrumentForm';
 import EtfInstrumentList from './components/EtfInstrumentList';
+import EtfPie from './components/EtfPie';
 import { useEtfInstrumentsQuery } from './queries';
 import { useEtfInstrumentToAdd } from './useEtfInstrumentToAdd';
 
@@ -76,6 +77,7 @@ const EtfsPage: React.FC<Props> = () => {
                 etfInstruments={data.etfInstruments}
                 currencies={currenciesQuery.data}
               />
+              <EtfPie etfData={data} />
             </>
           );
         }}
