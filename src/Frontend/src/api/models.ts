@@ -152,6 +152,7 @@ export interface EtfInstrumentDetail {
   currencyId: string;
   valueHistory: EtfInstrumentValueHistory[];
   tradeHistory: EtfTradeHistory[];
+  tradeHistoryEnhanced: EtfTradeHistoryEnhanced[];
 }
 
 export interface EtfInstrumentToAdd {
@@ -189,6 +190,21 @@ export interface EtfTradeHistory {
   date: string;
   amount: number;
   unitPrice: number;
+}
+
+export interface EtfTradeHistoryEnhanced {
+  id: number;
+  date: string;
+  conversionRate?: number;
+  valueBefore: number;
+  valueBeforeCZK?: number;
+  amountChange: number;
+  amountTotal: number;
+  unitPrice: number;
+  valueAfter: number;
+  valueAfterCZK?: number;
+  cumulativeTransactions: number;
+  cumulativeTransactionsCZK?: number;
 }
 
 export interface EtfTradeHistoryToAdd {

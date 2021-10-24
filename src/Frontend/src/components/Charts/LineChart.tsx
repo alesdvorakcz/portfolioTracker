@@ -43,7 +43,7 @@ const LineChart: React.FC<Props> = ({ data, yScale, height, tooltip }) => {
         }
         yScale={
           yScale
-            ? { type: 'linear', min: 'auto', max: 'auto', stacked: true, reverse: false }
+            ? { type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }
             : undefined
         }
         axisBottom={{
@@ -54,6 +54,7 @@ const LineChart: React.FC<Props> = ({ data, yScale, height, tooltip }) => {
             return d?.toLocaleString(DEFAULT_LOCALE);
           },
         }}
+        pointSize={3}
         curve="linear"
         useMesh={true}
         enableCrosshair={false}

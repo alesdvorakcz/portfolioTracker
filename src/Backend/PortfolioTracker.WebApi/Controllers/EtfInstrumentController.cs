@@ -50,13 +50,51 @@ public class EtfInstrumentController : BaseController
                     .OrderByDescending(x => x.Date)
             ).ToListAsync();
 
+        var tradeHistoryEnhanced = await Mapper.ProjectTo<EtfTradeHistoryEnhanced>(
+                DbContext.EtfInstrumentTradeHistoryEnhanced
+                    .Where(x => x.EtfInstrumentId == id)
+                    .OrderByDescending(x => x.Date)
+            ).ToListAsync();
+
         var valueHistory = await Mapper.ProjectTo<EtfInstrumentValueHistory>(
                 DbContext.EtfInstrumentValueHistory
                     .Where(x => x.EtfInstrumentId == id)
                     .OrderByDescending(x => x.Date)
             ).ToListAsync();
 
+        var cumulativeTotal = 0;
+        var cumulativeTransactions = 0m;
+        decimal? cumulativeTransactionsCZK = 0m;
+        foreach (var item in tradeHistoryEnhanced.OrderBy(x => x.Date))
+        {
+            item.ValueBefore = item.UnitPrice * cumulativeTotal;
+            item.ValueBeforeCZK = item.ConversionRate.HasValue
+                ? item.UnitPrice * item.ConversionRate * cumulativeTotal
+                : null;
+
+            cumulativeTotal += item.AmountChange;
+            item.AmountTotal = cumulativeTotal;
+
+            cumulativeTransactions += item.AmountChange * item.UnitPrice;
+            cumulativeTransactionsCZK += cumulativeTransactionsCZK.HasValue && item.ConversionRate.HasValue
+                ? item.AmountChange * item.UnitPrice * item.ConversionRate
+                : null;
+
+            item.CumulativeTransactions = cumulativeTransactions;
+            item.CumulativeTransactionsCZK = cumulativeTransactionsCZK;
+
+            item.ValueAfter = item.UnitPrice * cumulativeTotal;
+            item.ValueAfterCZK = item.ConversionRate.HasValue
+                ? item.UnitPrice * item.ConversionRate * cumulativeTotal
+                : null;
+        }
+
+        var firstTradeDay = tradeHistoryEnhanced.OrderBy(x => x.Date).FirstOrDefault(x => x.AmountTotal > 0)?.Date;
+        if (firstTradeDay.HasValue)
+            tradeHistoryEnhanced = tradeHistoryEnhanced.Where(x => x.Date > firstTradeDay).ToList();
+
         etfInstrument.TradeHistory = tradeHistory;
+        etfInstrument.TradeHistoryEnhanced = tradeHistoryEnhanced;
         etfInstrument.ValueHistory = valueHistory;
 
         return Ok(etfInstrument);

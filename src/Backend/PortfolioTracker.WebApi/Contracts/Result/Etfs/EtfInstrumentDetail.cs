@@ -11,4 +11,5 @@ public class EtfInstrumentDetail
 
     public IEnumerable<EtfInstrumentValueHistory> ValueHistory { get; set; } = Array.Empty<EtfInstrumentValueHistory>();
     public IEnumerable<EtfTradeHistory> TradeHistory { get; set; } = Array.Empty<EtfTradeHistory>();
+    public IEnumerable<EtfTradeHistoryEnhanced> TradeHistoryEnhanced { get; set; } = Array.Empty<EtfTradeHistoryEnhanced>();
 }

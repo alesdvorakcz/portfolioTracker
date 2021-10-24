@@ -20,6 +20,7 @@ public class AppDbContext : DbContext
     public DbSet<Views.AccountValueHistoryEnhanced> AccountValueHistoryEnhanced { get; set; } = null!;
     public DbSet<Views.AccountEnhanced> AccountsEnhanced { get; set; } = null!;
     public DbSet<Views.CurrencyEnhanced> CurrenciesEnhanced { get; set; } = null!;
+    public DbSet<Views.EtfInstrumentTradeHistoryEnhanced> EtfInstrumentTradeHistoryEnhanced { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -39,5 +40,8 @@ public class AppDbContext : DbContext
 
         modelBuilder.Entity<Views.CurrencyEnhanced>(
             x => x.ToView("View_CurrenciesEnhanced"));
+
+        modelBuilder.Entity<Views.EtfInstrumentTradeHistoryEnhanced>(
+            x => x.ToView("View_EtfInstrumentTradeHistoryEnhanced"));
     }
 }

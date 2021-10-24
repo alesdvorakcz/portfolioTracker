@@ -4,7 +4,7 @@ import React from 'react';
 
 import { Currency, EtfInstrumentDetail } from '../../../api/models';
 import { ChartTooltip, ChartTooltipItem, LineChart } from '../../../components';
-import { DEFAULT_LOCALE } from '../../../i18n';
+import { DEFAULT_CURRENCY, DEFAULT_LOCALE } from '../../../i18n';
 
 interface Props {
   etfInstrument: EtfInstrumentDetail;
@@ -20,13 +20,6 @@ const EtfValueChart: React.FC<Props> = ({ etfInstrument, currency }) => {
         y: item.value,
       })),
     },
-    // {
-    //   id: 'transactions',
-    //   data: account.history.map((item) => ({
-    //     x: moment.utc(item.date).format('YYYY-MM-DD'),
-    //     y: item.cumulativeTransactionsCZK,
-    //   })),
-    // },
   ];
 
   return (
@@ -41,16 +34,9 @@ const EtfValueChart: React.FC<Props> = ({ etfInstrument, currency }) => {
             label="Value: "
             value={point.data.y?.toLocaleString(DEFAULT_LOCALE, {
               style: 'currency',
-              currency: currency?.id,
+              currency: currency?.id ?? DEFAULT_CURRENCY,
             })}
           />
-          {/* <ChartTooltipItem
-            label="Transactions: "
-            value={transaction?.toLocaleString(DEFAULT_LOCALE, {
-              style: 'currency',
-              currency: DEFAULT_CURRENCY,
-            })}
-          /> */}
         </ChartTooltip>
       )}
     />

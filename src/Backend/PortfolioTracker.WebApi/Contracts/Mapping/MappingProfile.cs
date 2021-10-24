@@ -48,8 +48,17 @@ public class MappingProfile : Profile
         CreateMap<Database.Entity.EtfInstrument, Result.EtfInstrument>();
         CreateMap<Database.Entity.EtfInstrument, Result.EtfInstrumentDetail>()
             .ForMember(d => d.TradeHistory, opt => opt.Ignore())
+            .ForMember(d => d.TradeHistoryEnhanced, opt => opt.Ignore())
             .ForMember(d => d.ValueHistory, opt => opt.Ignore());
         CreateMap<Database.Entity.EtfInstrumentValueHistory, Result.EtfInstrumentValueHistory>();
         CreateMap<Database.Entity.EtfTradeHistory, Result.EtfTradeHistory>();
+        CreateMap<Database.Views.EtfInstrumentTradeHistoryEnhanced, Result.EtfTradeHistoryEnhanced>()
+            .ForMember(d => d.AmountTotal, opt => opt.Ignore())
+            .ForMember(d => d.ValueBefore, opt => opt.Ignore())
+            .ForMember(d => d.ValueBeforeCZK, opt => opt.Ignore())
+            .ForMember(d => d.ValueAfter, opt => opt.Ignore())
+            .ForMember(d => d.ValueAfterCZK, opt => opt.Ignore())
+            .ForMember(d => d.CumulativeTransactions, opt => opt.Ignore())
+            .ForMember(d => d.CumulativeTransactionsCZK, opt => opt.Ignore());
     }
 }
