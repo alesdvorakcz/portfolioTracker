@@ -23,14 +23,21 @@ public class EtfInstrumentController : BaseController
     }
 
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<EtfInstrument>), 200)]
+    [ProducesResponseType(typeof(GetAllEtfInstruments), 200)]
     public async Task<IActionResult> GetAll()
     {
         var instruments = await Mapper.ProjectTo<EtfInstrument>(
                 DbContext.EtfInstrumentEnhanced
             ).ToListAsync();
 
-        return Ok(instruments);
+        var result = new GetAllEtfInstruments
+        {
+            EtfInstruments = instruments,
+            TotalTransactionsCZK = instruments.Sum(x => x.CumulativeTransactionsCZK ?? 0m),
+            TotalValueCZK = instruments.Sum(x => x.ValueCZK ?? 0m)
+        };
+
+        return Ok(result);
     }
 
     [HttpGet("{id}")]

@@ -1,6 +1,8 @@
-import { Button, Drawer, Space } from 'antd';
+import { ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
+import { Button, Col, Drawer, Row, Space, Statistic } from 'antd';
 
-import { FlexRow, PageWrapper, QueryWrapper } from '../../components';
+import { Box, FlexRow, PageWrapper, QueryWrapper } from '../../components';
+import { DEFAULT_CURRENCY, DEFAULT_LOCALE } from '../../i18n';
 import { useCurrenciesQuery } from '../Currencies/queries';
 import AddEtfInstrumentForm from './components/AddEtfInstrumentForm';
 import EtfInstrumentList from './components/EtfInstrumentList';
@@ -26,9 +28,54 @@ const EtfsPage: React.FC<Props> = () => {
       <QueryWrapper
         query={query}
         render={(data) => {
+          const gain =
+            data.totalValueCZK && data.totalTransactionsCZK
+              ? data.totalValueCZK / data.totalTransactionsCZK - 1
+              : null;
+
+          const isGainPositive = gain && gain > 0;
+
           return (
             <>
-              <EtfInstrumentList etfInstruments={data} currencies={currenciesQuery.data} />
+              <Box>
+                <Row>
+                  <Col md={8}>
+                    <Statistic
+                      title="Total Value"
+                      value={data.totalValueCZK?.toLocaleString(DEFAULT_LOCALE, {
+                        style: 'currency',
+                        currency: DEFAULT_CURRENCY,
+                      })}
+                    />
+                  </Col>
+                  <Col md={8}>
+                    <Statistic
+                      title="Total Transactions"
+                      value={data.totalTransactionsCZK?.toLocaleString(DEFAULT_LOCALE, {
+                        style: 'currency',
+                        currency: DEFAULT_CURRENCY,
+                      })}
+                    />
+                  </Col>
+                  <Col md={8}>
+                    <Statistic
+                      title="Profit"
+                      prefix={isGainPositive ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
+                      valueStyle={{ color: isGainPositive ? 'green' : 'red' }}
+                      value={
+                        gain?.toLocaleString(DEFAULT_LOCALE, {
+                          style: 'percent',
+                          minimumFractionDigits: 2,
+                        }) ?? '???'
+                      }
+                    />
+                  </Col>
+                </Row>
+              </Box>
+              <EtfInstrumentList
+                etfInstruments={data.etfInstruments}
+                currencies={currenciesQuery.data}
+              />
             </>
           );
         }}

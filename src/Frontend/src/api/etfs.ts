@@ -2,7 +2,6 @@ import axios from 'axios';
 
 import { ROOT } from './config';
 import {
-  EtfInstrument,
   EtfInstrumentDetail,
   EtfInstrumentToAdd,
   EtfInstrumentToEdit,
@@ -10,10 +9,11 @@ import {
   EtfInstrumentValueHistoryToEdit,
   EtfTradeHistoryToAdd,
   EtfTradeHistoryToEdit,
+  GetAllEtfInstruments,
 } from './models';
 
 const getEtfInstruments = async () => {
-  const result = await axios.get<EtfInstrument[]>(`${ROOT}EtfInstrument`);
+  const result = await axios.get<GetAllEtfInstruments>(`${ROOT}EtfInstrument`);
   return result.data;
 };
 

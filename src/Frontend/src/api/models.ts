@@ -165,6 +165,12 @@ export interface EtfInstrumentDetail {
   cumulativeTransactionsCZK: number;
 }
 
+export interface GetAllEtfInstruments {
+  etfInstruments: EtfInstrument[];
+  totalTransactionsCZK: number;
+  totalValueCZK: number;
+}
+
 export interface EtfInstrumentToAdd {
   slug: string;
   name: string;
