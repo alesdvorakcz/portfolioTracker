@@ -16,11 +16,11 @@ const EtfInstrumentList: React.FC<Props> = ({ etfInstruments, currencies }) => {
         grid={{
           gutter: 16,
           xs: 1,
-          sm: 2,
-          md: 2,
-          lg: 3,
-          xl: 4,
-          xxl: 5,
+          sm: 1,
+          md: 1,
+          lg: 2,
+          xl: 2,
+          xxl: 3,
         }}
         dataSource={etfInstruments}
         rowKey="id"

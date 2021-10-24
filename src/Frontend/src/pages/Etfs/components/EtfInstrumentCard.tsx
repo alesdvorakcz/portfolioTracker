@@ -14,7 +14,7 @@ const EtfInstrumentCard: React.FC<Props> = ({ etfInstrument }) => {
   return (
     <Card
       title={etfInstrument.name}
-      extra={etfInstrument.isin}
+      extra={etfInstrument.slug}
       hoverable
       onClick={() => history.push(`/etfs/${etfInstrument.id}`)}
     >

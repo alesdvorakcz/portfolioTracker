@@ -10,6 +10,8 @@ import EditEtfInstrumentForm from './components/EditEtfInstrumentForm';
 import EditHistoryValueForm from './components/EditHistoryValueForm';
 import EditTradeForm from './components/EditTradeForm';
 import EtfInstrumentInfo from './components/EtfInstrumentInfo';
+import EtfTradeValueChart from './components/EtfTradeValueChart';
+import EtfValueChart from './components/EtfValueChart';
 import TradeHistoryTable from './components/TradeHistoryTable';
 import ValueHistoryTable from './components/ValueHistoryTable';
 import { useEtfInstrumentDetailQuery } from './queries';
@@ -93,8 +95,11 @@ const EtfInstrumentDetailPage: React.FC<Props> = () => {
                     onDeleteClick={tradeHistoryDelete.onDelete}
                   />
                 </TabPane>
-                <TabPane tab="Chart" key="3">
-                  TODO
+                <TabPane tab="Portfolio Chart" key="3">
+                  <EtfTradeValueChart etfInstrument={etf} currency={currency} />
+                </TabPane>
+                <TabPane tab="ETF Chart" key="4">
+                  <EtfValueChart etfInstrument={etf} currency={currency} />
                 </TabPane>
               </Tabs>
             </Box>
