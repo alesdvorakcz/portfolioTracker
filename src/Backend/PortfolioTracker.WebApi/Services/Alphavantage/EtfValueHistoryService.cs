@@ -1,27 +1,48 @@
+
 using System.Text.Json;
+using PortfolioTracker.WebApi.Common;
+using PortfolioTracker.WebApi.Services.Alphavantage.Models;
 
-namespace PortfolioTracker.WebApi.Services;
+namespace PortfolioTracker.WebApi.Services.Alphavantage;
 
-public class LoadEtfValueHistoryService
+public class EtfValueHistoryService
 {
-    private const string Url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol={0}&outputsize=full&apikey={1}";
-    private readonly DateTime minimumDate = new(2015, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
     private readonly string apiKey;
 
-    public LoadEtfValueHistoryService(string apiKey)
+    public EtfValueHistoryService(string apiKey)
     {
         this.apiKey = apiKey;
     }
 
-    public async Task<IEnumerable<EtfDailyValue>> LoadHistory(string isin)
+    public async Task<IEnumerable<EtfDailyValue>> LoadHistory(string isin, bool full)
     {
         using var httpClient = new HttpClient();
 
         var values = new List<EtfDailyValue>();
 
-        var response = await httpClient.GetFromJsonAsync<JsonDocument>(string.Format(Url, GetTickerFromIsin(isin), apiKey));
+        var symbol = AlphavantageHelpers.GetTickerFromIsin(isin);
 
-        var array = response!.RootElement.GetProperty("Time Series (Daily)");
+        var url = AlphavantageHelpers.GetEtfHistoryUrl(symbol, apiKey, full);
+        var response = await httpClient.GetAsync(url);
+
+        if (!response.IsSuccessStatusCode)
+            throw new BusinessException($"Error while calling api: {response.StatusCode}");
+
+        var result = await response.Content.ReadFromJsonAsync<JsonDocument>();
+
+        if (result == null)
+        {
+            throw new BusinessException($"Result for '{url}' is null!");
+        }
+
+        var isValid = result.RootElement.TryGetProperty("Time Series (Daily)", out var array);
+
+        if (!isValid)
+        {
+            var jsonString = result.RootElement.ToString();
+            throw new BusinessException($"Json is not valid: {jsonString[..200]}");
+        }
+
         foreach (var item in array.EnumerateObject())
         {
             var daySplit = item.Name.Split("-");
@@ -51,30 +72,7 @@ public class LoadEtfValueHistoryService
         };
 
         return values
-            .Where(x => x.Day >= minimumDate)
+            .Where(x => x.Day >= AlphavantageHelpers.GetMinimumDate(full))
             .ToArray();
-    }
-
-    private static string GetTickerFromIsin(string isin)
-    {
-        if (isin == "IE00B4L5Y983")
-            return "IWDA.AMS";
-
-        if (isin == "IE00B1XNHC34")
-            return "IQQH.DEX";
-
-        if (isin == "IE00B4L5YC18")
-            return "IEMA.AMS";
-
-        if (isin == "IE00BSPLC298")
-            return "ZPRX.DEX";
-
-        if (isin == "IE00BSPLC413")
-            return "ZPRV.DEX";
-
-        if (isin == "IE00BK5BQT80")
-            return "VWCE.DEX";
-
-        throw new ArgumentException($"Not supported isin '{isin}'");
     }
 }

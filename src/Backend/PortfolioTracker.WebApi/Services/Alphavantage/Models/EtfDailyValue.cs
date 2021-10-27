@@ -1,4 +1,4 @@
-namespace PortfolioTracker.WebApi.Services;
+namespace PortfolioTracker.WebApi.Services.Alphavantage.Models;
 
 public class EtfDailyValue
 {

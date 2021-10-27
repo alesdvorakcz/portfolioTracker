@@ -7,6 +7,7 @@ using PortfolioTracker.WebApi.Contracts.Input;
 using PortfolioTracker.WebApi.Contracts.Result;
 using PortfolioTracker.WebApi.Database;
 using PortfolioTracker.WebApi.Services;
+using PortfolioTracker.WebApi.Services.Alphavantage;
 
 namespace PortfolioTracker.WebApi.Controllers;
 
@@ -313,9 +314,9 @@ public class EtfInstrumentController : BaseController
         if (entity == null)
             return NotFound();
 
-        var loadEtfValueHistoryService = new LoadEtfValueHistoryService(loadEtfValueHistoryServiceApiKey);
+        var loadEtfValueHistoryService = new EtfValueHistoryService(loadEtfValueHistoryServiceApiKey);
 
-        var result = await loadEtfValueHistoryService.LoadHistory(entity.Isin);
+        var result = await loadEtfValueHistoryService.LoadHistory(entity.Isin, full: true);
 
         foreach (var day in result)
         {
