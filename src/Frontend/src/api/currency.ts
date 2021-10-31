@@ -4,7 +4,6 @@ import { ROOT } from './config';
 import {
   Currency,
   CurrencyDetail,
-  CurrencyHistoryImportRequest,
   CurrencyValueHistory,
   CurrencyValueHistoryToAdd,
   CurrencyValueHistoryToEdit,
@@ -40,19 +39,11 @@ const editValueToHistory = async (
   return result.data;
 };
 
-const historyImport = async (params: CurrencyHistoryImportRequest) => {
-  await axios.put<CurrencyHistoryImportRequest, AxiosResponse<CurrencyValueHistory>>(
-    `${ROOT}Currency/history/import`,
-    params
-  );
-};
-
 const currenciesClient = {
   getCurrencies,
   getCurrencyDetail,
   addValueToHistory,
   editValueToHistory,
-  historyImport,
 };
 
 export default currenciesClient;

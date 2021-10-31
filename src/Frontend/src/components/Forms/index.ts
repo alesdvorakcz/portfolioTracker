@@ -1,3 +1,4 @@
+export { default as Checkbox } from './Checkbox';
 export { default as DateInput } from './DateInput';
 export { default as DateRangeInput } from './DateRangeInput';
 export { default as FormError } from './FormError';

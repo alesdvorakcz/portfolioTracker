@@ -3,6 +3,7 @@ import moment from 'moment';
 
 import { requiredValidator } from '../../utils/validators';
 import {
+  Checkbox,
   DateInput,
   DateRangeInput,
   MultiSelectInput,
@@ -20,16 +21,14 @@ export interface FormSubmitResult<T> {
 
 export type FormSubmitFunc<T> = (payload: T) => Promise<FormSubmitResult<T>>;
 
-export type FormikValidateFunc = (value: string | number | undefined) => string | undefined;
-
-interface FormikInputProps {
+interface FormikInputProps<T> {
   name: string;
   label: string;
   required?: boolean;
-  validate?: FormikValidateFunc;
+  validate?: (value: T | undefined) => string | undefined;
 }
 
-export const FormikTextInput: React.FC<FormikInputProps> = ({
+export const FormikTextInput: React.FC<FormikInputProps<string>> = ({
   name,
   label,
   required,
@@ -54,7 +53,7 @@ export const FormikTextInput: React.FC<FormikInputProps> = ({
   );
 };
 
-export const FormikDateInput: React.FC<FormikInputProps> = ({
+export const FormikDateInput: React.FC<FormikInputProps<moment.Moment>> = ({
   name,
   label,
   required,
@@ -79,7 +78,7 @@ export const FormikDateInput: React.FC<FormikInputProps> = ({
   );
 };
 
-export const FormikDateRangeInput: React.FC<FormikInputProps> = ({
+export const FormikDateRangeInput: React.FC<FormikInputProps<[moment.Moment, moment.Moment]>> = ({
   name,
   label,
   required,
@@ -104,7 +103,7 @@ export const FormikDateRangeInput: React.FC<FormikInputProps> = ({
   );
 };
 
-interface FormikNumberInputProps extends FormikInputProps {
+interface FormikNumberInputProps extends FormikInputProps<number> {
   min?: number;
   max?: number;
   prefix?: string;
@@ -147,7 +146,7 @@ export const FormikNumberInput: React.FC<FormikNumberInputProps> = ({
   );
 };
 
-interface FormikSelectInputProps extends FormikInputProps {
+interface FormikSelectInputProps extends FormikInputProps<string | number> {
   options: SelectInputOption[];
   loading?: boolean;
 }
@@ -160,7 +159,7 @@ export const FormikSelectInput: React.FC<FormikSelectInputProps> = ({
   loading,
   validate,
 }) => {
-  const [, meta, helpers] = useField<string | undefined>({
+  const [, meta, helpers] = useField<string | number | undefined>({
     name,
     validate: validate ?? required ? requiredValidator : undefined,
   });
@@ -180,7 +179,7 @@ export const FormikSelectInput: React.FC<FormikSelectInputProps> = ({
   );
 };
 
-interface FormikMultiSelectInputProps extends FormikInputProps {
+interface FormikMultiSelectInputProps extends FormikInputProps<string[] | number[]> {
   options: SelectInputOption[];
   loading?: boolean;
 }
@@ -193,9 +192,9 @@ export const FormikMultiSelectInput: React.FC<FormikMultiSelectInputProps> = ({
   loading,
   validate,
 }) => {
-  const [, meta, helpers] = useField<string[]>({
+  const [, meta, helpers] = useField<string[] | number[]>({
     name,
-    validate: validate ?? required ? requiredValidator : undefined,
+    validate: validate ? validate : required ? requiredValidator : undefined,
   });
 
   return (
@@ -209,6 +208,25 @@ export const FormikMultiSelectInput: React.FC<FormikMultiSelectInputProps> = ({
       required={required}
       options={options}
       loading={loading}
+    />
+  );
+};
+
+export const FormikCheckbox: React.FC<FormikInputProps<boolean>> = ({ name, label, validate }) => {
+  const [, meta, helpers] = useField<boolean | undefined>({
+    name,
+    validate,
+  });
+
+  return (
+    <Checkbox
+      name={name}
+      label={label}
+      value={meta.value}
+      onChange={helpers.setValue}
+      // onBlur={() => helpers.setTouched(true)}
+      error={meta.error}
+      touched={meta.touched}
     />
   );
 };

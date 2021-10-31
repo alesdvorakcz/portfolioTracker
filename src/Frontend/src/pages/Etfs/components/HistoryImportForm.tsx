@@ -9,10 +9,10 @@ import {
   FormSubmitFunc,
 } from '../../../components/Forms/formik';
 import { maxOptionsValidator5 } from '../../../utils/validators';
-import { useCurrenciesQuery } from '../../Currencies/queries';
+import { useEtfInstrumentsQuery } from '../queries';
 
 export interface FormValues {
-  filter: string[];
+  filter: number[];
   full?: boolean;
   rewrite?: boolean;
 }
@@ -29,7 +29,7 @@ const HistoryImportForm: React.FC<Props> = ({ formRef, hideSubmitButton, onSubmi
     filter: [],
   };
 
-  const currenciesQuery = useCurrenciesQuery();
+  const etfInstrumentsQuerries = useEtfInstrumentsQuery();
 
   return (
     <Formik
@@ -45,14 +45,19 @@ const HistoryImportForm: React.FC<Props> = ({ formRef, hideSubmitButton, onSubmi
       innerRef={formRef}
     >
       <Form>
-        {!currenciesQuery.isLoading && currenciesQuery.error && (
-          <Alert type="error" message={(currenciesQuery.error as any).message} />
+        {!etfInstrumentsQuerries.isLoading && etfInstrumentsQuerries.error && (
+          <Alert type="error" message={(etfInstrumentsQuerries.error as any).message} />
         )}
         <FormikMultiSelectInput
           name="filter"
-          label="Currency"
-          loading={currenciesQuery.isLoading}
-          options={currenciesQuery.data?.map((x) => ({ value: x.id, label: x.name })) ?? []}
+          label="Etfs"
+          loading={etfInstrumentsQuerries.isLoading}
+          options={
+            etfInstrumentsQuerries.data?.etfInstruments.map((x) => ({
+              value: x.id,
+              label: x.name,
+            })) ?? []
+          }
           required
           validate={maxOptionsValidator5}
         />

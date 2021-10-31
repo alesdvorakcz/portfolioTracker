@@ -302,42 +302,4 @@ public class EtfInstrumentController : BaseController
 
         return NoContent();
     }
-
-    [HttpPut("{etfInstrumentId}/history/import")]
-    [ProducesResponseType(204)]
-    public async Task<IActionResult> ImportHistory([Required] int etfInstrumentId)
-    {
-        var entity = await DbContext.EtfInstruments
-            .Include(x => x.ValueHistory)
-            .FirstOrDefaultAsync(x => x.Id == etfInstrumentId);
-
-        if (entity == null)
-            return NotFound();
-
-        var loadEtfValueHistoryService = new EtfValueHistoryService(loadEtfValueHistoryServiceApiKey);
-
-        var result = await loadEtfValueHistoryService.LoadHistory(entity.Isin, full: true);
-
-        foreach (var day in result)
-        {
-            var historyValue = entity.ValueHistory.FirstOrDefault(x => x.Date == day.Day);
-            if (historyValue == null)
-            {
-                historyValue = new Database.Entity.EtfInstrumentValueHistory
-                {
-                    Date = day.Day,
-                    Value = day.AdjustedClose
-                };
-                entity.ValueHistory.Add(historyValue);
-            }
-            else
-            {
-                historyValue.Value = day.AdjustedClose;
-            }
-        }
-
-        await DbContext.SaveChangesAsync();
-
-        return NoContent();
-    }
 }

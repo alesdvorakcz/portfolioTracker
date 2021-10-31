@@ -4,9 +4,9 @@ import InputWrapper from './InputWrapper';
 
 interface Props {
   label: string;
-  value?: string[];
+  value?: string[] | number[];
   required?: boolean;
-  onChange: (value: string[]) => void;
+  onChange: (value: string[] | number[]) => void;
   onBlur: () => void;
   error?: string;
   touched?: boolean;
@@ -16,7 +16,7 @@ interface Props {
 
 export interface SelectInputOption {
   label: string;
-  value: string;
+  value: string | number;
   disabled?: boolean;
 }
 

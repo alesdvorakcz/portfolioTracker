@@ -7,8 +7,10 @@ import { useCurrenciesQuery } from '../Currencies/queries';
 import AddEtfInstrumentForm from './components/AddEtfInstrumentForm';
 import EtfInstrumentList from './components/EtfInstrumentList';
 import EtfPie from './components/EtfPie';
+import HistoryImportForm from './components/HistoryImportForm';
 import { useEtfInstrumentsQuery } from './queries';
 import { useEtfInstrumentToAdd } from './useEtfInstrumentToAdd';
+import { useHistoryImport } from './useHistoryImport';
 
 interface Props {}
 
@@ -16,14 +18,18 @@ const EtfsPage: React.FC<Props> = () => {
   const currenciesQuery = useCurrenciesQuery();
   const query = useEtfInstrumentsQuery();
   const etfInstrumentAdd = useEtfInstrumentToAdd();
+  const historyImport = useHistoryImport();
 
   return (
     <PageWrapper
       title="ETFs"
       extra={
-        <Button type="primary" onClick={etfInstrumentAdd.open}>
-          Add ETF
-        </Button>
+        <Space>
+          <Button onClick={historyImport.open}>History Import</Button>
+          <Button type="primary" onClick={etfInstrumentAdd.open}>
+            Add ETF
+          </Button>
+        </Space>
       }
     >
       <QueryWrapper
@@ -107,6 +113,34 @@ const EtfsPage: React.FC<Props> = () => {
         <AddEtfInstrumentForm
           formRef={etfInstrumentAdd.formRef}
           onSubmit={etfInstrumentAdd.onSubmit}
+          hideSubmitButton
+        />
+      </Drawer>
+      <Drawer
+        width={640}
+        onClose={historyImport.close}
+        maskClosable={false}
+        title="History Import"
+        visible={historyImport.isOpen}
+        destroyOnClose
+        footer={
+          <FlexRow align="right">
+            <Space>
+              <Button onClick={historyImport.close}>Cancel</Button>
+              <Button
+                loading={historyImport.isLoading}
+                type="primary"
+                onClick={() => historyImport.formRef.current?.submitForm()}
+              >
+                Save
+              </Button>
+            </Space>
+          </FlexRow>
+        }
+      >
+        <HistoryImportForm
+          formRef={historyImport.formRef}
+          onSubmit={historyImport.onSubmit}
           hideSubmitButton
         />
       </Drawer>

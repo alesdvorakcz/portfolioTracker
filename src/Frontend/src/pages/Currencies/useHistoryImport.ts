@@ -3,7 +3,7 @@ import { useRef, useState } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
 
 import apiClient from '../../api';
-import { CurrencyHistoryImportRequest } from '../../api/models';
+import { ImportCurrenciesQuery } from '../../api/models';
 import { FormSubmitFunc } from '../../components/Forms/formik';
 import { handleSubmitErrors } from '../../components/Forms/helpers';
 import { FormValues, ValidatedFormValues } from './components/HistoryImportForm';
@@ -14,18 +14,14 @@ export const useHistoryImport = () => {
   const [isOpen, setIsOpen] = useState(false);
   const formRef = useRef<FormikProps<FormValues>>(null);
 
-  const mutation = useMutation((params: CurrencyHistoryImportRequest) => {
-    return apiClient.currencies.historyImport(params);
+  const mutation = useMutation((query: ImportCurrenciesQuery) => {
+    return apiClient.importData.importCurrencyData(query);
   });
 
   const onSubmit: FormSubmitFunc<ValidatedFormValues> = async (payload) => {
     try {
-      await mutation.mutateAsync({
-        currencyIds: payload.currencyIds,
-        from: payload.dateRange[0].toISOString(),
-        to: payload.dateRange[1].toISOString(),
-      });
-      queryClient.invalidateQueries(currenciesQueryKeyBuilder(), { exact: true });
+      await mutation.mutateAsync(payload);
+      queryClient.invalidateQueries(currenciesQueryKeyBuilder());
       return { success: true, errors: {} };
     } catch (error) {
       return handleSubmitErrors(error);

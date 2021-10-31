@@ -9,7 +9,6 @@ import { DEFAULT_CURRENCY, DEFAULT_LOCALE } from '../../../i18n';
 interface Props {
   etfInstrument: EtfInstrumentDetail;
   currency?: Currency;
-  onImportClick: () => void;
   onEditClick: (item: EtfInstrumentValueHistory) => void;
   onDeleteClick: (item: EtfInstrumentValueHistory) => Promise<void>;
   onAddClick: () => void;
@@ -18,7 +17,6 @@ interface Props {
 const ValueHistoryTable: React.FC<Props> = ({
   etfInstrument,
   currency,
-  onImportClick,
   onAddClick,
   onEditClick,
   onDeleteClick,
@@ -62,7 +60,6 @@ const ValueHistoryTable: React.FC<Props> = ({
     <>
       <FlexRow align="right" marginBottom>
         <Space>
-          <Button onClick={onImportClick}>Import History</Button>
           <Button type="primary" onClick={onAddClick}>
             Add Value
           </Button>

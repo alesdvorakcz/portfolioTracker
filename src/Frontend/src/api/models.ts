@@ -107,12 +107,6 @@ export interface CurrencyValueHistoryToEdit {
   conversionRate: number;
 }
 
-export interface CurrencyHistoryImportRequest {
-  currencyIds: string[];
-  from: string;
-  to: string;
-}
-
 export interface GetDataForDashboardResult {
   totalTransactionsCZK?: number;
   totalValueCZK?: number;
@@ -233,4 +227,21 @@ export interface EtfTradeHistoryToEdit {
   date: string;
   amount: number;
   unitPrice: number;
+}
+
+export interface ImportQuery {
+  full?: boolean;
+  rewrite?: boolean;
+}
+
+export interface ImportEtfsQuery {
+  full?: boolean;
+  rewrite?: boolean;
+  filter?: number[];
+}
+
+export interface ImportCurrenciesQuery {
+  full?: boolean;
+  rewrite?: boolean;
+  filter?: string[];
 }

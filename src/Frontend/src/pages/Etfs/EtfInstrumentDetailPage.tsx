@@ -23,7 +23,6 @@ import { useEtfInstrumentValueHistoryEdit } from './useEtfInstrumentValueHistory
 import { useEtfTradeHistoryAdd } from './useEtfTradeHistoryAdd';
 import { useEtfTradeHistoryDelete } from './useEtfTradeHistoryDelete';
 import { useEtfTradeHistoryEdit } from './useEtfTradeHistoryEdit';
-import { useHistoryImport } from './useHistoryImport';
 
 const { TabPane } = Tabs;
 
@@ -48,7 +47,6 @@ const EtfInstrumentDetailPage: React.FC<Props> = () => {
   const tradeHistoryAdd = useEtfTradeHistoryAdd(id);
   const tradeHistoryEdit = useEtfTradeHistoryEdit(id);
   const tradeHistoryDelete = useEtfTradeHistoryDelete(id);
-  const historyImport = useHistoryImport(id);
   const query = useEtfInstrumentDetailQuery(id);
 
   const currency = query.data && currenciesQuery.data?.find((x) => x.id === query.data.currencyId);
@@ -83,7 +81,6 @@ const EtfInstrumentDetailPage: React.FC<Props> = () => {
                     onAddClick={valueHistoryAdd.open}
                     onEditClick={valueHistoryEdit.open}
                     onDeleteClick={valueHistoryDelete.onDelete}
-                    onImportClick={historyImport.onClick}
                   />
                 </TabPane>
                 <TabPane tab="Trades" key="2">
