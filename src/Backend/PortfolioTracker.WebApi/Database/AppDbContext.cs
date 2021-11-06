@@ -23,6 +23,11 @@ public class AppDbContext : DbContext
     public DbSet<Views.EtfInstrumentEnhanced> EtfInstrumentEnhanced { get; set; } = null!;
     public DbSet<Views.EtfInstrumentTradeHistoryEnhanced> EtfInstrumentTradeHistoryEnhanced { get; set; } = null!;
 
+    public DbSet<CryptoCurrency> CryptoCurrencies { get; set; } = null!;
+    public DbSet<CryptoCurrencyWallet> CryptoCurrencyWallets { get; set; } = null!;
+    public DbSet<CryptoCurrencyTrade> CryptoCurrencyTrades { get; set; } = null!;
+    public DbSet<CryptoCurrencyValueHistory> CryptoCurrencyValueHistory { get; set; } = null!;
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Account>()
