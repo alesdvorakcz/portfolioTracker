@@ -4,13 +4,18 @@ import { useHistory, useParams } from 'react-router';
 
 import { DeleteConfirm, FlexRow, PageWrapper, QueryWrapper } from '../../components';
 import { useCryptoCurrenciesQuery } from '../CryptoCurrencies/queries';
+import AddTradeForm from './components/AddTradeForm';
 import CryptoWalletDetailChart from './components/CryptoWalletDetailChart';
 import CryptoWalletInfo from './components/CryptoWalletInfo';
 import CryptoWalletTradesTable from './components/CryptoWalletTradesTable';
 import EditCryptoWalletForm from './components/EditCryptoWalletForm';
+import EditTradeForm from './components/EditTradeForm';
 import { useCryptoWalletDetailQuery } from './queries';
 import { useCryptoWalletDelete } from './useCryptoWalletDelete';
 import { useCryptoWalletEdit } from './useCryptoWalletEdit';
+import { useCryptoWalletTradeAdd } from './useCryptoWalletTradeAdd';
+import { useCryptoWalletTradeDelete } from './useCryptoWalletTradeDelete';
+import { useCryptoWalletTradeEdit } from './useCryptoWalletTradeEdit';
 
 const { TabPane } = Tabs;
 
@@ -29,6 +34,9 @@ const CryptoWalletDetailPage: React.FC<Props> = () => {
   const query = useCryptoWalletDetailQuery(id);
   const cryptoWalletEdit = useCryptoWalletEdit(id);
   const cryptoWalletDelete = useCryptoWalletDelete(id);
+  const cryptoWalletTradeAdd = useCryptoWalletTradeAdd(id);
+  const cryptoWalletTradeEdit = useCryptoWalletTradeEdit(id);
+  const cryptoWalletTradeDelete = useCryptoWalletTradeDelete(id);
 
   const cryptoCurrency =
     query.data && cryptoCurrenciesQuery.data?.find((x) => x.id === query.data.cryptoCurrencyId);
@@ -59,8 +67,9 @@ const CryptoWalletDetailPage: React.FC<Props> = () => {
               <TabPane tab="Table" key="1">
                 <CryptoWalletTradesTable
                   wallet={wallet}
-                  // onAddClick={currencyValueHistoryAdd.open}
-                  // onEditClick={currenc yValueHistoryEdit.open}
+                  onAddClick={cryptoWalletTradeAdd.open}
+                  onEditClick={cryptoWalletTradeEdit.open}
+                  onDeleteClick={cryptoWalletTradeDelete.onDelete}
                 />
               </TabPane>
               <TabPane tab="Chart" key="2">
@@ -70,6 +79,65 @@ const CryptoWalletDetailPage: React.FC<Props> = () => {
           </>
         )}
       />
+      <Drawer
+        width={640}
+        onClose={cryptoWalletTradeAdd.close}
+        maskClosable={false}
+        title="Add Trade"
+        visible={cryptoWalletTradeAdd.isOpen}
+        destroyOnClose
+        footer={
+          <FlexRow align="right">
+            <Space>
+              <Button onClick={cryptoWalletTradeAdd.close}>Cancel</Button>
+              <Button
+                loading={cryptoWalletTradeAdd.isLoading}
+                type="primary"
+                onClick={() => cryptoWalletTradeAdd.formRef.current?.submitForm()}
+              >
+                Save
+              </Button>
+            </Space>
+          </FlexRow>
+        }
+      >
+        <AddTradeForm
+          formRef={cryptoWalletTradeAdd.formRef}
+          onSubmit={cryptoWalletTradeAdd.onSubmit}
+          hideSubmitButton
+        />
+      </Drawer>
+      <Drawer
+        width={640}
+        onClose={cryptoWalletTradeEdit.close}
+        maskClosable={false}
+        title="Edit Trade"
+        visible={cryptoWalletTradeEdit.isOpen}
+        destroyOnClose
+        footer={
+          <FlexRow align="right">
+            <Space>
+              <Button onClick={cryptoWalletTradeEdit.close}>Cancel</Button>
+              <Button
+                loading={cryptoWalletTradeEdit.isLoading}
+                type="primary"
+                onClick={() => cryptoWalletTradeEdit.formRef.current?.submitForm()}
+              >
+                Save
+              </Button>
+            </Space>
+          </FlexRow>
+        }
+      >
+        {cryptoWalletTradeEdit.selectedTrade && (
+          <EditTradeForm
+            trade={cryptoWalletTradeEdit.selectedTrade}
+            formRef={cryptoWalletTradeEdit.formRef}
+            onSubmit={cryptoWalletTradeEdit.onSubmit}
+            hideSubmitButton
+          />
+        )}
+      </Drawer>
       <Drawer
         width={640}
         onClose={cryptoWalletEdit.close}
