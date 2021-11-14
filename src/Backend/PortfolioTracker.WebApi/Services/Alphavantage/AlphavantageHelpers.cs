@@ -26,7 +26,7 @@ public static class AlphavantageHelpers
 
     public static string GetCryptoHistoryUrl(string currencyId, string apiKey, bool full)
     {
-        return $"{ROOT_URL}?function=DIGITAL_CURRENCY_DAILY&from_symbol={currencyId}&market=EUR&outputsize={(full ? "full" : "compact")}&apikey={apiKey}";
+        return $"{ROOT_URL}?function=DIGITAL_CURRENCY_DAILY&symbol={currencyId}&market=EUR&outputsize={(full ? "full" : "compact")}&apikey={apiKey}";
     }
 
     private static readonly Dictionary<string, string> s_isinDictionary = new()
@@ -51,6 +51,12 @@ public static class AlphavantageHelpers
         { "BTC" },
         { "ETH" },
         { "ADA" },
+        { "LTC" },
+        { "NANO" },
+        { "Nexo" },
+        { "NexoEur" },
+        { "SOL" },
+        { "LRC" }
     };
 
     public static bool IsSupportedIsin(string isin)

@@ -51,7 +51,7 @@ public class ImportController : BaseController
         return NoContent();
     }
 
-    [HttpPut("cryptocurrency")]
+    [HttpPut("cryptoCurrency")]
     [ProducesResponseType(204)]
     public async Task<IActionResult> ImportCryptocurrencies([FromBody] ImportCryptocurrenciesQuery query)
     {
@@ -162,9 +162,56 @@ public class ImportController : BaseController
         }
     }
 
+    private async Task ImportCryptoCurrency(string cryptoCurrencyId, bool full, bool rewrite)
+    {
+        var cryptoCurrencyValueHistoryService = new CryptoValueHistoryService(apiKey);
+        var minimumDate = AlphavantageHelpers.GetMinimumDate(full);
+
+        if (!AlphavantageHelpers.IsSupportedCrypto(cryptoCurrencyId))
+            return;
+
+        var result = await cryptoCurrencyValueHistoryService.LoadHistory(cryptoCurrencyId, full);
+
+        var valueHistory = await DbContext.CryptoCurrencyValueHistory
+            .Where(x => x.CryptoCurrencyId == cryptoCurrencyId && x.Date > minimumDate)
+            .ToListAsync();
+
+        foreach (var day in result)
+        {
+            var historyValue = valueHistory.FirstOrDefault(x => x.Date == day.Day);
+            if (historyValue == null)
+            {
+                historyValue = new Database.Entity.CryptoCurrencyValueHistory
+                {
+                    Date = day.Day,
+                    ConversionRateEUR = day.CloseEUR,
+                    ConversionRateUSD = day.CloseUSD,
+                    CryptoCurrencyId = cryptoCurrencyId
+                };
+                DbContext.CryptoCurrencyValueHistory.Add(historyValue);
+            }
+            else
+            {
+                if (rewrite)
+                {
+                    historyValue.ConversionRateEUR = day.CloseEUR;
+                    historyValue.ConversionRateUSD = day.CloseUSD;
+                }
+            }
+        }
+
+        await DbContext.SaveChangesAsync();
+    }
+
     private async Task ImportAllCryptocurrencies(bool full, bool rewrite, IEnumerable<string>? cryptoCurrencyIds = null)
     {
-        //TODO
-        await Task.Delay(50);
+        var cryptoCurrencies = await DbContext.CryptoCurrencies
+            .Where(x => cryptoCurrencyIds == null || cryptoCurrencyIds.Contains(x.Id))
+            .ToListAsync();
+
+        foreach (var entity in cryptoCurrencies)
+        {
+            await ImportCryptoCurrency(entity.Id, full, rewrite);
+        }
     }
 }

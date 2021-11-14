@@ -324,3 +324,9 @@ export interface ImportCurrenciesQuery {
   rewrite?: boolean;
   filter?: string[];
 }
+
+export interface ImportCryptoCurrenciesQuery {
+  full?: boolean;
+  rewrite?: boolean;
+  filter?: string[];
+}

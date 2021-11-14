@@ -15,6 +15,10 @@ public class CryptoValueHistoryService
 
     public async Task<IEnumerable<CryptoDailyValue>> LoadHistory(string cryptoId, bool full)
     {
+        // TODO
+        //if (cryptoId == "NexoEur")
+        // return GetFakeEURHistory(full);
+
         using var httpClient = new HttpClient();
 
         var values = new List<CryptoDailyValue>();
@@ -27,18 +31,26 @@ public class CryptoValueHistoryService
             var daySplit = item.Name.Split("-");
             var day = new DateTime(Convert.ToInt32(daySplit[0]), Convert.ToInt32(daySplit[1]), Convert.ToInt32(daySplit[2]), 0, 0, 0, 0, DateTimeKind.Utc);
 
-            var open = Convert.ToDecimal(item.Value.GetProperty("1. open").GetString());
-            var high = Convert.ToDecimal(item.Value.GetProperty("2. high").GetString());
-            var low = Convert.ToDecimal(item.Value.GetProperty("3. low").GetString());
-            var close = Convert.ToDecimal(item.Value.GetProperty("4. close").GetString());
+            var openEUR = Convert.ToDecimal(item.Value.GetProperty("1a. open (EUR)").GetString());
+            var openUSD = Convert.ToDecimal(item.Value.GetProperty("1b. open (USD)").GetString());
+            var highEUR = Convert.ToDecimal(item.Value.GetProperty("2a. high (EUR)").GetString());
+            var highUSD = Convert.ToDecimal(item.Value.GetProperty("2b. high (USD)").GetString());
+            var lowEUR = Convert.ToDecimal(item.Value.GetProperty("3a. low (EUR)").GetString());
+            var lowUSD = Convert.ToDecimal(item.Value.GetProperty("3b. low (USD)").GetString());
+            var closeEUR = Convert.ToDecimal(item.Value.GetProperty("4a. close (EUR)").GetString());
+            var closeUSD = Convert.ToDecimal(item.Value.GetProperty("4b. close (USD)").GetString());
 
             values.Add(new CryptoDailyValue
             {
                 Day = day,
-                Open = open,
-                High = high,
-                Low = low,
-                Close = close,
+                OpenEUR = openEUR,
+                OpenUSD = openUSD,
+                HighEUR = highEUR,
+                HighUSD = highUSD,
+                LowEUR = lowEUR,
+                LowUSD = lowUSD,
+                CloseEUR = closeEUR,
+                CloseUSD = closeUSD
             });
         };
 
