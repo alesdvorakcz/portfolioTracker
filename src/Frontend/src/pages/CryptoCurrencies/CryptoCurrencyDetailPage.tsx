@@ -31,7 +31,6 @@ const CryptoCurrencyDetailPage: React.FC<Props> = () => {
   return (
     <PageWrapper
       title={query.data?.name || 'Currency Currency Detail'}
-      extra={<Button type="primary">History Import</Button>}
       goBack={() => history.goBack()}
     >
       <QueryWrapper

@@ -22,7 +22,7 @@ public class CryptoCurrencyController : BaseController
     public async Task<IActionResult> GetAll()
     {
         var currencies = await Mapper.ProjectTo<CryptoCurrency>(
-                DbContext.CryptoCurrencies
+                DbContext.CryptoCurrencies.OrderBy(x => x.Name)
             ).ToListAsync();
 
         return Ok(currencies);
