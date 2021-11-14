@@ -12,10 +12,17 @@ interface Props {
 const CryptoCurrencyDetailChart: React.FC<Props> = ({ cryptoCurrency }) => {
   const data: Serie[] = [
     {
-      id: 'value',
+      id: 'valueEUR',
       data: cryptoCurrency.history.map((item) => ({
         x: moment.utc(item.date).format('YYYY-MM-DD'),
         y: item.conversionRateEUR,
+      })),
+    },
+    {
+      id: 'valueUSD',
+      data: cryptoCurrency.history.map((item) => ({
+        x: moment.utc(item.date).format('YYYY-MM-DD'),
+        y: item.conversionRateUSD,
       })),
     },
   ];

@@ -61,7 +61,7 @@ const CryptoWalletDetailPage: React.FC<Props> = () => {
         query={query}
         render={(wallet) => (
           <>
-            <CryptoWalletInfo wallet={wallet} />
+            <CryptoWalletInfo wallet={wallet} cryptoCurrency={cryptoCurrency} />
 
             <Tabs defaultActiveKey="1">
               <TabPane tab="Table" key="1">

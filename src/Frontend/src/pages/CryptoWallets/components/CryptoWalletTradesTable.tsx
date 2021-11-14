@@ -31,7 +31,11 @@ const CryptoWalletTradesTable: React.FC<Props> = ({
       key: 'changeEUR',
       align: 'right',
       render: (text: string) => (
-        <div>{Intl.NumberFormat('cs-CZ', { style: 'decimal' }).format(parseFloat(text))}</div>
+        <div>
+          {Intl.NumberFormat('cs-CZ', { style: 'currency', currency: 'EUR' }).format(
+            parseFloat(text)
+          )}
+        </div>
       ),
     },
     {
@@ -40,7 +44,11 @@ const CryptoWalletTradesTable: React.FC<Props> = ({
       key: 'change',
       align: 'right',
       render: (text: string) => (
-        <div>{Intl.NumberFormat('cs-CZ', { style: 'decimal' }).format(parseFloat(text))}</div>
+        <div>
+          {Intl.NumberFormat('cs-CZ', { style: 'decimal', maximumFractionDigits: 8 }).format(
+            parseFloat(text)
+          )}
+        </div>
       ),
     },
     {
@@ -49,7 +57,11 @@ const CryptoWalletTradesTable: React.FC<Props> = ({
       key: 'amountAfter',
       align: 'right',
       render: (text: string) => (
-        <div>{Intl.NumberFormat('cs-CZ', { style: 'decimal' }).format(parseFloat(text))}</div>
+        <div>
+          {Intl.NumberFormat('cs-CZ', { style: 'decimal', maximumFractionDigits: 8 }).format(
+            parseFloat(text)
+          )}
+        </div>
       ),
     },
     {

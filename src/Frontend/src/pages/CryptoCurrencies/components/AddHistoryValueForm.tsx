@@ -50,7 +50,7 @@ const AddHistoryValueForm: React.FC<Props> = ({ formRef, hideSubmitButton, onSub
         <FormikNumberInput
           name="conversionRateUSD"
           label="Conversion Rate USD"
-          prefix=" $"
+          suffix=" $"
           allowDecimal
           required
         />

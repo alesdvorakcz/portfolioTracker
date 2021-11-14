@@ -31,7 +31,11 @@ const CryptoCurrencyValueHistoryTable: React.FC<Props> = ({
       key: 'conversionRateEUR',
       align: 'right',
       render: (text: string) => (
-        <div>{Intl.NumberFormat('cs-CZ', { style: 'decimal' }).format(parseFloat(text))}</div>
+        <div>
+          {Intl.NumberFormat('cs-CZ', { style: 'currency', currency: 'EUR' }).format(
+            parseFloat(text)
+          )}
+        </div>
       ),
     },
     {
@@ -40,7 +44,11 @@ const CryptoCurrencyValueHistoryTable: React.FC<Props> = ({
       key: 'conversionRateUSD',
       align: 'right',
       render: (text: string) => (
-        <div>{Intl.NumberFormat('cs-CZ', { style: 'decimal' }).format(parseFloat(text))}</div>
+        <div>
+          {Intl.NumberFormat('cs-CZ', { style: 'currency', currency: 'USD' }).format(
+            parseFloat(text)
+          )}
+        </div>
       ),
     },
     {

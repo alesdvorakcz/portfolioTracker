@@ -45,15 +45,21 @@ const AddTradeForm: React.FC<Props> = ({ formRef, hideSubmitButton, onSubmit }) 
 
         <Row gutter={16}>
           <Col span={12}>
-            <FormikNumberInput name="changeEUR" label="Change EUR" allowDecimal required />
+            <FormikNumberInput
+              name="changeEUR"
+              label="Change EUR"
+              suffix=" €"
+              allowDecimal
+              required
+            />
           </Col>
 
           <Col span={12}>
-            <FormikNumberInput name="change" label="Change" required />
+            <FormikNumberInput name="change" label="Change" allowDecimal required />
           </Col>
         </Row>
 
-        <FormikNumberInput name="amountAfter" label="Amount After" required />
+        <FormikNumberInput name="amountAfter" label="Amount After" allowDecimal required />
 
         {!hideSubmitButton && (
           <Button type="primary" htmlType="submit">
