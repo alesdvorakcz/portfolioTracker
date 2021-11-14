@@ -51,15 +51,14 @@ public class ImportController : BaseController
         return NoContent();
     }
 
-    // [HttpPut("cryptocurrency")]
-    // [ProducesResponseType(204)]
-    // public async Task<IActionResult> ImportCryptocurrencies([FromBody] ImportCryptocurrenciesQuery query)
-    // {
-    //     //TODO: filter
-    //     await ImportAllCryptocurrencies(query.Full, query.Rewrite);
+    [HttpPut("cryptocurrency")]
+    [ProducesResponseType(204)]
+    public async Task<IActionResult> ImportCryptocurrencies([FromBody] ImportCryptocurrenciesQuery query)
+    {
+        await ImportAllCryptocurrencies(query.Full, query.Rewrite, query.Filter);
 
-    //     return NoContent();
-    // }
+        return NoContent();
+    }
 
     private async Task ImportCurrency(string currencyId, bool full, bool rewrite)
     {
@@ -163,9 +162,9 @@ public class ImportController : BaseController
         }
     }
 
-    // private async Task ImportAllCryptocurrencies(bool full, bool rewrite)
-    // {
-    //     //TODO
-    //     await Task.Delay(50);
-    // }
+    private async Task ImportAllCryptocurrencies(bool full, bool rewrite, IEnumerable<string>? cryptoCurrencyIds = null)
+    {
+        //TODO
+        await Task.Delay(50);
+    }
 }

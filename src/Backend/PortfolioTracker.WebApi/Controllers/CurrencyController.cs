@@ -6,7 +6,6 @@ using PortfolioTracker.WebApi.Common;
 using PortfolioTracker.WebApi.Contracts.Input;
 using PortfolioTracker.WebApi.Contracts.Result;
 using PortfolioTracker.WebApi.Database;
-using PortfolioTracker.WebApi.Services;
 
 namespace PortfolioTracker.WebApi.Controllers;
 

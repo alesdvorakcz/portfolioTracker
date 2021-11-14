@@ -71,5 +71,22 @@ public class MappingProfile : Profile
             .ForMember(d => d.ValueAfterCZK, opt => opt.Ignore())
             .ForMember(d => d.CumulativeTransactions, opt => opt.Ignore())
             .ForMember(d => d.CumulativeTransactionsCZK, opt => opt.Ignore());
+
+        CreateMap<Database.Entity.CryptoCurrency, Result.CryptoCurrency>();
+        CreateMap<Database.Entity.CryptoCurrency, Result.CryptoCurrencyDetail>()
+            .ForMember(d => d.Date, opt => opt.Ignore())
+            .ForMember(d => d.ConverstionRateUSD, opt => opt.Ignore())
+            .ForMember(d => d.ConverstionRateEUR, opt => opt.Ignore())
+            .ForMember(d => d.History, opt => opt.Ignore());
+        CreateMap<Database.Entity.CryptoCurrencyValueHistory, Result.CryptoCurrencyValueHistory>();
+
+        CreateMap<Database.Entity.CryptoCurrencyWallet, Result.CryptoCurrencyWallet>();
+        CreateMap<Database.Entity.CryptoCurrencyWallet, Result.CryptoCurrencyWalletDetail>()
+            .ForMember(d => d.Date, opt => opt.Ignore())
+            .ForMember(d => d.Change, opt => opt.Ignore())
+            .ForMember(d => d.ChangeEUR, opt => opt.Ignore())
+            .ForMember(d => d.AmountAfter, opt => opt.Ignore())
+            .ForMember(d => d.Trades, opt => opt.Ignore());
+        CreateMap<Database.Entity.CryptoCurrencyTrade, Result.CryptoCurrencyTrade>();
     }
 }
