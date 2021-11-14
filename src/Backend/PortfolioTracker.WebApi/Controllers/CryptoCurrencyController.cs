@@ -67,8 +67,8 @@ public class CryptoCurrencyController : BaseController
         {
             CryptoCurrencyId = cryptoCurrencyId,
             Date = value.Date,
-            ConverstionRateUSD = value.ConverstionRateUSD,
-            ConverstionRateEUR = value.ConverstionRateEUR,
+            ConversionRateUSD = value.ConversionRateUSD,
+            ConversionRateEUR = value.ConversionRateEUR,
         };
 
         DbContext.CryptoCurrencyValueHistory.Add(entity);
@@ -92,8 +92,24 @@ public class CryptoCurrencyController : BaseController
             throw new Common.ValidationException(nameof(value.Date), ValidationError.Duplicity);
 
         entity.Date = value.Date;
-        entity.ConverstionRateUSD = value.ConverstionRateUSD;
-        entity.ConverstionRateEUR = value.ConverstionRateEUR;
+        entity.ConversionRateUSD = value.ConversionRateUSD;
+        entity.ConversionRateEUR = value.ConversionRateEUR;
+
+        await DbContext.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    [HttpDelete("{cryptoCurrencyId}/history/{valueHistoryId}")]
+    [ProducesResponseType(204)]
+    public async Task<IActionResult> DeleteValueFromHistory([Required] string cryptoCurrencyId, [Required] int valueHistoryId)
+    {
+        var entity = await DbContext.CryptoCurrencyValueHistory.FirstOrDefaultAsync(x => x.Id == valueHistoryId && x.CryptoCurrencyId == cryptoCurrencyId);
+
+        if (entity == null)
+            return NotFound();
+
+        DbContext.CryptoCurrencyValueHistory.Remove(entity);
 
         await DbContext.SaveChangesAsync();
 

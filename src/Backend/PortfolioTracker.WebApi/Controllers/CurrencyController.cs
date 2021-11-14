@@ -97,4 +97,20 @@ public class CurrencyController : BaseController
 
         return NoContent();
     }
+
+    [HttpDelete("{currencyId}/history/{valueHistoryId}")]
+    [ProducesResponseType(204)]
+    public async Task<IActionResult> DeleteValueFromHistory([Required] string currencyId, [Required] int valueHistoryId)
+    {
+        var entity = await DbContext.CurrencyValueHistory.FirstOrDefaultAsync(x => x.Id == valueHistoryId && x.CurrencyId == currencyId);
+
+        if (entity == null)
+            return NotFound();
+
+        DbContext.CurrencyValueHistory.Remove(entity);
+
+        await DbContext.SaveChangesAsync();
+
+        return NoContent();
+    }
 }

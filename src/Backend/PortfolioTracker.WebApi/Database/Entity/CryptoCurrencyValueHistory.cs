@@ -9,10 +9,10 @@ public class CryptoCurrencyValueHistory
     public DateTime Date { get; set; }
 
     [Column(TypeName = "decimal(18,8)")]
-    public decimal ConverstionRateUSD { get; set; }
+    public decimal ConversionRateUSD { get; set; }
 
     [Column(TypeName = "decimal(18,8)")]
-    public decimal ConverstionRateEUR { get; set; }
+    public decimal ConversionRateEUR { get; set; }
 
     public string CryptoCurrencyId { get; set; } = string.Empty;
     public CryptoCurrency CryptoCurrency { get; set; } = null!;

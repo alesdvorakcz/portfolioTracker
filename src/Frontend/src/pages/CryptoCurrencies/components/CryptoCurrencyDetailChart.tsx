@@ -15,7 +15,7 @@ const CryptoCurrencyDetailChart: React.FC<Props> = ({ cryptoCurrency }) => {
       id: 'value',
       data: cryptoCurrency.history.map((item) => ({
         x: moment.utc(item.date).format('YYYY-MM-DD'),
-        y: item.converstionRateEUR,
+        y: item.conversionRateEUR,
       })),
     },
   ];

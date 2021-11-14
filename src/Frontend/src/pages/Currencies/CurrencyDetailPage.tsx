@@ -9,6 +9,7 @@ import CurrencyValueHistoryTable from './components/CurrencyValueHistoryTable';
 import EditHistoryValueForm from './components/EditHistoryValueForm';
 import { useCurrencyDetailQuery } from './queries';
 import { useCurrencyValueHistoryAdd } from './useCurrencyValueHistoryAdd';
+import { useCurrencyValueHistoryDelete } from './useCurrencyValueHistoryDelete';
 import { useCurrencyValueHistoryEdit } from './useCurrencyValueHistoryEdit';
 
 const { TabPane } = Tabs;
@@ -26,6 +27,7 @@ const CurrencyDetailPage: React.FC<Props> = () => {
   const query = useCurrencyDetailQuery(id);
   const currencyValueHistoryAdd = useCurrencyValueHistoryAdd(id);
   const currencyValueHistoryEdit = useCurrencyValueHistoryEdit(id);
+  const deleteCurrencyValueHistory = useCurrencyValueHistoryDelete(id);
 
   return (
     <PageWrapper
@@ -45,6 +47,7 @@ const CurrencyDetailPage: React.FC<Props> = () => {
                   currency={currency}
                   onAddClick={currencyValueHistoryAdd.open}
                   onEditClick={currencyValueHistoryEdit.open}
+                  onDeleteClick={deleteCurrencyValueHistory.onDelete}
                 />
               </TabPane>
               <TabPane tab="Chart" key="2">

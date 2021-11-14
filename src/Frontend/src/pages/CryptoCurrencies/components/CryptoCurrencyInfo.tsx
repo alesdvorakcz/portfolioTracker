@@ -15,13 +15,13 @@ const CryptoCurrencyInfo: React.FC<Props> = ({ cryptoCurrency }) => {
         <Descriptions.Item label="Id">{cryptoCurrency.id}</Descriptions.Item>
         <Descriptions.Item label="Name">{cryptoCurrency.name}</Descriptions.Item>
         <Descriptions.Item label="Conversion Rate EUR">
-          {cryptoCurrency.converstionRateEUR?.toLocaleString(DEFAULT_LOCALE, {
+          {cryptoCurrency.conversionRateEUR?.toLocaleString(DEFAULT_LOCALE, {
             style: 'currency',
             currency: DEFAULT_CURRENCY, //TODO
           })}
         </Descriptions.Item>
         <Descriptions.Item label="Conversion Rate USD">
-          {cryptoCurrency.converstionRateUSD?.toLocaleString(DEFAULT_LOCALE, {
+          {cryptoCurrency.conversionRateUSD?.toLocaleString(DEFAULT_LOCALE, {
             style: 'currency',
             currency: DEFAULT_CURRENCY, //TODO
           })}

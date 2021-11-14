@@ -115,28 +115,28 @@ export interface CryptoCurrencyDetail {
   id: string;
   name: string;
   date?: string;
-  converstionRateUSD?: number;
-  converstionRateEUR?: number;
+  conversionRateEUR?: number;
+  conversionRateUSD?: number;
   history: CryptoCurrencyValueHistory[];
 }
 
 export interface CryptoCurrencyValueHistory {
   id: number;
   date: string;
-  converstionRateUSD?: number;
-  converstionRateEUR?: number;
+  conversionRateEUR?: number;
+  conversionRateUSD?: number;
 }
 
 export interface CryptoCurrencyValueHistoryToAdd {
   date: string;
-  converstionRateUSD?: number;
-  converstionRateEUR?: number;
+  conversionRateEUR?: number;
+  conversionRateUSD?: number;
 }
 
 export interface CryptoCurrencyValueHistoryToEdit {
   date: string;
-  converstionRateUSD?: number;
-  converstionRateEUR?: number;
+  conversionRateEUR?: number;
+  conversionRateUSD?: number;
 }
 
 export interface CryptoCurrencyWallet {

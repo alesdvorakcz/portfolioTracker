@@ -38,11 +38,16 @@ const editValueToHistory = async (
   return result.data;
 };
 
+const deleteValueFromHistory = async (currencyId: string, valueHistoryId: number) => {
+  await axios.delete(`${ROOT}CryptoCurrency/${currencyId}/History/${valueHistoryId}`);
+};
+
 const cryptoCurrencyClient = {
   getCryptoCurrencies,
   getCryptoCurrencyDetail,
   addValueToHistory,
   editValueToHistory,
+  deleteValueFromHistory,
 };
 
 export default cryptoCurrencyClient;

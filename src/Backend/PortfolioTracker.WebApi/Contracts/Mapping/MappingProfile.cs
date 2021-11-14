@@ -75,8 +75,8 @@ public class MappingProfile : Profile
         CreateMap<Database.Entity.CryptoCurrency, Result.CryptoCurrency>();
         CreateMap<Database.Entity.CryptoCurrency, Result.CryptoCurrencyDetail>()
             .ForMember(d => d.Date, opt => opt.Ignore())
-            .ForMember(d => d.ConverstionRateUSD, opt => opt.Ignore())
-            .ForMember(d => d.ConverstionRateEUR, opt => opt.Ignore())
+            .ForMember(d => d.ConversionRateUSD, opt => opt.Ignore())
+            .ForMember(d => d.ConversionRateEUR, opt => opt.Ignore())
             .ForMember(d => d.History, opt => opt.Ignore());
         CreateMap<Database.Entity.CryptoCurrencyValueHistory, Result.CryptoCurrencyValueHistory>();
 

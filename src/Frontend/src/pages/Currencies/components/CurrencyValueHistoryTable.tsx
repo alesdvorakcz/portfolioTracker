@@ -1,17 +1,23 @@
-import { Button, Table } from 'antd';
+import { Button, Space, Table } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import moment from 'moment';
 
 import { CurrencyDetail, CurrencyValueHistory } from '../../../api/models';
-import { Box, FlexRow } from '../../../components';
+import { Box, DeleteConfirm, FlexRow } from '../../../components';
 
 interface Props {
   currency: CurrencyDetail;
-  onEditClick: (item: CurrencyValueHistory) => void;
   onAddClick: () => void;
+  onEditClick: (item: CurrencyValueHistory) => void;
+  onDeleteClick: (item: CurrencyValueHistory) => Promise<void>;
 }
 
-const CurrencyValueHistoryTable: React.FC<Props> = ({ currency, onAddClick, onEditClick }) => {
+const CurrencyValueHistoryTable: React.FC<Props> = ({
+  currency,
+  onAddClick,
+  onEditClick,
+  onDeleteClick,
+}) => {
   const columns: ColumnType<CurrencyValueHistory>[] = [
     {
       title: 'Date',
@@ -31,7 +37,14 @@ const CurrencyValueHistoryTable: React.FC<Props> = ({ currency, onAddClick, onEd
     {
       title: '',
       key: 'action',
-      render: (_text, record) => <Button onClick={() => onEditClick(record)}>Edit</Button>,
+      render: (_text, record) => (
+        <Space>
+          <Button onClick={() => onEditClick(record)}>Edit</Button>
+          <DeleteConfirm onDelete={() => onDeleteClick(record)}>
+            <Button>Delete</Button>
+          </DeleteConfirm>
+        </Space>
+      ),
     },
   ];
 

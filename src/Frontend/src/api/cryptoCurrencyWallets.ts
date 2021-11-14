@@ -48,6 +48,10 @@ const editTrade = async (walletId: number, tradeId: number, trade: CryptoCurrenc
   return result.data;
 };
 
+const deleteTrade = async (walletId: number, tradeId: number) => {
+  await axios.delete(`${ROOT}CryptoCurrencyWallet/${walletId}/Trade/${tradeId}`);
+};
+
 const cryptoCurrencyWalletsClient = {
   getCryptoCurrencyWallets,
   getCryptoCurrencyWalletDetail,
@@ -56,6 +60,7 @@ const cryptoCurrencyWalletsClient = {
   deleteCryptoCurrencyWallet,
   addTrade,
   editTrade,
+  deleteTrade,
 };
 
 export default cryptoCurrencyWalletsClient;
