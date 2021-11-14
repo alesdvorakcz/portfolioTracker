@@ -107,6 +107,85 @@ export interface CurrencyValueHistoryToEdit {
   conversionRate: number;
 }
 
+export interface CryptoCurrency {
+  id: string;
+  name: string;
+}
+export interface CryptoCurrencyDetail {
+  id: string;
+  name: string;
+  date?: string;
+  converstionRateUSD?: number;
+  converstionRateEUR?: number;
+  history: CryptoCurrencyValueHistory[];
+}
+
+export interface CryptoCurrencyValueHistory {
+  id: number;
+  date: string;
+  converstionRateUSD?: number;
+  converstionRateEUR?: number;
+}
+
+export interface CryptoCurrencyValueHistoryToAdd {
+  date: string;
+  converstionRateUSD?: number;
+  converstionRateEUR?: number;
+}
+
+export interface CryptoCurrencyValueHistoryToEdit {
+  date: string;
+  converstionRateUSD?: number;
+  converstionRateEUR?: number;
+}
+
+export interface CryptoCurrencyWallet {
+  id: number;
+  name: string;
+  cryptoCurrencyId: string;
+}
+
+export interface CryptoCurrencyWalletDetail {
+  id: number;
+  name: string;
+  cryptoCurrencyId: string;
+  date?: string;
+  changeEUR?: number;
+  change?: number;
+  amountAfter?: number;
+  trades: CryptoCurrencyTrade[];
+}
+
+export interface CryptoCurrencyTrade {
+  id: number;
+  date: string;
+  changeEUR: number;
+  change: number;
+  amountAfter: number;
+}
+
+export interface CryptoCurrencyWalletToAdd {
+  name: string;
+  cryptoCurrencyId: string;
+}
+
+export interface CryptoCurrencyWalletToEdit {
+  name: string;
+}
+export interface CryptoCurrencyTradeToAdd {
+  date: string;
+  changeEUR: number;
+  change: number;
+  amountAfter: number;
+}
+
+export interface CryptoCurrencyTradeToEdit {
+  date: string;
+  changeEUR: number;
+  change: number;
+  amountAfter: number;
+}
+
 export interface GetDataForDashboardResult {
   totalTransactionsCZK?: number;
   totalValueCZK?: number;

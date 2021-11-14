@@ -12,7 +12,7 @@ namespace PortfolioTracker.WebApi.Database.Migrations
             migrationBuilder.InsertData("CryptoCurrencies", new[] { "Id", "Name" }, new[] { "ADA", "Cardano ADA" });
             migrationBuilder.InsertData("CryptoCurrencies", new[] { "Id", "Name" }, new[] { "NANO", "Nano" });
             migrationBuilder.InsertData("CryptoCurrencies", new[] { "Id", "Name" }, new[] { "NexoEur", "Nexo EUR" });
-            migrationBuilder.InsertData("CryptoCurrencies", new[] { "Id", "Name" }, new[] { "Nexo", "Cardano ADA" });
+            migrationBuilder.InsertData("CryptoCurrencies", new[] { "Id", "Name" }, new[] { "Nexo", "Nexo Token" });
             migrationBuilder.InsertData("CryptoCurrencies", new[] { "Id", "Name" }, new[] { "SOL", "Solana" });
             migrationBuilder.InsertData("CryptoCurrencies", new[] { "Id", "Name" }, new[] { "LRC", "Loopring" });
         }

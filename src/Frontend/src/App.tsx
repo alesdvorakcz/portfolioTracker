@@ -5,7 +5,17 @@ import { useState } from 'react';
 import { Route, Switch } from 'react-router-dom';
 
 import { Menu } from './components';
-import { AccountDetailPage, AccountsPage, CurrenciesPage, DashboardPage, EtfsPage } from './pages';
+import {
+  AccountDetailPage,
+  AccountsPage,
+  CryptoCurrenciesPage,
+  CryptoCurrencyDetailPage,
+  CryptoWalletsPage,
+  CurrenciesPage,
+  DashboardPage,
+  EtfsPage,
+} from './pages';
+import CryptoWalletDetailPage from './pages/CryptoWallets/CryptoWalletDetailPage';
 import CurrencyDetailPage from './pages/Currencies/CurrencyDetailPage';
 import EtfInstrumentDetailPage from './pages/Etfs/EtfInstrumentDetailPage';
 
@@ -60,6 +70,18 @@ function App() {
           </Route>
           <Route path="/currencies">
             <CurrenciesPage />
+          </Route>
+          <Route path="/cryptoCurrencies/:id">
+            <CryptoCurrencyDetailPage />
+          </Route>
+          <Route path="/cryptoCurrencies">
+            <CryptoCurrenciesPage />
+          </Route>
+          <Route path="/cryptoWallets/:id">
+            <CryptoWalletDetailPage />
+          </Route>
+          <Route path="/cryptoWallets">
+            <CryptoWalletsPage />
           </Route>
         </Switch>
         <Footer style={{ textAlign: 'center' }}>Footer text</Footer>
