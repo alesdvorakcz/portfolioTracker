@@ -16,7 +16,8 @@ public static class AlphavantageHelpers
 
     public static string GetEtfHistoryUrl(string symbol, string apiKey, bool full)
     {
-        return $"{ROOT_URL}?function=TIME_SERIES_DAILY_ADJUSTED&symbol={symbol}&outputsize={(full ? "full" : "compact")}&apikey={apiKey}";
+        //return $"{ROOT_URL}?function=TIME_SERIES_DAILY_ADJUSTED&symbol={symbol}&outputsize={(full ? "full" : "compact")}&apikey={apiKey}";
+        return $"{ROOT_URL}?function=TIME_SERIES_DAILY&symbol={symbol}&outputsize={(full ? "full" : "compact")}&apikey={apiKey}";
     }
 
     public static string GetCurrencyHistoryUrl(string currencyId, string apiKey, bool full)

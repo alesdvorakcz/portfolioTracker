@@ -52,10 +52,10 @@ public class EtfValueHistoryService
             var high = Convert.ToDecimal(item.Value.GetProperty("2. high").GetString());
             var low = Convert.ToDecimal(item.Value.GetProperty("3. low").GetString());
             var close = Convert.ToDecimal(item.Value.GetProperty("4. close").GetString());
-            var adjustedClose = Convert.ToDecimal(item.Value.GetProperty("5. adjusted close").GetString());
-            var volume = Convert.ToDecimal(item.Value.GetProperty("6. volume").GetString());
-            var dividendAmount = Convert.ToDecimal(item.Value.GetProperty("7. dividend amount").GetString());
-            var splitCoefficient = Convert.ToDecimal(item.Value.GetProperty("8. split coefficient").GetString());
+            // var adjustedClose = Convert.ToDecimal(item.Value.GetProperty("5. adjusted close").GetString());
+            var volume = Convert.ToDecimal(item.Value.GetProperty("5. volume").GetString());
+            // var dividendAmount = Convert.ToDecimal(item.Value.GetProperty("7. dividend amount").GetString());
+            // var splitCoefficient = Convert.ToDecimal(item.Value.GetProperty("8. split coefficient").GetString());
 
             values.Add(new EtfDailyValue
             {
@@ -64,10 +64,10 @@ public class EtfValueHistoryService
                 High = high,
                 Low = low,
                 Close = close,
-                AdjustedClose = adjustedClose,
+                // AdjustedClose = adjustedClose,
                 Volume = volume,
-                DividendAmount = dividendAmount,
-                SplitCoefficient = splitCoefficient
+                // DividendAmount = dividendAmount,
+                // SplitCoefficient = splitCoefficient
             });
         };
 

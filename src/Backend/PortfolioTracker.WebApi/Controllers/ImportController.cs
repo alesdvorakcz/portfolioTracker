@@ -133,7 +133,8 @@ public class ImportController : BaseController
                 historyValue = new Database.Entity.EtfInstrumentValueHistory
                 {
                     Date = day.Day,
-                    Value = day.AdjustedClose,
+                    // Value = day.AdjustedClose,
+                    Value = day.Close,
                     EtfInstrumentId = etfId
                 };
                 DbContext.EtfInstrumentValueHistory.Add(historyValue);
@@ -142,7 +143,8 @@ public class ImportController : BaseController
             {
                 if (rewrite)
                 {
-                    historyValue.Value = day.AdjustedClose;
+                    // historyValue.Value = day.AdjustedClose;
+                    historyValue.Value = day.Close;
                 }
             }
         }
