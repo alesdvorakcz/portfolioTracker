@@ -6,8 +6,6 @@ using PortfolioTracker.WebApi.Common;
 using PortfolioTracker.WebApi.Contracts.Input;
 using PortfolioTracker.WebApi.Contracts.Result;
 using PortfolioTracker.WebApi.Database;
-using PortfolioTracker.WebApi.Services;
-using PortfolioTracker.WebApi.Services.Alphavantage;
 
 namespace PortfolioTracker.WebApi.Controllers;
 
@@ -15,12 +13,8 @@ namespace PortfolioTracker.WebApi.Controllers;
 [Route("api/[controller]")]
 public class EtfInstrumentController : BaseController
 {
-    private readonly string loadEtfValueHistoryServiceApiKey;
-
-    public EtfInstrumentController(AppDbContext dbContext, IMapper mapper, IConfiguration configuration) : base(dbContext, mapper)
+    public EtfInstrumentController(AppDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
     {
-        var alphavantageConfig = configuration.GetSection("Alphavantage");
-        loadEtfValueHistoryServiceApiKey = alphavantageConfig.GetValue<string>("ApiKey");
     }
 
     [HttpGet]
