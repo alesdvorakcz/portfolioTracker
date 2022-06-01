@@ -1,4 +1,6 @@
 
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text.Json;
 using PortfolioTracker.WebApi.Common;
 using PortfolioTracker.WebApi.Services.Alphavantage.Models;

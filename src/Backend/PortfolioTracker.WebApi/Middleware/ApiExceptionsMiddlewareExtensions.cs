@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Logging;
+
 namespace PortfolioTracker.WebApi.Middleware;
 
 public static class ApiExceptionsMiddlewareExtensions

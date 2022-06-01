@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using PortfolioTracker.WebApi.Database;
 
 namespace PortfolioTracker.WebApi.Extensions;

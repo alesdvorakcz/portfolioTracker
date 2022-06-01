@@ -2,6 +2,7 @@ using System.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using PortfolioTracker.WebApi.Contracts.Input;
 using PortfolioTracker.WebApi.Database;
 using PortfolioTracker.WebApi.Services.Alphavantage;
