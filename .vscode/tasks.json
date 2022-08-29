@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/src/Backend/PortfolioTracker.WebApi/PortfolioTracker.WebApi.csproj",
+                "${workspaceFolder}/src/v2/Backend/PortfolioTracker.WebApi/PortfolioTracker.WebApi.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/src/Backend/PortfolioTracker.WebApi/PortfolioTracker.WebApi.csproj",
+                "${workspaceFolder}/src/v2/Backend/PortfolioTracker.WebApi/PortfolioTracker.WebApi.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -32,7 +32,7 @@
             "args": [
                 "watch",
                 "run",
-                "${workspaceFolder}/src/Backend/PortfolioTracker.WebApi/PortfolioTracker.WebApi.csproj",
+                "${workspaceFolder}/src/v2/Backend/PortfolioTracker.WebApi/PortfolioTracker.WebApi.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
