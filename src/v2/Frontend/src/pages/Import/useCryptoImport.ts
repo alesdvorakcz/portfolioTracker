@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from 'react-query';
 
 import apiClient from '../../api';
+import { cryptosQueryKeyBuilder } from '../Cryptos/queries';
 
 export const useCryptoImport = () => {
   const queryClient = useQueryClient();
@@ -11,7 +12,7 @@ export const useCryptoImport = () => {
 
   const onImport = async () => {
     await mutation.mutateAsync();
-    // queryClient.invalidateQueries(currenciesQueryKeyBuilder());
+    queryClient.invalidateQueries(cryptosQueryKeyBuilder());
     return { success: true, errors: {} };
   };
 

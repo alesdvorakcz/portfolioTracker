@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from 'react-query';
 
 import apiClient from '../../api';
+import { etfsQueryKeyBuilder } from '../Etfs/queries';
 
 export const useEtfImport = () => {
   const queryClient = useQueryClient();
@@ -11,7 +12,7 @@ export const useEtfImport = () => {
 
   const onImport = async () => {
     await mutation.mutateAsync();
-    // queryClient.invalidateQueries(currenciesQueryKeyBuilder());
+    queryClient.invalidateQueries(etfsQueryKeyBuilder());
     return { success: true, errors: {} };
   };
 

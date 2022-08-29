@@ -1,6 +1,10 @@
-import { Button } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
+import { Button, Divider, message, Space, Spin, Upload, UploadFile, UploadProps } from 'antd';
+import { RcFile } from 'antd/lib/upload';
+import { saveAs } from 'file-saver';
+import { useState } from 'react';
 
-import { FlexRow, PageWrapper } from '../../components';
+import { Box, LoadingIndicator, PageWrapper } from '../../components';
 import { useCryptoImport } from './useCryptoImport';
 import { useCurrencyImport } from './useCurrencyImport';
 import { useEtfImport } from './useEtfImport';
@@ -12,32 +16,112 @@ const ImportPage: React.FC<Props> = () => {
   const cryptoImport = useCryptoImport();
   const etfImport = useEtfImport();
 
+  const [file, setFile] = useState<UploadFile | undefined>();
+  const [uploading, setUploading] = useState(false);
+
+  const handleUploadTrades = async () => {
+    const formData = new FormData();
+    formData.append('file', file as RcFile);
+
+    setUploading(true);
+
+    try {
+      const result = await fetch('http://localhost:3000/api/upload/trades', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const json = await result.json();
+
+      console.log(json);
+      //TODO: save this to context?
+
+      message.success('file uploaded sucessfully!');
+      setFile(undefined);
+    } catch {
+      message.error('upload failed!');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleUploadAndExport = async () => {
+    const formData = new FormData();
+    formData.append('file', file as RcFile);
+
+    setUploading(true);
+
+    try {
+      const result = await fetch('http://localhost:3000/api/upload/export', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const blob = await result.blob();
+
+      saveAs(blob, 'out.xlsx');
+      setFile(undefined);
+    } catch {
+      message.error('upload failed!');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const uploadProps: UploadProps = {
+    fileList: file ? [file] : undefined,
+    onRemove: () => {
+      setFile(undefined);
+    },
+    beforeUpload: (file) => {
+      setFile(file);
+      return false;
+    },
+  };
+
   return (
     <PageWrapper title="Import">
-      <Button
-        type="primary"
-        style={{ margin: 10 }}
-        onClick={() => currencyImport.onImport()}
-        loading={currencyImport.isLoading}
-      >
-        Import Currencies
-      </Button>
-      <Button
-        type="primary"
-        style={{ margin: 10 }}
-        onClick={() => etfImport.onImport()}
-        loading={etfImport.isLoading}
-      >
-        Import Etfs
-      </Button>
-      <Button
-        type="primary"
-        style={{ margin: 10 }}
-        onClick={() => cryptoImport.onImport()}
-        loading={cryptoImport.isLoading}
-      >
-        Import Cryptos
-      </Button>
+      <Box>
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => currencyImport.onImport()}
+            loading={currencyImport.isLoading}
+          >
+            Import Currencies
+          </Button>
+          <Button type="primary" onClick={() => etfImport.onImport()} loading={etfImport.isLoading}>
+            Import Etfs
+          </Button>
+          <Button
+            type="primary"
+            onClick={() => cryptoImport.onImport()}
+            loading={cryptoImport.isLoading}
+          >
+            Import Cryptos
+          </Button>
+        </Space>
+      </Box>
+      <Box>
+        {uploading ? (
+          <Spin />
+        ) : (
+          <>
+            <Upload {...uploadProps}>
+              <Button icon={<UploadOutlined />}>Select a File</Button>
+            </Upload>
+            <Divider />
+            <Space>
+              <Button icon={<UploadOutlined />} disabled={!file} onClick={handleUploadTrades}>
+                Upload Trades
+              </Button>
+              <Button icon={<UploadOutlined />} disabled={!file} onClick={handleUploadAndExport}>
+                Upload &amp; Export
+              </Button>
+            </Space>
+          </>
+        )}
+      </Box>
     </PageWrapper>
   );
 };

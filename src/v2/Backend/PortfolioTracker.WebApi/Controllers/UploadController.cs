@@ -1,6 +1,9 @@
 using AutoMapper;
+using ClosedXML.Excel;
 using Microsoft.AspNetCore.Mvc;
+using PortfolioTracker.WebApi.Common;
 using PortfolioTracker.WebApi.Database;
+using PortfolioTracker.WebApi.Excel.Models;
 
 namespace PortfolioTracker.WebApi.Controllers;
 
@@ -13,24 +16,31 @@ public class UploadController : BaseController
     }
 
     [HttpPost("trades")]
-    [ProducesResponseType(204)]
-    public async Task<IActionResult> Trades()
+    [ProducesResponseType(200)]
+    public async Task<IActionResult> Trades(IFormFile file)
     {
-        await Task.Delay(10);
+        using var excel = new XLWorkbook(file.OpenReadStream());
+
+        var etfWs = excel.Worksheet("Etfs");
+        var etfTrades = etfWs.Table("EtfTrades").DataRange.Rows().Select(row => new EtfTrade
+        {
+            Date = row.Field("Date").GetDateTime(),
+            Ticker = row.Field("Ticker").GetString(),
+            UnitsChange = row.Field("Units Change").GetValue<int>(),
+            UnitPrice = row.Field("Unit Price").GetValue<decimal>(),
+            Fee = row.Field("Fee").GetValue<decimal>()
+        }).ToList();
 
         //TODO: load excel, return json with data to client app
 
-        return NoContent();
+        return Ok(new { Trades = etfTrades });
     }
 
     [HttpPost("export")]
     [ProducesResponseType(204)]
-    public async Task<IActionResult> Export()
+    public async Task<IActionResult> Export(IFormFile file)
     {
-        await Task.Delay(10);
-
-        //TODO: load excel, return new excel?
-
-        return NoContent();
+        var excel = new XLWorkbook(file.OpenReadStream());
+        return new ExcelResult(excel, "out.xlsx");
     }
 }

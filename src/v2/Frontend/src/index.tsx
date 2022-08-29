@@ -4,7 +4,7 @@ import 'moment/locale/cs';
 import { ConfigProvider } from 'antd';
 import csLocale from 'antd/lib/locale/cs_CZ';
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -14,7 +14,10 @@ import reportWebVitals from './reportWebVitals';
 
 const queryClient = new QueryClient();
 
-ReactDOM.render(
+const container = document.getElementById('root');
+const root = createRoot(container!);
+
+root.render(
   <React.StrictMode>
     <ConfigProvider locale={csLocale}>
       <Router>
@@ -24,8 +27,7 @@ ReactDOM.render(
         </QueryClientProvider>
       </Router>
     </ConfigProvider>
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function
