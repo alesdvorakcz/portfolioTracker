@@ -1,10 +1,11 @@
-import { UploadOutlined } from '@ant-design/icons';
+import { DeleteOutlined, ExportOutlined, UploadOutlined } from '@ant-design/icons';
 import { Button, Divider, message, Space, Spin, Upload, UploadFile, UploadProps } from 'antd';
 import { RcFile } from 'antd/lib/upload';
 import { saveAs } from 'file-saver';
 import { useState } from 'react';
 
-import { Box, LoadingIndicator, PageWrapper } from '../../components';
+import { Box, PageWrapper } from '../../components';
+import { useTradesContext } from '../../tradesContext';
 import { useCryptoImport } from './useCryptoImport';
 import { useCurrencyImport } from './useCurrencyImport';
 import { useEtfImport } from './useEtfImport';
@@ -15,6 +16,7 @@ const ImportPage: React.FC<Props> = () => {
   const currencyImport = useCurrencyImport();
   const cryptoImport = useCryptoImport();
   const etfImport = useEtfImport();
+  const { tradesData, setTradesData, clearData } = useTradesContext();
 
   const [file, setFile] = useState<UploadFile | undefined>();
   const [uploading, setUploading] = useState(false);
@@ -32,9 +34,7 @@ const ImportPage: React.FC<Props> = () => {
       });
 
       const json = await result.json();
-
-      console.log(json);
-      //TODO: save this to context?
+      setTradesData(json);
 
       message.success('file uploaded sucessfully!');
       setFile(undefined);
@@ -112,15 +112,36 @@ const ImportPage: React.FC<Props> = () => {
             </Upload>
             <Divider />
             <Space>
-              <Button icon={<UploadOutlined />} disabled={!file} onClick={handleUploadTrades}>
+              <Button
+                icon={<UploadOutlined />}
+                disabled={!file}
+                type="primary"
+                onClick={handleUploadTrades}
+              >
                 Upload Trades
               </Button>
-              <Button icon={<UploadOutlined />} disabled={!file} onClick={handleUploadAndExport}>
+              <Button icon={<ExportOutlined />} disabled={!file} onClick={handleUploadAndExport}>
                 Upload &amp; Export
+              </Button>
+              <Button
+                icon={<DeleteOutlined />}
+                onClick={clearData}
+                type="dashed"
+                danger
+                disabled={tradesData.trades.length === 0}
+              >
+                Clear data
               </Button>
             </Space>
           </>
         )}
+      </Box>
+      <Box>
+        {tradesData.trades.map((x) => (
+          <div>
+            {x.date} - {x.ticker}
+          </div>
+        ))}
       </Box>
     </PageWrapper>
   );

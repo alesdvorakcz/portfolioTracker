@@ -11,6 +11,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { TradesContextProvider } from './tradesContext';
 
 const queryClient = new QueryClient();
 
@@ -20,12 +21,14 @@ const root = createRoot(container!);
 root.render(
   <React.StrictMode>
     <ConfigProvider locale={csLocale}>
-      <Router>
-        <QueryClientProvider client={queryClient}>
-          <App />
-          <ReactQueryDevtools initialIsOpen={false} />
-        </QueryClientProvider>
-      </Router>
+      <TradesContextProvider>
+        <Router>
+          <QueryClientProvider client={queryClient}>
+            <App />
+            <ReactQueryDevtools initialIsOpen={false} />
+          </QueryClientProvider>
+        </Router>
+      </TradesContextProvider>
     </ConfigProvider>
   </React.StrictMode>
 );
