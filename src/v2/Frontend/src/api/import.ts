@@ -2,6 +2,10 @@ import axios from 'axios';
 
 import { ROOT } from './config';
 
+const all = async () => {
+  await axios.post(`${ROOT}import/all`);
+};
+
 const currencies = async () => {
   await axios.post(`${ROOT}import/currencies`);
 };
@@ -14,6 +18,6 @@ const cryptos = async () => {
   await axios.post(`${ROOT}import/cryptos`);
 };
 
-const importClient = { currencies, etfs, cryptos };
+const importClient = { currencies, etfs, cryptos, all };
 
 export default importClient;

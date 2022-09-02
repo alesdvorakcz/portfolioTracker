@@ -15,13 +15,47 @@ public class ImportController : BaseController
     private readonly string apiKey1;
     private readonly string apiKey2;
     private readonly string apiKey3;
+    private readonly ILoggerFactory loggerFactory;
 
-    public ImportController(AppDbContext dbContext, IMapper mapper, IConfiguration configuration) : base(dbContext, mapper)
+    public ImportController(AppDbContext dbContext, IMapper mapper, IConfiguration configuration,
+        ILoggerFactory loggerFactory) : base(dbContext, mapper)
     {
         var alphavantageConfig = configuration.GetSection("Alphavantage");
         apiKey1 = alphavantageConfig.GetValue<string>("ApiKey1");
         apiKey2 = alphavantageConfig.GetValue<string>("ApiKey2");
         apiKey3 = alphavantageConfig.GetValue<string>("ApiKey3");
+        this.loggerFactory = loggerFactory;
+    }
+
+    [HttpPost("all")]
+    [ProducesResponseType(204)]
+    public async Task<IActionResult> ImportAll()
+    {
+        await ImportCurrency("CZK", false, false, "");
+        await ImportCurrency("EUR", false, false, apiKey1);
+        await ImportCurrency("USD", false, false, apiKey1);
+
+        await ImportEtf(2, "IE00BK5BQT80", false, false, apiKey2);
+        await ImportEtf(3, "IE00B4L5Y983", false, false, apiKey2);
+
+        await ImportCrypto(1, "bitcoin", "eur", false, false);
+        await ImportCrypto(2, "ethereum", "eur", false, false);
+        await ImportCrypto(3, "cardano", "eur", false, false);
+        await ImportCrypto(4, "litecoin", "eur", false, false);
+        await ImportCrypto(5, "solana", "eur", false, false);
+        await ImportCrypto(6, "nano", "eur", false, false);
+        await ImportCrypto(7, "nexo", "eur", false, false);
+        await ImportCrypto(8, "loopring", "eur", false, false);
+        //TODO: import nexoEUR (fake history)
+
+        await Task.Delay(1000 * 60); //wait 60seconds
+
+        await ImportEtf(4, "IE00B4L5YC18", false, false, apiKey2);
+        await ImportEtf(5, "IE00B1XNHC34", false, false, apiKey3);
+        await ImportEtf(6, "IE00BSPLC298", false, false, apiKey3);
+        await ImportEtf(7, "IE00BSPLC413", false, false, apiKey3);
+
+        return NoContent();
     }
 
     [HttpPost("currencies")]
@@ -37,7 +71,7 @@ public class ImportController : BaseController
 
     private async Task ImportCurrency(string currencyId, bool full, bool rewrite, string apiKey)
     {
-        var currencyValueHistoryService = new CurrencyValueHistoryService(apiKey);
+        var currencyValueHistoryService = new CurrencyValueHistoryService(apiKey, loggerFactory.CreateLogger<CurrencyValueHistoryService>());
         var minimumDate = AlphavantageHelpers.GetMinimumDate(full);
 
         if (!AlphavantageHelpers.IsSupportedCurrency(currencyId))
@@ -51,7 +85,7 @@ public class ImportController : BaseController
 
         foreach (var day in result)
         {
-            var historyValue = valueHistory.FirstOrDefault(x => x.Date == day.Day);
+            var historyValue = valueHistory.FirstOrDefault(x => x.Date.ToString("yyyyMMdd") == day.Day.ToString("yyyyMMdd"));
             if (historyValue == null)
             {
                 historyValue = new Database.Entity.CurrencyValueHistory
@@ -90,7 +124,7 @@ public class ImportController : BaseController
 
     private async Task ImportEtf(int etfId, string isin, bool full, bool rewrite, string apiKey)
     {
-        var etfValueHistoryService = new EtfValueHistoryService(apiKey);
+        var etfValueHistoryService = new EtfValueHistoryService(apiKey, loggerFactory.CreateLogger<EtfValueHistoryService>());
         var minimumDate = AlphavantageHelpers.GetMinimumDate(full);
 
         if (!AlphavantageHelpers.IsSupportedIsin(isin))
@@ -104,7 +138,7 @@ public class ImportController : BaseController
 
         foreach (var day in result)
         {
-            var historyValue = valueHistory.FirstOrDefault(x => x.Date == day.Day);
+            var historyValue = valueHistory.FirstOrDefault(x => x.Date.ToString("yyyyMMdd") == day.Day.ToString("yyyyMMdd"));
             if (historyValue == null)
             {
                 historyValue = new Database.Entity.EtfValueHistory
@@ -139,13 +173,14 @@ public class ImportController : BaseController
         await ImportCrypto(6, "nano", "eur", false, false);
         await ImportCrypto(7, "nexo", "eur", false, false);
         await ImportCrypto(8, "loopring", "eur", false, false);
+        //TODO: import nexoEUR (fake history)
 
         return NoContent();
     }
 
-    private async Task ImportCrypto(int cryptoId, string ticker, string currencyId, bool full, bool rewrite)
+    private async Task ImportCrypto(int cryptoId, string coingeckoTicker, string currencyId, bool full, bool rewrite)
     {
-        var cryptoValueHistoryService = new CryptoValueHistoryService();
+        var cryptoValueHistoryService = new CryptoValueHistoryService(loggerFactory.CreateLogger<CryptoValueHistoryService>());
 
         var minimumDate = CoinGeckoHelpers.GetMinimumDate(full);
 
@@ -158,16 +193,16 @@ public class ImportController : BaseController
         if (full)
         {
             var toDate = DateTime.UtcNow.Date;
-            result = await cryptoValueHistoryService.LoadHistory(ticker, currencyId, minimumDate, toDate);
+            result = await cryptoValueHistoryService.LoadHistory(coingeckoTicker, currencyId, minimumDate, toDate);
         }
         else
         {
-            result = await cryptoValueHistoryService.LoadHistory(ticker, currencyId);
+            result = await cryptoValueHistoryService.LoadHistory(coingeckoTicker, currencyId);
         }
 
         foreach (var day in result)
         {
-            var historyValue = valueHistory.FirstOrDefault(x => x.Date == day.Day);
+            var historyValue = valueHistory.FirstOrDefault(x => x.Date.ToString("yyyyMMdd") == day.Day.ToString("yyyyMMdd"));
             if (historyValue == null)
             {
                 historyValue = new Database.Entity.CryptoValueHistory

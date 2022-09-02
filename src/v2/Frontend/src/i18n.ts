@@ -8,6 +8,13 @@ export const toCurrencyFormat = (x?: number | string | Date, currencyId?: string
   });
 };
 
-export const toNumberFormat = (x: number) => {
-  return x.toLocaleString(DEFAULT_LOCALE);
+export const toNumberFormat = (x?: number | string) => {
+  return x?.toLocaleString(DEFAULT_LOCALE);
+};
+
+export const toPercentFormat = (x?: number) => {
+  return x?.toLocaleString(DEFAULT_LOCALE, {
+    style: 'percent',
+    minimumFractionDigits: 2,
+  });
 };

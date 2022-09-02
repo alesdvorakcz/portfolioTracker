@@ -1,13 +1,21 @@
 import React, { PropsWithChildren, useState } from 'react';
 
-interface TradesState {
-  trades: {
-    date: string;
-    ticker: string;
-    unitsChange: number;
-    unitPrice: number;
-    fee: number;
-  }[];
+import { EtfDetailWithTrades } from '../api/models';
+
+export interface TradesState {
+  etfData: EtfData;
+  netWorth: NetWorth;
+}
+
+export interface EtfData {
+  etfs: EtfDetailWithTrades[];
+  totalValueCZK: number;
+  totalTransactionsCZK: number;
+}
+
+export interface NetWorth {
+  totalValueCZK: number;
+  totalTransactionsCZK: number;
 }
 
 interface TradesContextValue {
@@ -17,7 +25,15 @@ interface TradesContextValue {
 }
 
 const defaultValue: TradesState = {
-  trades: [],
+  etfData: {
+    etfs: [],
+    totalTransactionsCZK: 0,
+    totalValueCZK: 0,
+  },
+  netWorth: {
+    totalTransactionsCZK: 0,
+    totalValueCZK: 0,
+  },
 };
 
 const TradesContext = React.createContext<TradesContextValue | undefined>(undefined);

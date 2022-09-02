@@ -6,10 +6,12 @@ namespace PortfolioTracker.WebApi.Services.Alphavantage;
 public class CurrencyValueHistoryService
 {
     private readonly string apiKey;
+    private readonly ILogger<CurrencyValueHistoryService> logger;
 
-    public CurrencyValueHistoryService(string apiKey)
+    public CurrencyValueHistoryService(string apiKey, ILogger<CurrencyValueHistoryService> logger)
     {
         this.apiKey = apiKey;
+        this.logger = logger;
     }
 
     public async Task<IEnumerable<CurrencyDailyValue>> LoadHistory(string currencyId, bool full)
@@ -21,6 +23,8 @@ public class CurrencyValueHistoryService
 
         var values = new List<CurrencyDailyValue>();
 
+        logger.LogInformation("Calling Alphavantage API to get currency '{currencyId}' info with API KEY '{apiKey}'", currencyId, apiKey);
+
         var response = await httpClient.GetFromJsonAsync<JsonDocument>(AlphavantageHelpers.GetCurrencyHistoryUrl(currencyId, apiKey, full));
 
         var array = response!.RootElement.GetProperty("Time Series FX (Daily)");
@@ -28,7 +32,7 @@ public class CurrencyValueHistoryService
         var dates = GetListOfDates(AlphavantageHelpers.GetMinimumDate(full), DateTime.UtcNow.Date);
         var lastValue = new CurrencyDailyValue
         {
-            Day = AlphavantageHelpers.GetMinimumDate(full),
+            Day = DateTime.MinValue,
             Open = 0,
             High = 0,
             Low = 0,
@@ -59,7 +63,7 @@ public class CurrencyValueHistoryService
                 values.Add(value);
                 lastValue = value;
             }
-            else
+            else if (lastValue.Day != DateTime.MinValue)
             {
                 var value = new CurrencyDailyValue
                 {

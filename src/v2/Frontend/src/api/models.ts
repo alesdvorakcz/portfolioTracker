@@ -16,14 +16,14 @@ export interface CurrencyValueHistory {
 }
 
 export interface Crypto {
-  id: string;
+  id: number;
   ticker: string;
   name: string;
   currencyId: string;
 }
 
 export interface CryptoDetail {
-  id: string;
+  id: number;
   ticker: string;
   name: string;
   currencyId: string;
@@ -37,14 +37,14 @@ export interface CryptoValueHistory {
 }
 
 export interface Etf {
-  id: string;
+  id: number;
   ticker: string;
   name: string;
   isin: string;
   currencyId: string;
 }
 export interface EtfDetail {
-  id: string;
+  id: number;
   ticker: string;
   name: string;
   isin: string;
@@ -56,4 +56,37 @@ export interface EtfValueHistory {
   id: number;
   date: string;
   value: number;
+}
+
+export interface EtfDetailWithTrades {
+  id: number;
+  ticker: string;
+  name: string;
+  isin: string;
+  currencyId: string;
+  value: number;
+  valueCZK?: number;
+  unitsTotal: number;
+  cumulativeTransactions: number;
+  cumulativeTransactionsCZK?: number;
+  history: EtfValueHistoryEnhanced[];
+}
+
+export interface EtfValueHistoryEnhanced {
+  id: number;
+  date: string;
+  currencyId: string;
+  conversionRate?: number;
+  valueBefore?: number;
+  valueBeforeCZK?: number;
+  unitsChange: number;
+  unitsTotal: number;
+  unitPrice: number;
+  fee: number;
+  transaction: number;
+  transactionCZK?: number;
+  valueAfter: number;
+  valueAfterCZK?: number;
+  cumulativeTransactions: number;
+  cumulativeTransactionsCZK?: number;
 }

@@ -10,8 +10,8 @@ import { ReactQueryDevtools } from 'react-query/devtools';
 import { BrowserRouter as Router } from 'react-router-dom';
 
 import App from './App';
+import { TradesContextProvider } from './contexts/tradesContext';
 import reportWebVitals from './reportWebVitals';
-import { TradesContextProvider } from './tradesContext';
 
 const queryClient = new QueryClient();
 

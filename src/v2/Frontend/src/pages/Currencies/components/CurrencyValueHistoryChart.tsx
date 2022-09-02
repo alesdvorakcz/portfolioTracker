@@ -11,10 +11,13 @@ interface Props {
 }
 
 const CurrencyValueHistoryChart: React.FC<Props> = ({ currency }) => {
+  const limit = moment().add(-2, 'year'); //TODO: make this dynamic
+  var history = currency.history.filter((x) => moment.utc(x.date).isAfter(limit));
+
   const data: Serie[] = [
     {
       id: 'value',
-      data: currency.history.map((item) => ({
+      data: history.map((item) => ({
         x: moment.utc(item.date).format('YYYY-MM-DD'),
         y: item.conversionRate,
       })),

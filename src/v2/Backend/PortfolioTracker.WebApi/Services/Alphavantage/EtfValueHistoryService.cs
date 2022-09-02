@@ -7,10 +7,12 @@ namespace PortfolioTracker.WebApi.Services.Alphavantage;
 public class EtfValueHistoryService
 {
     private readonly string apiKey;
+    private readonly ILogger<EtfValueHistoryService> logger;
 
-    public EtfValueHistoryService(string apiKey)
+    public EtfValueHistoryService(string apiKey, ILogger<EtfValueHistoryService> logger)
     {
         this.apiKey = apiKey;
+        this.logger = logger;
     }
 
     public async Task<IEnumerable<EtfDailyValue>> LoadHistory(string isin, bool full)
@@ -20,6 +22,8 @@ public class EtfValueHistoryService
         var values = new List<EtfDailyValue>();
 
         var symbol = AlphavantageHelpers.GetTickerFromIsin(isin);
+
+        logger.LogInformation("Calling Alphavantage API to get ETF '{isin}' info with API KEY '{apiKey}'", isin, apiKey);
 
         var url = AlphavantageHelpers.GetEtfHistoryUrl(symbol, apiKey, full);
         var response = await httpClient.GetAsync(url);
@@ -45,7 +49,7 @@ public class EtfValueHistoryService
         var dates = GetListOfDates(AlphavantageHelpers.GetMinimumDate(full), DateTime.UtcNow.Date);
         var lastValue = new EtfDailyValue
         {
-            Day = AlphavantageHelpers.GetMinimumDate(full),
+            Day = DateTime.MinValue,
             Open = 0,
             High = 0,
             Low = 0,
@@ -79,7 +83,7 @@ public class EtfValueHistoryService
                 values.Add(value);
                 lastValue = value;
             }
-            else
+            else if (lastValue.Day != DateTime.MinValue)
             {
                 var value = new EtfDailyValue
                 {

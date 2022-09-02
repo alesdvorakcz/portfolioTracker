@@ -6,6 +6,13 @@ namespace PortfolioTracker.WebApi.Services.CoinGecko;
 
 public class CryptoValueHistoryService
 {
+    private readonly ILogger<CryptoValueHistoryService> logger;
+
+    public CryptoValueHistoryService(ILogger<CryptoValueHistoryService> logger)
+    {
+        this.logger = logger;
+    }
+
     private static string GetUnixTimestampFromDateTime(DateTime date)
     {
         return ((DateTimeOffset)date).ToUnixTimeSeconds().ToString();
@@ -59,6 +66,8 @@ public class CryptoValueHistoryService
         var url = string.Format("https://api.coingecko.com/api/v3/coins/{0}/market_chart/range?vs_currency={1}&from={2}&to={3}",
             ticker, currency, GetUnixTimestampFromDateTime(from), GetUnixTimestampFromDateTime(to));
 
+        logger.LogInformation("Calling CoinGecko API to get crypto '{ticker}' info", ticker);
+
         var response = await httpClient.GetAsync(url);
 
         if (!response.IsSuccessStatusCode)
@@ -81,6 +90,8 @@ public class CryptoValueHistoryService
 
         var url = string.Format("https://api.coingecko.com/api/v3/coins/{0}/market_chart?vs_currency={1}&days={2}",
             ticker, currency, days);
+
+        logger.LogInformation("Calling CoinGecko API to get crypto '{ticker}' info", ticker);
 
         var response = await httpClient.GetAsync(url);
 

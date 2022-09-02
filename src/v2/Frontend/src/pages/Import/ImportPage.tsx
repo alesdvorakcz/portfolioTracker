@@ -5,10 +5,11 @@ import { saveAs } from 'file-saver';
 import { useState } from 'react';
 
 import { Box, PageWrapper } from '../../components';
-import { useTradesContext } from '../../tradesContext';
+import { useTradesContext } from '../../contexts/tradesContext';
 import { useCryptoImport } from './useCryptoImport';
 import { useCurrencyImport } from './useCurrencyImport';
 import { useEtfImport } from './useEtfImport';
+import { useImportAll } from './useImportAll';
 
 interface Props {}
 
@@ -16,6 +17,7 @@ const ImportPage: React.FC<Props> = () => {
   const currencyImport = useCurrencyImport();
   const cryptoImport = useCryptoImport();
   const etfImport = useEtfImport();
+  const importAll = useImportAll();
   const { tradesData, setTradesData, clearData } = useTradesContext();
 
   const [file, setFile] = useState<UploadFile | undefined>();
@@ -100,6 +102,9 @@ const ImportPage: React.FC<Props> = () => {
           >
             Import Cryptos
           </Button>
+          <Button type="primary" onClick={() => importAll.onImport()} loading={importAll.isLoading}>
+            Import All
+          </Button>
         </Space>
       </Box>
       <Box>
@@ -128,7 +133,7 @@ const ImportPage: React.FC<Props> = () => {
                 onClick={clearData}
                 type="dashed"
                 danger
-                disabled={tradesData.trades.length === 0}
+                disabled={tradesData.etfData.etfs.length === 0}
               >
                 Clear data
               </Button>
@@ -137,9 +142,9 @@ const ImportPage: React.FC<Props> = () => {
         )}
       </Box>
       <Box>
-        {tradesData.trades.map((x) => (
+        {tradesData.etfData.etfs.map((x) => (
           <div>
-            {x.date} - {x.ticker}
+            {x.name} - {x.valueCZK}
           </div>
         ))}
       </Box>
