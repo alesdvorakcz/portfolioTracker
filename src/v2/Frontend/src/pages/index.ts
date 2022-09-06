@@ -1,5 +1,8 @@
+export { default as AccountDetailPage } from './Accounts/AccountDetailPage';
+export { default as AccountsPage } from './Accounts/AccountsPage';
 export { default as CryptoDetailPage } from './Cryptos/CryptoDetailPage';
 export { default as CryptosPage } from './Cryptos/CryptosPage';
+export { default as CryptoWalletDetailPage } from './Cryptos/CryptoWalletDetailPage';
 export { default as CurrenciesPage } from './Currencies/CurrenciesPage';
 export { default as CurrencyDetailPage } from './Currencies/CurrencyDetailPage';
 export { default as DashboardPage } from './Dashboard/DashboardPage';

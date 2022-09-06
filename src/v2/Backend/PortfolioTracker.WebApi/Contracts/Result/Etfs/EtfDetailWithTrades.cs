@@ -13,7 +13,7 @@ public class EtfDetailWithTrades
     public decimal? ValueCZK { get; set; }
     public int UnitsTotal { get; set; }
     public decimal CumulativeTransactions { get; set; }
-    public decimal? CumulativeTransactionsCZK { get; set; }
+    public decimal CumulativeTransactionsCZK { get; set; }
 
     public IEnumerable<EtfValueHistoryEnhanced> History { get; set; } = Array.Empty<EtfValueHistoryEnhanced>();
 }

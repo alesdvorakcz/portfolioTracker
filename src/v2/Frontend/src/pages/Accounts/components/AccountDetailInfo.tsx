@@ -1,19 +1,19 @@
 import { ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
 import { Col, Row, Statistic } from 'antd';
 
-import { EtfDetailWithTrades } from '../../../api/models';
+import { Account } from '../../../api/models';
 import { Box } from '../../../components';
-import { toCurrencyFormat, toNumberFormat, toPercentFormat } from '../../../i18n';
+import { toCurrencyFormat, toPercentFormat } from '../../../i18n';
 
 interface Props {
-  etf: EtfDetailWithTrades;
+  account: Account;
 }
 
-const EtfDetailInfo: React.FC<Props> = ({ etf }) => {
-  const gain = etf.value / etf.cumulativeTransactions - 1;
+const AccountDetailInfo: React.FC<Props> = ({ account }) => {
+  const gain = account.value / account.cumulativeTransactions - 1;
   const gainCZK =
-    etf.valueCZK && etf.cumulativeTransactionsCZK
-      ? etf.valueCZK / etf.cumulativeTransactionsCZK - 1
+    account.valueCZK && account.cumulativeTransactionsCZK
+      ? account.valueCZK / account.cumulativeTransactionsCZK - 1
       : undefined;
 
   const isGainPositive = gain && gain > 0;
@@ -23,7 +23,7 @@ const EtfDetailInfo: React.FC<Props> = ({ etf }) => {
     <Box>
       <Row>
         <Col xs={24} md={8}>
-          <Statistic title="Value" value={toCurrencyFormat(etf.valueCZK)} />
+          <Statistic title="Value" value={toCurrencyFormat(account.valueCZK)} />
         </Col>
         <Col xs={12} md={6}>
           {!isNaN(gain) && (
@@ -35,19 +35,16 @@ const EtfDetailInfo: React.FC<Props> = ({ etf }) => {
             />
           )}
         </Col>
-        <Col xs={12} md={3}>
-          <Statistic title="Total Amount" value={toNumberFormat(etf.unitsTotal)} />
-        </Col>
         <Col xs={12} md={7} style={{ textAlign: 'right' }}>
           <Statistic
             title="Total Transactions"
-            value={toCurrencyFormat(etf.cumulativeTransactionsCZK)}
+            value={toCurrencyFormat(account.cumulativeTransactionsCZK)}
           />
         </Col>
       </Row>
       <Row>
         <Col xs={24} md={8}>
-          <Statistic title="Value" value={toCurrencyFormat(etf.value, etf.currencyId)} />
+          <Statistic title="Value" value={toCurrencyFormat(account.value, account.currencyId)} />
         </Col>
         <Col xs={12} md={6}>
           {!isNaN(gain) && (
@@ -59,20 +56,10 @@ const EtfDetailInfo: React.FC<Props> = ({ etf }) => {
             />
           )}
         </Col>
-        <Col xs={12} md={3}>
-          <Statistic
-            title="Unit Price"
-            value={
-              etf.history.length > 0
-                ? toCurrencyFormat(etf.history[0].unitPrice, etf.currencyId)
-                : undefined
-            }
-          />
-        </Col>
         <Col xs={12} md={7} style={{ textAlign: 'right' }}>
           <Statistic
             title="Transactions"
-            value={toCurrencyFormat(etf.cumulativeTransactions, etf.currencyId)}
+            value={toCurrencyFormat(account.cumulativeTransactions, account.currencyId)}
           />
         </Col>
       </Row>
@@ -80,4 +67,4 @@ const EtfDetailInfo: React.FC<Props> = ({ etf }) => {
   );
 };
 
-export default EtfDetailInfo;
+export default AccountDetailInfo;

@@ -2,6 +2,7 @@ namespace PortfolioTracker.WebApi.Contracts.Result;
 
 public class CryptoWallet
 {
+    public string Id { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public Crypto Crypto { get; set; } = new Crypto();
     public IEnumerable<CryptoWalletTrade> History { get; set; } = Array.Empty<CryptoWalletTrade>();

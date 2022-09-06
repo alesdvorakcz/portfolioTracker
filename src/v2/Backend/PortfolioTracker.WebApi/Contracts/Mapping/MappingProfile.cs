@@ -6,7 +6,8 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        CreateMap<Database.Entity.Currency, Result.Currency>();
+        CreateMap<Database.Entity.Currency, Result.Currency>()
+            .ForMember(d => d.LastValue, opt => opt.Ignore());
         CreateMap<Database.Entity.Currency, Result.CurrencyDetail>()
             .ForMember(d => d.History, opt => opt.Ignore());
 
@@ -14,7 +15,8 @@ public class MappingProfile : Profile
         CreateMap<Database.Entity.Etf, Result.EtfDetail>()
             .ForMember(d => d.History, opt => opt.Ignore());
 
-        CreateMap<Database.Entity.Crypto, Result.Crypto>();
+        CreateMap<Database.Entity.Crypto, Result.Crypto>()
+            .ForMember(d => d.LastValue, opt => opt.Ignore());
         CreateMap<Database.Entity.Crypto, Result.CryptoDetail>()
             .ForMember(d => d.History, opt => opt.Ignore());
 

@@ -27,8 +27,8 @@ const EtfValueHistoryTable: React.FC<Props> = ({ etf, etfWithTrades }) => {
       },
       {
         title: 'Value',
-        dataIndex: 'valueAfter',
-        key: 'valueAfter',
+        dataIndex: 'unitPrice',
+        key: 'unitPrice',
         align: 'right',
         render: (text: string) => <div>{toCurrencyFormat(text, etf.currencyId)}</div>,
       },

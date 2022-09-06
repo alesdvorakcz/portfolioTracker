@@ -6,8 +6,11 @@ import { Route, Routes } from 'react-router-dom';
 
 import { Menu } from './components';
 import {
+  AccountDetailPage,
+  AccountsPage,
   CryptoDetailPage,
   CryptosPage,
+  CryptoWalletDetailPage,
   CurrenciesPage,
   CurrencyDetailPage,
   DashboardPage,
@@ -53,7 +56,10 @@ function App() {
           <Route path="etfs" element={<EtfsPage />} />
           <Route path="etfs/:id" element={<EtfDetailPage />} />
           <Route path="cryptos" element={<CryptosPage />} />
-          <Route path="cryptos/:id" element={<CryptoDetailPage />} />
+          <Route path="cryptos/wallet/:id" element={<CryptoWalletDetailPage />} />
+          <Route path="cryptos/coins/:id" element={<CryptoDetailPage />} />
+          <Route path="accounts" element={<AccountsPage />} />
+          <Route path="accounts/:id" element={<AccountDetailPage />} />
           <Route path="import" element={<ImportPage />} />
         </Routes>
         <Footer style={{ textAlign: 'center' }}>Footer text</Footer>

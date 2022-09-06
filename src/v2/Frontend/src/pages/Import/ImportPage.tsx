@@ -1,11 +1,22 @@
 import { DeleteOutlined, ExportOutlined, UploadOutlined } from '@ant-design/icons';
-import { Button, Divider, message, Space, Spin, Upload, UploadFile, UploadProps } from 'antd';
+import {
+  Button,
+  Divider,
+  message,
+  Space,
+  Spin,
+  Statistic,
+  Upload,
+  UploadFile,
+  UploadProps,
+} from 'antd';
 import { RcFile } from 'antd/lib/upload';
 import { saveAs } from 'file-saver';
 import { useState } from 'react';
 
-import { Box, PageWrapper } from '../../components';
+import { Box, FlexRow, PageWrapper } from '../../components';
 import { useTradesContext } from '../../contexts/tradesContext';
+import { toCurrencyFormat } from '../../i18n';
 import { useCryptoImport } from './useCryptoImport';
 import { useCurrencyImport } from './useCurrencyImport';
 import { useEtfImport } from './useEtfImport';
@@ -22,6 +33,8 @@ const ImportPage: React.FC<Props> = () => {
 
   const [file, setFile] = useState<UploadFile | undefined>();
   const [uploading, setUploading] = useState(false);
+
+  const hasData = tradesData.netWorth.totalTransactionsCZK !== 0;
 
   const handleUploadTrades = async () => {
     const formData = new FormData();
@@ -133,7 +146,7 @@ const ImportPage: React.FC<Props> = () => {
                 onClick={clearData}
                 type="dashed"
                 danger
-                disabled={tradesData.etfData.etfs.length === 0}
+                disabled={!hasData}
               >
                 Clear data
               </Button>
@@ -141,13 +154,44 @@ const ImportPage: React.FC<Props> = () => {
           </>
         )}
       </Box>
-      <Box>
-        {tradesData.etfData.etfs.map((x) => (
-          <div>
-            {x.name} - {x.valueCZK}
-          </div>
-        ))}
-      </Box>
+      {hasData && (
+        <Box>
+          <FlexRow>
+            <Statistic
+              style={{ margin: 20 }}
+              title="Accounts Value"
+              value={toCurrencyFormat(tradesData.accountData.totalValueCZK)}
+            />
+            <Statistic
+              style={{ margin: 20 }}
+              title="ETFs Value"
+              value={toCurrencyFormat(tradesData.etfData.totalValueCZK)}
+            />
+            <Statistic
+              style={{ margin: 20 }}
+              title="Cryptos Value"
+              value={toCurrencyFormat(tradesData.cryptoData.totalValueCZK)}
+            />
+          </FlexRow>
+          <FlexRow>
+            <Statistic
+              style={{ margin: 20 }}
+              title="Accounts Transactions"
+              value={toCurrencyFormat(tradesData.accountData.totalTransactionsCZK)}
+            />
+            <Statistic
+              style={{ margin: 20 }}
+              title="ETFs Transactions"
+              value={toCurrencyFormat(tradesData.etfData.totalTransactionsCZK)}
+            />
+            <Statistic
+              style={{ margin: 20 }}
+              title="Cryptos Transactions"
+              value={toCurrencyFormat(tradesData.cryptoData.totalTransactionsCZK)}
+            />
+          </FlexRow>
+        </Box>
+      )}
     </PageWrapper>
   );
 };

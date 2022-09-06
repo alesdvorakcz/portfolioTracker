@@ -1,6 +1,7 @@
 export interface Currency {
   id: string;
   name: string;
+  lastValue?: CurrencyValueHistory;
 }
 
 export interface CurrencyDetail {
@@ -20,6 +21,7 @@ export interface Crypto {
   ticker: string;
   name: string;
   currencyId: string;
+  lastValue?: CryptoValueHistory;
 }
 
 export interface CryptoDetail {
@@ -68,7 +70,7 @@ export interface EtfDetailWithTrades {
   valueCZK?: number;
   unitsTotal: number;
   cumulativeTransactions: number;
-  cumulativeTransactionsCZK?: number;
+  cumulativeTransactionsCZK: number;
   history: EtfValueHistoryEnhanced[];
 }
 
@@ -77,16 +79,71 @@ export interface EtfValueHistoryEnhanced {
   date: string;
   currencyId: string;
   conversionRate?: number;
-  valueBefore?: number;
+  valueBefore: number;
   valueBeforeCZK?: number;
   unitsChange: number;
   unitsTotal: number;
   unitPrice: number;
   fee: number;
   transaction: number;
-  transactionCZK?: number;
+  transactionCZK: number;
   valueAfter: number;
   valueAfterCZK?: number;
   cumulativeTransactions: number;
+  cumulativeTransactionsCZK: number;
+}
+
+export interface Account {
+  id: string;
+  name: string;
+  currencyId: string;
+  history: AccountTrade[];
+  value: number;
+  valueCZK?: number;
+  cumulativeTransactionsCZK: number;
+  cumulativeTransactions: number;
+}
+
+export interface AccountTrade {
+  date: string;
+  currencyId: string;
+  conversionRate?: number;
+  valueBefore: number;
+  valueBeforeCZK?: number;
+  transactionCzk: number;
+  transaction: number;
+  valueAfter: number;
+  valueAfterCZK?: number;
+  cumulativeTransactionsCzk: number;
+  cumulativeTransactions: number;
+}
+
+export interface CryptoWallet {
+  id: string;
+  name: string;
+  crypto: Crypto;
+  history: CryptoWalletTrade[];
+  value: number;
+  valueCZK?: number;
+  unitsTotal?: number;
+  cumulativeTransactions: number;
   cumulativeTransactionsCZK?: number;
+  stakedUnits: number;
+}
+
+export interface CryptoWalletTrade {
+  id: number;
+  date: string;
+  currencyId: string;
+  conversionRate?: number;
+  unitPrice: number;
+  unitsChange: number;
+  unitsTotal: number;
+  transaction: number;
+  transactionCZK: number;
+  valueAfter: number;
+  valueAfterCZK?: number;
+  cumulativeTransactions: number;
+  cumulativeTransactionsCZK: number;
+  stakedUnits: number;
 }

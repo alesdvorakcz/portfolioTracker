@@ -15,7 +15,7 @@ public class EtfValueHistoryEnhanced
     public decimal ValueAfter { get; set; }
     public decimal? ValueAfterCZK { get; set; }
     public decimal Transaction { get; set; }
-    public decimal? TransactionCZK { get; set; }
+    public decimal TransactionCZK { get; set; }
     public decimal CumulativeTransactions { get; set; }
-    public decimal? CumulativeTransactionsCZK { get; set; }
+    public decimal CumulativeTransactionsCZK { get; set; }
 }

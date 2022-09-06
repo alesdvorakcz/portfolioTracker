@@ -1,4 +1,5 @@
 import {
+  BankOutlined,
   DashboardOutlined,
   EuroOutlined,
   FundOutlined,
@@ -10,8 +11,7 @@ import { matchPath, useLocation, useNavigate } from 'react-router-dom';
 
 const menuItems = [
   { label: 'Dashboard', key: '/', pattern: '/', icon: <DashboardOutlined /> },
-  // { label: 'Accounts', icon: <BankOutlined /> },
-  // { label: 'Crypto Wallets', icon: <WalletOutlined /> },
+  { label: 'Accounts', key: '/accounts', pattern: '/accounts/*', icon: <BankOutlined /> },
   { label: 'ETFs', key: 'etfs', pattern: '/etfs/*', icon: <FundOutlined /> },
   {
     label: 'Currencies',

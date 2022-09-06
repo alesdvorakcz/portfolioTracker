@@ -23,6 +23,17 @@ public class CurrencyController : BaseController
                 DbContext.Currencies
             ).ToListAsync();
 
+
+        foreach (var currency in currencies)
+        {
+            currency.LastValue = await Mapper.ProjectTo<CurrencyValueHistory>(
+                    DbContext.CurrencyValueHistory
+                        .Where(x => x.CurrencyId == currency.Id)
+                        .OrderByDescending(x => x.Date)
+                )
+                .FirstOrDefaultAsync();
+        }
+
         return Ok(currencies);
     }
 

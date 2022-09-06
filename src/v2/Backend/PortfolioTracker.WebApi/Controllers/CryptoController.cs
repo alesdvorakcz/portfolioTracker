@@ -19,11 +19,21 @@ public class CryptoController : BaseController
     [ProducesResponseType(typeof(IEnumerable<Crypto>), 200)]
     public async Task<IActionResult> GetAll()
     {
-        var instruments = await Mapper.ProjectTo<Crypto>(
+        var cryptos = await Mapper.ProjectTo<Crypto>(
                 DbContext.Cryptos
             ).ToListAsync();
 
-        return Ok(instruments);
+        foreach (var crypto in cryptos)
+        {
+            crypto.LastValue = await Mapper.ProjectTo<CryptoValueHistory>(
+                    DbContext.CryptoValueHistory
+                        .Where(x => x.CryptoId == crypto.Id)
+                        .OrderByDescending(x => x.Date)
+                )
+                .FirstOrDefaultAsync();
+        }
+
+        return Ok(cryptos);
     }
 
     [HttpGet("{id}")]

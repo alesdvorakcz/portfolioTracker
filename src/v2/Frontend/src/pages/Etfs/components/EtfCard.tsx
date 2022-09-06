@@ -1,5 +1,6 @@
 import { ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
 import { Card, Statistic } from 'antd';
+import moment from 'moment';
 import { useNavigate } from 'react-router';
 
 import { Etf, EtfDetailWithTrades } from '../../../api/models';
@@ -27,10 +28,12 @@ const EtfCard: React.FC<Props> = ({ etf, etfWithTrades }) => {
 
   const isGainPositive = gain && gain > 0;
 
+  const lastPrice = !!etfWithTrades?.history.length ? etfWithTrades.history[0] : undefined;
+
   return (
     <Card title={etf.name} extra={etf.ticker} hoverable onClick={() => navigate(`/etfs/${etf.id}`)}>
       {etfWithTrades && (
-        <div>
+        <>
           <Statistic title="Value" value={valueText} />
           <Statistic
             title="Profit"
@@ -38,7 +41,16 @@ const EtfCard: React.FC<Props> = ({ etf, etfWithTrades }) => {
             valueStyle={{ color: isGainPositive ? 'green' : 'red' }}
             value={toPercentFormat(gain ?? 0)}
           />
-        </div>
+          <Statistic
+            title="UnitPrice"
+            value={
+              lastPrice &&
+              `${toCurrencyFormat(lastPrice.unitPrice, etf.currencyId)} (${moment
+                .utc(lastPrice.date)
+                .format('l')})`
+            }
+          />
+        </>
       )}
     </Card>
   );
