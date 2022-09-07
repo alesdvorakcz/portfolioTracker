@@ -9,7 +9,9 @@ export const toCurrencyFormat = (x?: number | string | Date, currencyId?: string
 };
 
 export const toNumberFormat = (x?: number | string) => {
-  return x?.toLocaleString(DEFAULT_LOCALE);
+  return x?.toLocaleString(DEFAULT_LOCALE, {
+    maximumFractionDigits: 8,
+  });
 };
 
 export const toPercentFormat = (x?: number) => {

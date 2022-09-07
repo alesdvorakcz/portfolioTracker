@@ -16,4 +16,5 @@ public class CryptoWalletTrade
     public decimal CumulativeTransactions { get; set; }
     public decimal CumulativeTransactionsCZK { get; set; }
     public decimal StakedUnits { get; set; }
+    public decimal CumulativeStakedUnits { get; set; }
 }

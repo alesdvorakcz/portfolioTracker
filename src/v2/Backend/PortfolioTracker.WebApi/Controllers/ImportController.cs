@@ -31,29 +31,29 @@ public class ImportController : BaseController
     [ProducesResponseType(204)]
     public async Task<IActionResult> ImportAll()
     {
-        await ImportCurrency("CZK", false, false, "");
-        await ImportCurrency("EUR", false, false, apiKey1);
-        await ImportCurrency("USD", false, false, apiKey1);
+        await ImportCurrency("CZK", false, true, "");
+        await ImportCurrency("EUR", false, true, apiKey1);
+        await ImportCurrency("USD", false, true, apiKey1);
 
-        await ImportEtf(2, "IE00BK5BQT80", false, false, apiKey2);
-        await ImportEtf(3, "IE00B4L5Y983", false, false, apiKey2);
+        await ImportEtf(2, "IE00BK5BQT80", false, true, apiKey2);
+        await ImportEtf(3, "IE00B4L5Y983", false, true, apiKey2);
 
-        await ImportCrypto(1, "bitcoin", "eur", false, false);
-        await ImportCrypto(2, "ethereum", "eur", false, false);
-        await ImportCrypto(3, "cardano", "eur", false, false);
-        await ImportCrypto(4, "litecoin", "eur", false, false);
-        await ImportCrypto(5, "solana", "eur", false, false);
-        await ImportCrypto(6, "nano", "eur", false, false);
-        await ImportCrypto(7, "nexo", "eur", false, false);
-        await ImportCrypto(8, "loopring", "eur", false, false);
-        //TODO: import nexoEUR (fake history)
+        await ImportCrypto(1, "bitcoin", "eur", false, true);
+        await ImportCrypto(2, "ethereum", "eur", false, true);
+        await ImportCrypto(3, "cardano", "eur", false, true);
+        await ImportCrypto(4, "litecoin", "eur", false, true);
+        await ImportCrypto(5, "solana", "eur", false, true);
+        await ImportCrypto(6, "nano", "eur", false, true);
+        await ImportCrypto(7, "nexo", "eur", false, true);
+        await ImportCrypto(8, "loopring", "eur", false, true);
+        await ImportCrypto(9, "nexoeur", "eur", false, true);
 
         await Task.Delay(1000 * 60); //wait 60seconds
 
-        await ImportEtf(4, "IE00B4L5YC18", false, false, apiKey2);
-        await ImportEtf(5, "IE00B1XNHC34", false, false, apiKey3);
-        await ImportEtf(6, "IE00BSPLC298", false, false, apiKey3);
-        await ImportEtf(7, "IE00BSPLC413", false, false, apiKey3);
+        await ImportEtf(4, "IE00B4L5YC18", false, true, apiKey2);
+        await ImportEtf(5, "IE00B1XNHC34", false, true, apiKey3);
+        await ImportEtf(6, "IE00BSPLC298", false, true, apiKey3);
+        await ImportEtf(7, "IE00BSPLC413", false, true, apiKey3);
 
         return NoContent();
     }
@@ -80,7 +80,7 @@ public class ImportController : BaseController
         var result = await currencyValueHistoryService.LoadHistory(currencyId, full);
 
         var valueHistory = await DbContext.CurrencyValueHistory
-            .Where(x => x.CurrencyId == currencyId && x.Date > minimumDate)
+            .Where(x => x.CurrencyId == currencyId && x.Date >= minimumDate)
             .ToListAsync();
 
         foreach (var day in result)
@@ -133,7 +133,7 @@ public class ImportController : BaseController
         var result = await etfValueHistoryService.LoadHistory(isin, full);
 
         var valueHistory = await DbContext.EtfValueHistory
-            .Where(x => x.EtfId == etfId && x.Date > minimumDate)
+            .Where(x => x.EtfId == etfId && x.Date >= minimumDate)
             .ToListAsync();
 
         foreach (var day in result)
@@ -173,7 +173,7 @@ public class ImportController : BaseController
         await ImportCrypto(6, "nano", "eur", false, false);
         await ImportCrypto(7, "nexo", "eur", false, false);
         await ImportCrypto(8, "loopring", "eur", false, false);
-        //TODO: import nexoEUR (fake history)
+        await ImportCrypto(9, "nexoeur", "eur", false, false);
 
         return NoContent();
     }
@@ -185,7 +185,7 @@ public class ImportController : BaseController
         var minimumDate = CoinGeckoHelpers.GetMinimumDate(full);
 
         var valueHistory = await DbContext.CryptoValueHistory
-                    .Where(x => x.CryptoId == cryptoId && x.Date > minimumDate)
+                    .Where(x => x.CryptoId == cryptoId && x.Date >= minimumDate)
                     .ToListAsync();
 
         IEnumerable<CryptoDailyValue> result;

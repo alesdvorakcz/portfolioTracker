@@ -48,6 +48,9 @@ public class CryptoValueHistoryService
 
             var date = GetDateTimeFromUnixTimestampMiliseconds(dateUnit);
 
+            //Normalize date (strip hours, minutes, ...)
+            date = date.Date;
+
             values.Add(new CryptoDailyValue
             {
                 Day = date,
@@ -61,6 +64,9 @@ public class CryptoValueHistoryService
 
     public async Task<IEnumerable<CryptoDailyValue>> LoadHistory(string ticker, string currency, DateTime from, DateTime to)
     {
+        if (ticker == "nexoeur")
+            return GetFakeNexoEurHistory(from, to);
+
         using var httpClient = new HttpClient();
 
         var url = string.Format("https://api.coingecko.com/api/v3/coins/{0}/market_chart/range?vs_currency={1}&from={2}&to={3}",
@@ -86,6 +92,13 @@ public class CryptoValueHistoryService
     {
         var days = 140;
 
+        if (ticker == "nexoeur")
+        {
+            var to = DateTime.UtcNow.Date;
+            var from = to.AddDays(-1 * days);
+            return GetFakeNexoEurHistory(from, to);
+        }
+
         using var httpClient = new HttpClient();
 
         var url = string.Format("https://api.coingecko.com/api/v3/coins/{0}/market_chart?vs_currency={1}&days={2}",
@@ -105,5 +118,28 @@ public class CryptoValueHistoryService
         }
 
         return ProcessResult(result);
+    }
+
+    private static CryptoDailyValue[] GetFakeNexoEurHistory(DateTime from, DateTime to)
+    {
+        var days = GetListOfDates(from, to);
+        return days.Select(day => new CryptoDailyValue
+        {
+            Day = day,
+            Close = 1
+        }).ToArray();
+    }
+
+    private static List<DateTime> GetListOfDates(DateTime from, DateTime to)
+    {
+        var list = new List<DateTime>();
+        var day = from;
+        while (day <= to)
+        {
+            list.Add(day);
+            day = day.AddDays(1);
+        }
+
+        return list;
     }
 }

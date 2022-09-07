@@ -143,7 +143,8 @@ export interface CryptoWalletTrade {
   transactionCZK: number;
   valueAfter: number;
   valueAfterCZK?: number;
+  stakedUnits: number;
   cumulativeTransactions: number;
   cumulativeTransactionsCZK: number;
-  stakedUnits: number;
+  cumulativeStakedUnits: number;
 }

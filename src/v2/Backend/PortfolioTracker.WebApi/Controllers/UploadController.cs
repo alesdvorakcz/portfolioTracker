@@ -328,8 +328,9 @@ public class UploadController : BaseController
                 walletTrade.UnitsChange = walletHistoryRow.UnitsChange;
                 walletTrade.UnitsTotal = walletHistoryRow.AmountAfter;
                 walletTrade.StakedUnits = walletTrade.UnitsTotal - unitsTotal - walletTrade.UnitsChange;
+                walletTrade.CumulativeStakedUnits = stakedTotal + walletTrade.StakedUnits;
                 unitsTotal = walletTrade.UnitsTotal;
-                stakedTotal += walletTrade.StakedUnits;
+                stakedTotal = walletTrade.CumulativeStakedUnits;
 
                 walletTrade.Transaction = walletHistoryRow.TransactionEur;
                 walletTrade.TransactionCZK = walletHistoryRow.TransactionEur * conversionRate ?? 0;
@@ -355,6 +356,7 @@ public class UploadController : BaseController
                 walletTrade.TransactionCZK = 0;
                 walletTrade.StakedUnits = 0;
 
+                walletTrade.CumulativeStakedUnits = stakedTotal;
                 walletTrade.CumulativeTransactions = cumulativeTransactions;
                 walletTrade.CumulativeTransactionsCZK = cumulativeTransactionsCZK;
             }

@@ -39,10 +39,10 @@ const CryptoWalletHistoryChart: React.FC<Props> = ({ wallet }) => {
       })),
     },
     {
-      id: 'stakedUnits',
+      id: 'cumulativeStakedUnits',
       data: trades.map((item) => ({
         x: moment.utc(item.date).format('YYYY-MM-DD'),
-        y: item.stakedUnits,
+        y: item.cumulativeStakedUnits,
       })),
     },
   ];
@@ -88,12 +88,14 @@ const CryptoWalletHistoryChart: React.FC<Props> = ({ wallet }) => {
           yScale
           tooltip={({ point }) => {
             const index = parseInt(point.id.split('.')[1], 10);
-            const unitsTotal = trades[index].valueAfter;
+            const unitsTotal = trades[index].unitsTotal;
+            const stakedTotal = trades[index].cumulativeStakedUnits;
 
             return (
               <ChartTooltip>
                 <ChartTooltipItem label="Date: " value={point.data.xFormatted} />
                 <ChartTooltipItem label="Units Total: " value={toNumberFormat(unitsTotal)} />
+                <ChartTooltipItem label="Staked Total: " value={toNumberFormat(stakedTotal)} />
               </ChartTooltip>
             );
           }}
