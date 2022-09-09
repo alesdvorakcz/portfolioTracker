@@ -9,3 +9,5 @@ export { default as DashboardPage } from './Dashboard/DashboardPage';
 export { default as EtfDetailPage } from './Etfs/EtfDetailPage';
 export { default as EtfsPage } from './Etfs/EtfsPage';
 export { default as ImportPage } from './Import/ImportPage';
+export { default as RealEstateDetailPage } from './RealEstates/RealEstateDetailPage';
+export { default as RealEstatesPage } from './RealEstates/RealEstatesPage';

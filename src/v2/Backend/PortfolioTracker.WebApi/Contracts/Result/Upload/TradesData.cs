@@ -6,4 +6,5 @@ public class TradesData
     public EtfData EtfData { get; set; } = new EtfData();
     public AccountData AccountData { get; set; } = new AccountData();
     public CryptoData CryptoData { get; set; } = new CryptoData();
+    public RealEstateData RealEstateData { get; set; } = new RealEstateData();
 }

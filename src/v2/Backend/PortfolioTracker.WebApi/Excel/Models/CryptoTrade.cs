@@ -7,4 +7,4 @@ public class CryptoTrade
     public decimal UnitsChange { get; set; }
     public decimal TransactionEur { get; set; }
     public decimal AmountAfter { get; set; }
-};
+}

@@ -148,3 +148,25 @@ export interface CryptoWalletTrade {
   cumulativeTransactionsCZK: number;
   cumulativeStakedUnits: number;
 }
+
+export interface RealEstate {
+  id: string;
+  name: string;
+  startingPrice: number;
+  ownStartingCapital: number;
+  history: RealEstateHistory[];
+  ownValue: number;
+  totalValue: number;
+  remainingMortage: number;
+  totalIncome: number;
+}
+
+export interface RealEstateHistory {
+  date: string;
+  income: number;
+  remainingMortage: number;
+  estimatedPrice: number;
+  ownValue: number;
+  totalValueIncludingIncome: number;
+  cumulativeIncome: number;
+}

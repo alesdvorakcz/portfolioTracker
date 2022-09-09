@@ -17,6 +17,8 @@ import {
   EtfDetailPage,
   EtfsPage,
   ImportPage,
+  RealEstateDetailPage,
+  RealEstatesPage,
 } from './pages';
 
 const { Footer, Sider } = Layout;
@@ -60,6 +62,8 @@ function App() {
           <Route path="cryptos/coins/:id" element={<CryptoDetailPage />} />
           <Route path="accounts" element={<AccountsPage />} />
           <Route path="accounts/:id" element={<AccountDetailPage />} />
+          <Route path="realEstates" element={<RealEstatesPage />} />
+          <Route path="realEstates/:id" element={<RealEstateDetailPage />} />
           <Route path="import" element={<ImportPage />} />
         </Routes>
         <Footer style={{ textAlign: 'center' }}>Footer text</Footer>

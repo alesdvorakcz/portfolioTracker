@@ -190,6 +190,23 @@ const ImportPage: React.FC<Props> = () => {
               value={toCurrencyFormat(tradesData.cryptoData.totalTransactionsCZK)}
             />
           </FlexRow>
+          <FlexRow>
+            <Statistic
+              style={{ margin: 20 }}
+              title="Real Estates Total Value"
+              value={toCurrencyFormat(tradesData.realEstateData.totalValue)}
+            />
+            <Statistic
+              style={{ margin: 20 }}
+              title="Real Estates Own Value"
+              value={toCurrencyFormat(tradesData.realEstateData.ownValue)}
+            />
+            <Statistic
+              style={{ margin: 20 }}
+              title="Real Estates Income"
+              value={toCurrencyFormat(tradesData.realEstateData.totalIncome)}
+            />
+          </FlexRow>
         </Box>
       )}
     </PageWrapper>

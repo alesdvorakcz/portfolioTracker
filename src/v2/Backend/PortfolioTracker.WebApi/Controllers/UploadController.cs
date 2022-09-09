@@ -88,6 +88,30 @@ public class UploadController : BaseController
             })
             .ToList();
 
+        var realEstatesWs = excel.Worksheet("Real Estates");
+        var realEstates = realEstatesWs.Table("RealEstates").DataRange
+            .Rows()
+            .Select(row => new Excel.Models.RealEstate
+            {
+                Id = row.Field("Id").GetString(),
+                Name = row.Field("Name").GetString(),
+                StartingPrice = row.Field("Starting Price").GetValue<decimal>(),
+                OwnStartingCapital = row.Field("Own Starting Capital").GetValue<decimal>()
+            })
+            .ToList();
+
+        var realEstatesHistory = realEstatesWs.Table("RealEstatesHistory").DataRange
+            .Rows()
+            .Select(row => new Excel.Models.RealEstateHistory
+            {
+                Date = row.Field("Date").GetDateTime(),
+                RealEstateId = row.Field("Real Estate").GetString(),
+                Income = row.Field("Income (Rent)").GetValue<decimal>(),
+                RemainingMortage = row.Field("Remaining Mortage").GetValue<decimal>(),
+                EstimatedPrice = row.Field("Estimated Price").GetValue<decimal>()
+            })
+            .ToList();
+
         var etfs = await DbContext.Etfs
             .Select(x => new Etf
             {
@@ -179,8 +203,23 @@ public class UploadController : BaseController
         cryptoData.TotalValueCZK = cryptoData.CryptoWallets.Sum(x => x.ValueCZK ?? 0);
         cryptoData.TotalTransactionsCZK = cryptoData.CryptoWallets.Sum(x => x.CumulativeTransactionsCZK ?? 0);
 
+        var realEstateData = new RealEstateData
+        {
+            RealEstates = realEstates.Select(realEstate =>
+            {
+                var history = realEstatesHistory.Where(x => x.RealEstateId == realEstate.Id);
+
+                return PrepareRealEstate(realEstate, history);
+            }).ToList()
+        };
+        realEstateData.OwnValue = realEstateData.RealEstates.Sum(x => x.OwnValue);
+        realEstateData.TotalValue = realEstateData.RealEstates.Sum(x => x.TotalValue);
+        realEstateData.RemainingMortage = realEstateData.RealEstates.Sum(x => x.RemainingMortage);
+        realEstateData.TotalIncome = realEstateData.RealEstates.Sum(x => x.TotalIncome);
+
         var netWorth = new NetWorth()
         {
+            //TODO: rework this
             TotalValueCZK = etfData.TotalValueCZK + cryptoData.TotalValueCZK,
             TotalTransactionsCZK = etfData.TotalTransactionsCZK + cryptoData.TotalTransactionsCZK,
         };
@@ -190,6 +229,7 @@ public class UploadController : BaseController
             EtfData = etfData,
             AccountData = accountData,
             CryptoData = cryptoData,
+            RealEstateData = realEstateData,
             NetWorth = netWorth
         };
     }
@@ -214,65 +254,68 @@ public class UploadController : BaseController
         var cumulativeTransactionsCZK = 0m;
         decimal? lastConversionRate = null;
 
-        var firstTradeDate = etfTrades.First().Date;
-
-        foreach (var valueHistoryRow in etfValueHistory.Where(x => x.Date >= firstTradeDate))
+        if (etfTrades.Any())
         {
-            var valueHistoryRowEnhanced = new EtfValueHistoryEnhanced
+            var firstTradeDate = etfTrades.First().Date;
+
+            foreach (var valueHistoryRow in etfValueHistory.Where(x => x.Date >= firstTradeDate))
             {
-                Id = valueHistoryRow.Id,
-                Date = valueHistoryRow.Date,
-                CurrencyId = etf.CurrencyId,
-                UnitPrice = valueHistoryRow.Value,
-            };
+                var valueHistoryRowEnhanced = new EtfValueHistoryEnhanced
+                {
+                    Id = valueHistoryRow.Id,
+                    Date = valueHistoryRow.Date,
+                    CurrencyId = etf.CurrencyId,
+                    UnitPrice = valueHistoryRow.Value,
+                };
 
-            var conversionRate = currencyValueHistory.FirstOrDefault(x => x.Date == valueHistoryRow.Date)?.ConversionRate;
-            valueHistoryRowEnhanced.ConversionRate = conversionRate;
-            if (conversionRate != null)
-                lastConversionRate = conversionRate;
+                var conversionRate = currencyValueHistory.FirstOrDefault(x => x.Date == valueHistoryRow.Date)?.ConversionRate;
+                valueHistoryRowEnhanced.ConversionRate = conversionRate;
+                if (conversionRate != null)
+                    lastConversionRate = conversionRate;
 
-            var tradeHistoryRow = etfTrades.FirstOrDefault(x => x.Date == valueHistoryRow.Date);
-            if (tradeHistoryRow != null)
-            {
-                valueHistoryRowEnhanced.ValueBefore = valueBefore;
-                valueHistoryRowEnhanced.ValueBeforeCZK = valueBefore * conversionRate;
-                valueHistoryRowEnhanced.UnitsChange = tradeHistoryRow.UnitsChange;
+                var tradeHistoryRow = etfTrades.FirstOrDefault(x => x.Date == valueHistoryRow.Date);
+                if (tradeHistoryRow != null)
+                {
+                    valueHistoryRowEnhanced.ValueBefore = valueBefore;
+                    valueHistoryRowEnhanced.ValueBeforeCZK = valueBefore * conversionRate;
+                    valueHistoryRowEnhanced.UnitsChange = tradeHistoryRow.UnitsChange;
 
-                unitsTotal += tradeHistoryRow.UnitsChange;
-                valueHistoryRowEnhanced.UnitsTotal = unitsTotal;
+                    unitsTotal += tradeHistoryRow.UnitsChange;
+                    valueHistoryRowEnhanced.UnitsTotal = unitsTotal;
 
-                valueHistoryRowEnhanced.Fee = tradeHistoryRow.Fee;
-                valueHistoryRowEnhanced.Transaction = tradeHistoryRow.UnitsChange * tradeHistoryRow.UnitPrice;
-                valueHistoryRowEnhanced.TransactionCZK = tradeHistoryRow.UnitsChange * tradeHistoryRow.UnitPrice * conversionRate ?? 0;
+                    valueHistoryRowEnhanced.Fee = tradeHistoryRow.Fee;
+                    valueHistoryRowEnhanced.Transaction = tradeHistoryRow.UnitsChange * tradeHistoryRow.UnitPrice;
+                    valueHistoryRowEnhanced.TransactionCZK = tradeHistoryRow.UnitsChange * tradeHistoryRow.UnitPrice * conversionRate ?? 0;
 
-                valueHistoryRowEnhanced.ValueAfter = unitsTotal * tradeHistoryRow.UnitPrice;
-                valueHistoryRowEnhanced.ValueAfterCZK = valueHistoryRowEnhanced.ValueAfter * conversionRate;
+                    valueHistoryRowEnhanced.ValueAfter = unitsTotal * tradeHistoryRow.UnitPrice;
+                    valueHistoryRowEnhanced.ValueAfterCZK = valueHistoryRowEnhanced.ValueAfter * conversionRate;
 
-                cumulativeTransactions += valueHistoryRowEnhanced.Transaction;
-                cumulativeTransactionsCZK += valueHistoryRowEnhanced.TransactionCZK;
-                valueHistoryRowEnhanced.CumulativeTransactions = cumulativeTransactions;
-                valueHistoryRowEnhanced.CumulativeTransactionsCZK = cumulativeTransactionsCZK;
+                    cumulativeTransactions += valueHistoryRowEnhanced.Transaction;
+                    cumulativeTransactionsCZK += valueHistoryRowEnhanced.TransactionCZK;
+                    valueHistoryRowEnhanced.CumulativeTransactions = cumulativeTransactions;
+                    valueHistoryRowEnhanced.CumulativeTransactionsCZK = cumulativeTransactionsCZK;
 
-                valueBefore = valueHistoryRowEnhanced.ValueAfter;
+                    valueBefore = valueHistoryRowEnhanced.ValueAfter;
+                }
+                else
+                {
+                    valueBefore = unitsTotal * valueHistoryRow.Value;
+
+                    valueHistoryRowEnhanced.ValueBefore = valueBefore;
+                    valueHistoryRowEnhanced.ValueBeforeCZK = valueBefore * conversionRate;
+                    valueHistoryRowEnhanced.UnitsChange = 0;
+                    valueHistoryRowEnhanced.UnitsTotal = unitsTotal;
+                    valueHistoryRowEnhanced.Fee = 0;
+                    valueHistoryRowEnhanced.Transaction = 0;
+                    valueHistoryRowEnhanced.TransactionCZK = 0;
+                    valueHistoryRowEnhanced.ValueAfter = valueHistoryRowEnhanced.ValueBefore;
+                    valueHistoryRowEnhanced.ValueAfterCZK = valueHistoryRowEnhanced.ValueBeforeCZK;
+                    valueHistoryRowEnhanced.CumulativeTransactions = cumulativeTransactions;
+                    valueHistoryRowEnhanced.CumulativeTransactionsCZK = cumulativeTransactionsCZK;
+                }
+
+                history.Add(valueHistoryRowEnhanced);
             }
-            else
-            {
-                valueBefore = unitsTotal * valueHistoryRow.Value;
-
-                valueHistoryRowEnhanced.ValueBefore = valueBefore;
-                valueHistoryRowEnhanced.ValueBeforeCZK = valueBefore * conversionRate;
-                valueHistoryRowEnhanced.UnitsChange = 0;
-                valueHistoryRowEnhanced.UnitsTotal = unitsTotal;
-                valueHistoryRowEnhanced.Fee = 0;
-                valueHistoryRowEnhanced.Transaction = 0;
-                valueHistoryRowEnhanced.TransactionCZK = 0;
-                valueHistoryRowEnhanced.ValueAfter = valueHistoryRowEnhanced.ValueBefore;
-                valueHistoryRowEnhanced.ValueAfterCZK = valueHistoryRowEnhanced.ValueBeforeCZK;
-                valueHistoryRowEnhanced.CumulativeTransactions = cumulativeTransactions;
-                valueHistoryRowEnhanced.CumulativeTransactionsCZK = cumulativeTransactionsCZK;
-            }
-
-            history.Add(valueHistoryRowEnhanced);
         }
 
         etfWithTrades.History = history.OrderByDescending(x => x.Date).ToList();
@@ -296,8 +339,6 @@ public class UploadController : BaseController
             Crypto = crypto
         };
 
-        var firstWalletValue = walletValueHistory.First().Date;
-
         var history = new List<CryptoWalletTrade>();
 
         var valueBefore = 0m;
@@ -307,61 +348,66 @@ public class UploadController : BaseController
         var stakedTotal = 0m;
         decimal? lastConversionRate = null;
 
-        foreach (var valueHistoryRow in cryptoValueHistory.Where(x => x.Date >= firstWalletValue.Date))
+        if (walletValueHistory.Any())
         {
-            var walletTrade = new CryptoWalletTrade
+            var firstWalletValue = walletValueHistory.First().Date;
+
+            foreach (var valueHistoryRow in cryptoValueHistory.Where(x => x.Date >= firstWalletValue.Date))
             {
-                Id = valueHistoryRow.Id,
-                Date = valueHistoryRow.Date,
-                CurrencyId = crypto.CurrencyId,
-                UnitPrice = valueHistoryRow.Value
-            };
+                var walletTrade = new CryptoWalletTrade
+                {
+                    Id = valueHistoryRow.Id,
+                    Date = valueHistoryRow.Date,
+                    CurrencyId = crypto.CurrencyId,
+                    UnitPrice = valueHistoryRow.Value
+                };
 
-            var conversionRate = currencyValueHistory.FirstOrDefault(x => x.Date == valueHistoryRow.Date)?.ConversionRate;
-            walletTrade.ConversionRate = conversionRate;
-            if (conversionRate != null)
-                lastConversionRate = conversionRate;
+                var conversionRate = currencyValueHistory.FirstOrDefault(x => x.Date == valueHistoryRow.Date)?.ConversionRate;
+                walletTrade.ConversionRate = conversionRate;
+                if (conversionRate != null)
+                    lastConversionRate = conversionRate;
 
-            var walletHistoryRow = walletValueHistory.FirstOrDefault(x => x.Date == valueHistoryRow.Date);
-            if (walletHistoryRow != null)
-            {
-                walletTrade.UnitsChange = walletHistoryRow.UnitsChange;
-                walletTrade.UnitsTotal = walletHistoryRow.AmountAfter;
-                walletTrade.StakedUnits = walletTrade.UnitsTotal - unitsTotal - walletTrade.UnitsChange;
-                walletTrade.CumulativeStakedUnits = stakedTotal + walletTrade.StakedUnits;
-                unitsTotal = walletTrade.UnitsTotal;
-                stakedTotal = walletTrade.CumulativeStakedUnits;
+                var walletHistoryRow = walletValueHistory.FirstOrDefault(x => x.Date == valueHistoryRow.Date);
+                if (walletHistoryRow != null)
+                {
+                    walletTrade.UnitsChange = walletHistoryRow.UnitsChange;
+                    walletTrade.UnitsTotal = walletHistoryRow.AmountAfter;
+                    walletTrade.StakedUnits = walletTrade.UnitsTotal - unitsTotal - walletTrade.UnitsChange;
+                    walletTrade.CumulativeStakedUnits = stakedTotal + walletTrade.StakedUnits;
+                    unitsTotal = walletTrade.UnitsTotal;
+                    stakedTotal = walletTrade.CumulativeStakedUnits;
 
-                walletTrade.Transaction = walletHistoryRow.TransactionEur;
-                walletTrade.TransactionCZK = walletHistoryRow.TransactionEur * conversionRate ?? 0;
-                walletTrade.ValueAfter = walletTrade.UnitsTotal * valueHistoryRow.Value;
-                walletTrade.ValueAfterCZK = walletTrade.UnitsTotal * valueHistoryRow.Value * conversionRate;
+                    walletTrade.Transaction = walletHistoryRow.TransactionEur;
+                    walletTrade.TransactionCZK = walletHistoryRow.TransactionEur * conversionRate ?? 0;
+                    walletTrade.ValueAfter = walletTrade.UnitsTotal * valueHistoryRow.Value;
+                    walletTrade.ValueAfterCZK = walletTrade.UnitsTotal * valueHistoryRow.Value * conversionRate;
 
-                valueBefore = walletTrade.ValueAfter;
-                cumulativeTransactions += walletTrade.Transaction;
-                cumulativeTransactionsCZK += walletTrade.TransactionCZK;
+                    valueBefore = walletTrade.ValueAfter;
+                    cumulativeTransactions += walletTrade.Transaction;
+                    cumulativeTransactionsCZK += walletTrade.TransactionCZK;
 
-                walletTrade.CumulativeTransactions = cumulativeTransactions;
-                walletTrade.CumulativeTransactionsCZK = cumulativeTransactionsCZK;
+                    walletTrade.CumulativeTransactions = cumulativeTransactions;
+                    walletTrade.CumulativeTransactionsCZK = cumulativeTransactionsCZK;
+                }
+                else
+                {
+                    walletTrade.ValueAfter = unitsTotal * valueHistoryRow.Value;
+                    walletTrade.ValueAfterCZK = unitsTotal * valueHistoryRow.Value * conversionRate;
+                    valueBefore = walletTrade.ValueAfter;
+
+                    walletTrade.UnitsChange = 0;
+                    walletTrade.UnitsTotal = unitsTotal;
+                    walletTrade.Transaction = 0;
+                    walletTrade.TransactionCZK = 0;
+                    walletTrade.StakedUnits = 0;
+
+                    walletTrade.CumulativeStakedUnits = stakedTotal;
+                    walletTrade.CumulativeTransactions = cumulativeTransactions;
+                    walletTrade.CumulativeTransactionsCZK = cumulativeTransactionsCZK;
+                }
+
+                history.Add(walletTrade);
             }
-            else
-            {
-                walletTrade.ValueAfter = unitsTotal * valueHistoryRow.Value;
-                walletTrade.ValueAfterCZK = unitsTotal * valueHistoryRow.Value * conversionRate;
-                valueBefore = walletTrade.ValueAfter;
-
-                walletTrade.UnitsChange = 0;
-                walletTrade.UnitsTotal = unitsTotal;
-                walletTrade.Transaction = 0;
-                walletTrade.TransactionCZK = 0;
-                walletTrade.StakedUnits = 0;
-
-                walletTrade.CumulativeStakedUnits = stakedTotal;
-                walletTrade.CumulativeTransactions = cumulativeTransactions;
-                walletTrade.CumulativeTransactionsCZK = cumulativeTransactionsCZK;
-            }
-
-            history.Add(walletTrade);
         }
 
         cryptoWallet.History = history.OrderByDescending(x => x.Date).ToList();
@@ -432,6 +478,51 @@ public class UploadController : BaseController
         account.CumulativeTransactionsCZK = cumulativeTransactionsCZK;
 
         return account;
+    }
+
+    public static Contracts.Result.RealEstate PrepareRealEstate(Excel.Models.RealEstate estate, IEnumerable<Excel.Models.RealEstateHistory> estateHistory)
+    {
+        var realEstate = new Contracts.Result.RealEstate
+        {
+            Id = estate.Id,
+            Name = estate.Name,
+            StartingPrice = estate.StartingPrice,
+            OwnStartingCapital = estate.OwnStartingCapital
+        };
+
+        var cumulativeIncome = 0m;
+        var lastPrice = 0m;
+        var lastRemainingMortage = 0m;
+
+        var history = new List<Contracts.Result.RealEstateHistory>();
+        foreach (var historyRow in estateHistory)
+        {
+            var realEstateHistoryRow = new Contracts.Result.RealEstateHistory
+            {
+                Date = historyRow.Date,
+                Income = historyRow.Income,
+                RemainingMortage = historyRow.RemainingMortage,
+                EstimatedPrice = historyRow.EstimatedPrice
+            };
+
+            lastPrice = realEstateHistoryRow.EstimatedPrice;
+            lastRemainingMortage = realEstateHistoryRow.RemainingMortage;
+            cumulativeIncome += realEstateHistoryRow.Income;
+            realEstateHistoryRow.CumulativeIncome = cumulativeIncome;
+            realEstateHistoryRow.OwnValue = realEstateHistoryRow.EstimatedPrice - realEstateHistoryRow.RemainingMortage;
+            realEstateHistoryRow.TotalValueIncludingIncome = realEstateHistoryRow.EstimatedPrice + cumulativeIncome;
+
+            history.Add(realEstateHistoryRow);
+        }
+
+        realEstate.History = history.OrderByDescending(x => x.Date).ToList();
+
+        realEstate.RemainingMortage = lastRemainingMortage;
+        realEstate.OwnValue = lastPrice - lastRemainingMortage; ;
+        realEstate.TotalValue = lastPrice;
+        realEstate.TotalIncome = cumulativeIncome;
+
+        return realEstate;
     }
 
     [HttpPost("export")]

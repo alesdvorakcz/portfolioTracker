@@ -3,6 +3,7 @@ import {
   DashboardOutlined,
   EuroOutlined,
   FundOutlined,
+  HomeOutlined,
   ImportOutlined,
   PayCircleOutlined,
 } from '@ant-design/icons';
@@ -25,6 +26,7 @@ const menuItems = [
     pattern: '/cryptos/*',
     icon: <PayCircleOutlined />,
   },
+  { label: 'Real Estates', key: 'realEstates', pattern: '/realEstates/*', icon: <HomeOutlined /> },
   {
     label: 'Import',
     key: 'import',

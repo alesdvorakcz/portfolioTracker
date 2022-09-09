@@ -1,12 +1,13 @@
 import React, { PropsWithChildren, useState } from 'react';
 
-import { Account, CryptoWallet, EtfDetailWithTrades } from '../api/models';
+import { Account, CryptoWallet, EtfDetailWithTrades, RealEstate } from '../api/models';
 
 export interface TradesState {
   netWorth: NetWorth;
   etfData: EtfData;
   accountData: AccountData;
   cryptoData: CryptoData;
+  realEstateData: RealEstateData;
 }
 
 export interface AccountData {
@@ -25,6 +26,14 @@ export interface EtfData {
   etfs: EtfDetailWithTrades[];
   totalValueCZK: number;
   totalTransactionsCZK: number;
+}
+
+export interface RealEstateData {
+  realEstates: RealEstate[];
+  ownValue: number;
+  totalValue: number;
+  remainingMortage: number;
+  totalIncome: number;
 }
 
 export interface NetWorth {
@@ -57,6 +66,13 @@ const defaultValue: TradesState = {
     cryptoWallets: [],
     totalTransactionsCZK: 0,
     totalValueCZK: 0,
+  },
+  realEstateData: {
+    realEstates: [],
+    ownValue: 0,
+    totalValue: 0,
+    remainingMortage: 0,
+    totalIncome: 0,
   },
 };
 
