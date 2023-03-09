@@ -110,11 +110,11 @@ export interface AccountTrade {
   conversionRate?: number;
   valueBefore: number;
   valueBeforeCZK?: number;
-  transactionCzk: number;
+  transactionCZK: number;
   transaction: number;
   valueAfter: number;
   valueAfterCZK?: number;
-  cumulativeTransactionsCzk: number;
+  cumulativeTransactionsCZK: number;
   cumulativeTransactions: number;
 }
 

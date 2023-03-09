@@ -23,7 +23,7 @@ public class EtfValueHistoryService
 
         var symbol = AlphavantageHelpers.GetTickerFromIsin(isin);
 
-        logger.LogInformation("Calling Alphavantage API to get ETF '{isin}' info with API KEY '{apiKey}'", isin, apiKey);
+        logger.LogInformation("Calling Alphavantage API to get ETF '{isin}' info", isin);
 
         var url = AlphavantageHelpers.GetEtfHistoryUrl(symbol, apiKey, full);
         var response = await httpClient.GetAsync(url);

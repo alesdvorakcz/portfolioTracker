@@ -12,18 +12,19 @@ namespace PortfolioTracker.WebApi.Controllers;
 [Route("api/import")]
 public class ImportController : BaseController
 {
-    private readonly string apiKey1;
-    private readonly string apiKey2;
-    private readonly string apiKey3;
+    private readonly string alphavantageApiKey;
+    private readonly string lemonMarketsApiKey;
     private readonly ILoggerFactory loggerFactory;
 
     public ImportController(AppDbContext dbContext, IMapper mapper, IConfiguration configuration,
         ILoggerFactory loggerFactory) : base(dbContext, mapper)
     {
         var alphavantageConfig = configuration.GetSection("Alphavantage");
-        apiKey1 = alphavantageConfig.GetValue<string>("ApiKey1");
-        apiKey2 = alphavantageConfig.GetValue<string>("ApiKey2");
-        apiKey3 = alphavantageConfig.GetValue<string>("ApiKey3");
+        alphavantageApiKey = alphavantageConfig.GetValue<string>("ApiKey");
+
+        var lemonMarketsConfig = configuration.GetSection("LemonMarkets");
+        lemonMarketsApiKey = lemonMarketsConfig.GetValue<string>("ApiKey");
+
         this.loggerFactory = loggerFactory;
     }
 
@@ -32,11 +33,8 @@ public class ImportController : BaseController
     public async Task<IActionResult> ImportAll()
     {
         await ImportCurrency("CZK", false, true, "");
-        await ImportCurrency("EUR", false, true, apiKey1);
-        await ImportCurrency("USD", false, true, apiKey1);
-
-        await ImportEtf(2, "IE00BK5BQT80", false, true, apiKey2);
-        await ImportEtf(3, "IE00B4L5Y983", false, true, apiKey2);
+        await ImportCurrency("EUR", false, true, alphavantageApiKey);
+        await ImportCurrency("USD", false, true, alphavantageApiKey);
 
         await ImportCrypto(1, "bitcoin", "eur", false, true);
         await ImportCrypto(2, "ethereum", "eur", false, true);
@@ -48,12 +46,12 @@ public class ImportController : BaseController
         await ImportCrypto(8, "loopring", "eur", false, true);
         await ImportCrypto(9, "nexoeur", "eur", false, true);
 
-        await Task.Delay(1000 * 60); //wait 60seconds
-
-        await ImportEtf(4, "IE00B4L5YC18", false, true, apiKey2);
-        await ImportEtf(5, "IE00B1XNHC34", false, true, apiKey3);
-        await ImportEtf(6, "IE00BSPLC298", false, true, apiKey3);
-        await ImportEtf(7, "IE00BSPLC413", false, true, apiKey3);
+        await ImportEtfLemonMarkets(2, "IE00BK5BQT80", false, lemonMarketsApiKey);
+        await ImportEtfLemonMarkets(3, "IE00B4L5Y983", false, lemonMarketsApiKey);
+        await ImportEtfLemonMarkets(4, "IE00B4L5YC18", false, lemonMarketsApiKey);
+        await ImportEtfLemonMarkets(5, "IE00B1XNHC34", false, lemonMarketsApiKey);
+        await ImportEtfLemonMarkets(6, "IE00BSPLC298", false, lemonMarketsApiKey);
+        await ImportEtfLemonMarkets(7, "IE00BSPLC413", false, lemonMarketsApiKey);
 
         return NoContent();
     }
@@ -63,8 +61,8 @@ public class ImportController : BaseController
     public async Task<IActionResult> ImportCurrencies()
     {
         await ImportCurrency("CZK", false, false, "");
-        await ImportCurrency("EUR", false, false, apiKey1);
-        await ImportCurrency("USD", false, false, apiKey1);
+        await ImportCurrency("EUR", false, false, alphavantageApiKey);
+        await ImportCurrency("USD", false, false, alphavantageApiKey);
 
         return NoContent();
     }
@@ -112,17 +110,24 @@ public class ImportController : BaseController
     [ProducesResponseType(204)]
     public async Task<IActionResult> ImportEtfs()
     {
-        await ImportEtf(2, "IE00BK5BQT80", false, false, apiKey2);
-        await ImportEtf(3, "IE00B4L5Y983", false, false, apiKey2);
-        await ImportEtf(4, "IE00B4L5YC18", false, false, apiKey2);
-        await ImportEtf(5, "IE00B1XNHC34", false, false, apiKey3);
-        await ImportEtf(6, "IE00BSPLC298", false, false, apiKey3);
-        await ImportEtf(7, "IE00BSPLC413", false, false, apiKey3);
+        // await ImportEtfAlphavantage(2, "IE00BK5BQT80", false, false, alphavantageApiKey);
+        // await ImportEtfAlphavantage(3, "IE00B4L5Y983", false, false, alphavantageApiKey);
+        // await ImportEtfAlphavantage(4, "IE00B4L5YC18", false, false, alphavantageApiKey);
+        // await ImportEtfAlphavantage(5, "IE00B1XNHC34", false, false, alphavantageApiKey);
+        // await ImportEtfAlphavantage(6, "IE00BSPLC298", false, false, alphavantageApiKey);
+        // await ImportEtfAlphavantage(7, "IE00BSPLC413", false, false, alphavantageApiKey);
+
+        await ImportEtfLemonMarkets(2, "IE00BK5BQT80", false, lemonMarketsApiKey);
+        await ImportEtfLemonMarkets(3, "IE00B4L5Y983", false, lemonMarketsApiKey);
+        await ImportEtfLemonMarkets(4, "IE00B4L5YC18", false, lemonMarketsApiKey);
+        await ImportEtfLemonMarkets(5, "IE00B1XNHC34", false, lemonMarketsApiKey);
+        await ImportEtfLemonMarkets(6, "IE00BSPLC298", false, lemonMarketsApiKey);
+        await ImportEtfLemonMarkets(7, "IE00BSPLC413", false, lemonMarketsApiKey);
 
         return NoContent();
     }
 
-    private async Task ImportEtf(int etfId, string isin, bool full, bool rewrite, string apiKey)
+    private async Task ImportEtfAlphavantage(int etfId, string isin, bool full, bool rewrite, string apiKey)
     {
         var etfValueHistoryService = new EtfValueHistoryService(apiKey, loggerFactory.CreateLogger<EtfValueHistoryService>());
         var minimumDate = AlphavantageHelpers.GetMinimumDate(full);
@@ -134,6 +139,47 @@ public class ImportController : BaseController
 
         var valueHistory = await DbContext.EtfValueHistory
             .Where(x => x.EtfId == etfId && x.Date >= minimumDate)
+            .ToListAsync();
+
+        foreach (var day in result)
+        {
+            var historyValue = valueHistory.FirstOrDefault(x => x.Date.ToString("yyyyMMdd") == day.Day.ToString("yyyyMMdd"));
+            if (historyValue == null)
+            {
+                historyValue = new Database.Entity.EtfValueHistory
+                {
+                    Date = day.Day,
+                    Value = day.Close,
+                    EtfId = etfId
+                };
+                DbContext.EtfValueHistory.Add(historyValue);
+            }
+            else
+            {
+                if (rewrite)
+                {
+                    historyValue.Value = day.Close;
+                }
+            }
+        }
+
+        await DbContext.SaveChangesAsync();
+    }
+
+    private async Task ImportEtfLemonMarkets(int etfId, string isin, bool rewrite, string apiKey)
+    {
+        var etfValueHistoryService = new Services.LemonMarkets.EtfValueHistoryService(apiKey, loggerFactory.CreateLogger<Services.LemonMarkets.EtfValueHistoryService>());
+
+        if (!Services.LemonMarkets.LemonMarketsHelpers.IsSupportedIsin(isin))
+            return;
+
+        var startDate = new DateTime(2023, 2, 1, 0, 0, 0, DateTimeKind.Utc);
+        var days = 35;
+
+        var result = await etfValueHistoryService.LoadHistory(isin, startDate, days);
+
+        var valueHistory = await DbContext.EtfValueHistory
+            .Where(x => x.EtfId == etfId && x.Date >= startDate)
             .ToListAsync();
 
         foreach (var day in result)
