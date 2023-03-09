@@ -181,6 +181,7 @@ public class UploadController : BaseController
                 return PrepareAccount(account, tradeHistory, currencyValueHistory);
             }).ToList()
         };
+        accountData.History = GetTotalAccountsHistory(accountData.Accounts);
         accountData.TotalValueCZK = accountData.Accounts.Sum(x => x.ValueCZK);
         accountData.TotalTransactionsCZK = accountData.Accounts.Sum(x => x.CumulativeTransactionsCZK);
 
@@ -200,6 +201,7 @@ public class UploadController : BaseController
                 return PrepareCryptoWallet(wallet, tradesHistory, valueHistory, crypto, currencyValueHistory);
             }).ToList()
         };
+        cryptoData.History = GetTotalCryptoHistory(cryptoData.CryptoWallets);
         cryptoData.TotalValueCZK = cryptoData.CryptoWallets.Sum(x => x.ValueCZK ?? 0);
         cryptoData.TotalTransactionsCZK = cryptoData.CryptoWallets.Sum(x => x.CumulativeTransactionsCZK ?? 0);
 
@@ -220,8 +222,9 @@ public class UploadController : BaseController
         var netWorth = new NetWorth()
         {
             //TODO: rework this
-            TotalValueCZK = etfData.TotalValueCZK + cryptoData.TotalValueCZK,
-            TotalTransactionsCZK = etfData.TotalTransactionsCZK + cryptoData.TotalTransactionsCZK,
+            History = GetTotalHistory(accountData.History, cryptoData.History),
+            TotalValueCZK = accountData.TotalValueCZK + cryptoData.TotalValueCZK,
+            TotalTransactionsCZK = accountData.TotalTransactionsCZK + cryptoData.TotalTransactionsCZK,
         };
 
         return new TradesData
@@ -232,6 +235,188 @@ public class UploadController : BaseController
             RealEstateData = realEstateData,
             NetWorth = netWorth
         };
+    }
+
+    private static IEnumerable<NetWorthHistory> GetTotalHistory(IEnumerable<NetWorthHistory> accountsHistory, IEnumerable<NetWorthHistory> cryptoHistory)
+    {
+        var result = new List<NetWorthHistory>();
+
+        var valuesByDay = accountsHistory.Select(x => new { Id = "accounts", Value = x }).Concat(cryptoHistory.Select(x => new { Id = "crypto", Value = x })).GroupBy(x => x.Value.Date).OrderBy(x => x.Key);
+        LastHistoryValue? accountsLastValue = null;
+        LastHistoryValue? cryptosLastValue = null;
+
+        foreach (var dayTrades in valuesByDay)
+        {
+            var value = 0m;
+            var transactions = 0m;
+
+            var valueForAccounts = dayTrades.FirstOrDefault(x => x.Id == "accounts");
+            var valueForCrypto = dayTrades.FirstOrDefault(x => x.Id == "crypto");
+
+            if (valueForAccounts != null)
+            {
+                value += valueForAccounts.Value.ValueCZK ?? 0m;
+                transactions += valueForAccounts.Value.TransactionsCZK;
+
+                if (accountsLastValue != null)
+                {
+                    accountsLastValue.TotalValueCZK = valueForAccounts.Value.ValueCZK ?? 0m;
+                    accountsLastValue.TotalTransactionsCZK = valueForAccounts.Value.TransactionsCZK;
+                }
+                else
+                {
+                    accountsLastValue = new LastHistoryValue
+                    {
+                        TotalValueCZK = valueForAccounts.Value.ValueCZK ?? 0m,
+                        TotalTransactionsCZK = valueForAccounts.Value.TransactionsCZK
+                    };
+                }
+            }
+            else if (accountsLastValue != null)
+            {
+                value += accountsLastValue.TotalValueCZK;
+                transactions += accountsLastValue.TotalTransactionsCZK;
+            }
+
+
+            if (valueForCrypto != null)
+            {
+                value += valueForCrypto.Value.ValueCZK ?? 0m;
+                transactions += valueForCrypto.Value.TransactionsCZK;
+
+                if (cryptosLastValue != null)
+                {
+                    cryptosLastValue.TotalValueCZK = valueForCrypto.Value.ValueCZK ?? 0m;
+                    cryptosLastValue.TotalTransactionsCZK = valueForCrypto.Value.TransactionsCZK;
+                }
+                else
+                {
+                    cryptosLastValue = new LastHistoryValue
+                    {
+                        TotalValueCZK = valueForCrypto.Value.ValueCZK ?? 0m,
+                        TotalTransactionsCZK = valueForCrypto.Value.TransactionsCZK
+                    };
+                }
+            }
+            else if (cryptosLastValue != null)
+            {
+                value += cryptosLastValue.TotalValueCZK;
+                transactions += cryptosLastValue.TotalTransactionsCZK;
+            }
+
+            result.Add(new NetWorthHistory
+            {
+                Date = dayTrades.Key,
+                ValueCZK = value,
+                TransactionsCZK = transactions
+            });
+        }
+
+        return result;
+    }
+
+    private static IEnumerable<NetWorthHistory> GetTotalAccountsHistory(IEnumerable<Contracts.Result.Account> accounts)
+    {
+        var result = new List<NetWorthHistory>();
+
+        var valuesByDay = accounts.SelectMany(x => x.History.Select(h => new { AccountId = x.Id, Value = h })).GroupBy(x => x.Value.Date).OrderBy(x => x.Key);
+        var lastValue = new Dictionary<string, LastHistoryValue>();
+
+        foreach (var dayTrades in valuesByDay)
+        {
+            var value = 0m;
+            var transactions = 0m;
+
+            foreach (var account in accounts)
+            {
+                var accountValue = dayTrades.FirstOrDefault(x => x.AccountId == account.Id);
+                if (accountValue != null)
+                {
+                    value += accountValue.Value.ValueAfterCZK ?? 0m;
+                    transactions += accountValue.Value.CumulativeTransactionsCZK;
+
+                    if (lastValue.ContainsKey(account.Id))
+                    {
+                        lastValue[account.Id].TotalValueCZK = accountValue.Value.ValueAfterCZK ?? 0m;
+                        lastValue[account.Id].TotalTransactionsCZK = accountValue.Value.CumulativeTransactionsCZK;
+                    }
+                    else
+                    {
+                        lastValue.Add(account.Id, new LastHistoryValue
+                        {
+                            TotalValueCZK = accountValue.Value.ValueAfterCZK ?? 0m,
+                            TotalTransactionsCZK = accountValue.Value.CumulativeTransactionsCZK
+                        });
+                    }
+                }
+                else if (lastValue.ContainsKey(account.Id))
+                {
+                    value += lastValue[account.Id]?.TotalValueCZK ?? 0m;
+                    transactions += lastValue[account.Id]?.TotalTransactionsCZK ?? 0m;
+                }
+            }
+
+            result.Add(new NetWorthHistory
+            {
+                Date = dayTrades.Key,
+                ValueCZK = value,
+                TransactionsCZK = transactions
+            });
+        }
+
+        return result;
+    }
+
+    private static IEnumerable<NetWorthHistory> GetTotalCryptoHistory(IEnumerable<Contracts.Result.CryptoWallet> cryptoWallet)
+    {
+        var result = new List<NetWorthHistory>();
+
+        var valuesByDay = cryptoWallet.SelectMany(x => x.History.Select(h => new { AccountId = x.Id, Value = h })).GroupBy(x => x.Value.Date).OrderBy(x => x.Key);
+        var lastValue = new Dictionary<string, LastHistoryValue>();
+
+        foreach (var dayTrades in valuesByDay)
+        {
+            var value = 0m;
+            var transactions = 0m;
+
+            foreach (var wallet in cryptoWallet)
+            {
+                var walletValue = dayTrades.FirstOrDefault(x => x.AccountId == wallet.Id);
+                if (walletValue != null)
+                {
+                    value += walletValue.Value.ValueAfterCZK ?? 0m;
+                    transactions += walletValue.Value.CumulativeTransactionsCZK;
+
+                    if (lastValue.ContainsKey(wallet.Id))
+                    {
+                        lastValue[wallet.Id].TotalValueCZK = walletValue.Value.ValueAfterCZK ?? 0m;
+                        lastValue[wallet.Id].TotalTransactionsCZK = walletValue.Value.CumulativeTransactionsCZK;
+                    }
+                    else
+                    {
+                        lastValue.Add(wallet.Id, new LastHistoryValue
+                        {
+                            TotalValueCZK = walletValue.Value.ValueAfterCZK ?? 0m,
+                            TotalTransactionsCZK = walletValue.Value.CumulativeTransactionsCZK
+                        });
+                    }
+                }
+                else if (lastValue.ContainsKey(wallet.Id))
+                {
+                    value += lastValue[wallet.Id]?.TotalValueCZK ?? 0m;
+                    transactions += lastValue[wallet.Id]?.TotalTransactionsCZK ?? 0m;
+                }
+            }
+
+            result.Add(new NetWorthHistory
+            {
+                Date = dayTrades.Key,
+                ValueCZK = value,
+                TransactionsCZK = transactions
+            });
+        }
+
+        return result;
     }
 
     private static EtfDetailWithTrades PrepareEtfData(Etf etf,

@@ -12,12 +12,14 @@ export interface TradesState {
 
 export interface AccountData {
   accounts: Account[];
+  history: NetWorthHistory[];
   totalValueCZK: number;
   totalTransactionsCZK: number;
 }
 
 export interface CryptoData {
   cryptoWallets: CryptoWallet[];
+  history: NetWorthHistory[];
   totalValueCZK: number;
   totalTransactionsCZK: number;
 }
@@ -37,8 +39,15 @@ export interface RealEstateData {
 }
 
 export interface NetWorth {
+  history: NetWorthHistory[];
   totalValueCZK: number;
   totalTransactionsCZK: number;
+}
+
+export interface NetWorthHistory {
+  date: string;
+  valueCZK: number;
+  transactionsCZK: number;
 }
 
 interface TradesContextValue {
@@ -49,6 +58,7 @@ interface TradesContextValue {
 
 const defaultValue: TradesState = {
   netWorth: {
+    history: [],
     totalTransactionsCZK: 0,
     totalValueCZK: 0,
   },
@@ -59,11 +69,13 @@ const defaultValue: TradesState = {
   },
   accountData: {
     accounts: [],
+    history: [],
     totalTransactionsCZK: 0,
     totalValueCZK: 0,
   },
   cryptoData: {
     cryptoWallets: [],
+    history: [],
     totalTransactionsCZK: 0,
     totalValueCZK: 0,
   },
