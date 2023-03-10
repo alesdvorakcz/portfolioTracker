@@ -182,6 +182,7 @@ public class UploadController : BaseController
             }).ToList()
         };
         accountData.History = GetTotalAccountsHistory(accountData.Accounts);
+        accountData.MonthlyHistory = GetMonthlyHistory(accountData.History);
         accountData.TotalValueCZK = accountData.Accounts.Sum(x => x.ValueCZK);
         accountData.TotalTransactionsCZK = accountData.Accounts.Sum(x => x.CumulativeTransactionsCZK);
 
@@ -202,6 +203,7 @@ public class UploadController : BaseController
             }).ToList()
         };
         cryptoData.History = GetTotalCryptoHistory(cryptoData.CryptoWallets);
+        cryptoData.MonthlyHistory = GetMonthlyHistory(cryptoData.History);
         cryptoData.TotalValueCZK = cryptoData.CryptoWallets.Sum(x => x.ValueCZK ?? 0);
         cryptoData.TotalTransactionsCZK = cryptoData.CryptoWallets.Sum(x => x.CumulativeTransactionsCZK ?? 0);
 
@@ -222,10 +224,12 @@ public class UploadController : BaseController
         var netWorth = new NetWorth()
         {
             //TODO: rework this
-            History = GetTotalHistory(accountData.History, cryptoData.History),
             TotalValueCZK = accountData.TotalValueCZK + cryptoData.TotalValueCZK,
             TotalTransactionsCZK = accountData.TotalTransactionsCZK + cryptoData.TotalTransactionsCZK,
         };
+
+        netWorth.History = GetTotalHistory(accountData.History, cryptoData.History);
+        netWorth.MonthlyHistory = GetMonthlyHistory(netWorth.History);
 
         return new TradesData
         {
@@ -309,6 +313,44 @@ public class UploadController : BaseController
                 Date = dayTrades.Key,
                 ValueCZK = value,
                 TransactionsCZK = transactions
+            });
+        }
+
+        return result;
+    }
+
+    private static IEnumerable<NetWorthHistory> GetMonthlyHistory(IEnumerable<NetWorthHistory> totalHistory)
+    {
+        var result = new List<NetWorthHistory>();
+
+        var firstDate = totalHistory.Min(x => x.Date);
+        var lastDate = totalHistory.Max(x => x.Date);
+
+        var firstMonth = new DateTime(firstDate.Year, firstDate.Month, 1);
+        var lastMonth = new DateTime(lastDate.Year, lastDate.Month, 1);
+
+        var months = (lastMonth.Year - firstMonth.Year) * 12 + (lastMonth.Month - firstMonth.Month);
+
+        var lastValue = 0m;
+        var lastTransactions = 0m;
+
+        for (var i = 0; i < months; i++)
+        {
+            var month = firstMonth.AddMonths(i);
+
+            var monthHistoryItems = totalHistory.Where(x => x.Date.Year == month.Year && x.Date.Month == month.Month);
+
+            if (monthHistoryItems.Any())
+            {
+                lastValue = monthHistoryItems.Last().ValueCZK ?? lastValue;
+                lastTransactions = monthHistoryItems.Last().TransactionsCZK;
+            }
+
+            result.Add(new NetWorthHistory
+            {
+                Date = month,
+                ValueCZK = lastValue,
+                TransactionsCZK = lastTransactions
             });
         }
 

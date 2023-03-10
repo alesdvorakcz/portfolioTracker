@@ -7,10 +7,21 @@ interface Props {
   data: Serie[];
   yScale?: boolean;
   height: number;
+  xFormat?: string;
+  xScale?: any;
+  axisBottom?: any;
   tooltip?: (props: PointTooltipProps) => React.ReactElement;
 }
 
-const LineChart: React.FC<Props> = ({ data, yScale, height, tooltip }) => {
+const LineChart: React.FC<Props> = ({
+  data,
+  xFormat,
+  xScale,
+  yScale,
+  axisBottom,
+  height,
+  tooltip,
+}) => {
   return (
     <div style={{ height: height }}>
       <ResponsiveLine
@@ -32,9 +43,9 @@ const LineChart: React.FC<Props> = ({ data, yScale, height, tooltip }) => {
           'rgba(249,199,79, .6)',
         ]}
         margin={{ top: 50, right: 0, bottom: 50, left: 50 }}
-        xScale={{ type: 'time', format: '%Y-%m-%d', precision: 'day' }}
         enableGridX={false}
-        xFormat="time:%d.%m.%Y"
+        xScale={xScale || { type: 'time', format: '%Y-%m-%d', precision: 'day' }}
+        xFormat={xFormat || 'time:%d.%m.%Y'}
         yFormat={(x) =>
           x.toLocaleString(DEFAULT_LOCALE, {
             style: 'currency',
@@ -46,9 +57,11 @@ const LineChart: React.FC<Props> = ({ data, yScale, height, tooltip }) => {
             ? { type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }
             : undefined
         }
-        axisBottom={{
-          format: '%b %y',
-        }}
+        axisBottom={
+          axisBottom || {
+            format: '%b %y',
+          }
+        }
         axisLeft={{
           format: (d: number) => {
             return d?.toLocaleString(DEFAULT_LOCALE);
