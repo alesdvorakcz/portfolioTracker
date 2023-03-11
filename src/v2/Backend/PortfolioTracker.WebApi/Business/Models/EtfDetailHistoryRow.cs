@@ -1,6 +1,6 @@
-namespace PortfolioTracker.WebApi.Contracts.Result;
+namespace PortfolioTracker.WebApi.Business.Models;
 
-public class EtfValueHistoryEnhanced
+public class EtfDetailHistoryRow
 {
     public int Id { get; set; }
     public DateTime Date { get; set; }

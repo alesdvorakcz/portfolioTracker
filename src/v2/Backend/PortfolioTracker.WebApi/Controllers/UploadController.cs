@@ -2,6 +2,7 @@ using AutoMapper;
 using ClosedXML.Excel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PortfolioTracker.WebApi.Business;
 using PortfolioTracker.WebApi.Common;
 using PortfolioTracker.WebApi.Contracts.Result;
 using PortfolioTracker.WebApi.Database;
@@ -112,8 +113,8 @@ public class UploadController : BaseController
             })
             .ToList();
 
-        var etfs = await DbContext.Etfs
-            .Select(x => new Etf
+        var etfDtos = await DbContext.Etfs
+            .Select(x => new Database.Dtos.Etf
             {
                 Id = x.Id,
                 Ticker = x.Ticker,
@@ -123,19 +124,33 @@ public class UploadController : BaseController
             })
             .ToListAsync();
 
-        var etfValueHistory = await DbContext.EtfValueHistory
+        var etfValueHistoryDtos = await DbContext.EtfValueHistory
+            .Select(x => new Database.Dtos.EtfValueHistory
+            {
+                Id = x.Id,
+                EtfId = x.EtfId,
+                Date = x.Date,
+                Value = x.Value
+            })
             .OrderBy(x => x.Date)
             .ToListAsync();
 
-        var currencies = await DbContext.Currencies
-            .Select(x => new Currency
+        var currencyDtos = await DbContext.Currencies
+            .Select(x => new Database.Dtos.Currency
             {
                 Id = x.Id,
                 Name = x.Name
             })
             .ToListAsync();
 
-        var currenciesHistory = await DbContext.CurrencyValueHistory
+        var currencyHistoryDtos = await DbContext.CurrencyValueHistory
+            .Select(x => new Database.Dtos.CurrencyValueHistory
+            {
+                Id = x.Id,
+                CurrencyId = x.CurrencyId,
+                Date = x.Date,
+                ConversionRate = x.ConversionRate
+            })
             .OrderBy(x => x.Date)
             .ToListAsync();
 
@@ -153,22 +168,8 @@ public class UploadController : BaseController
             .OrderBy(x => x.Date)
             .ToListAsync();
 
-        var etfData = new EtfData
-        {
-            Etfs = etfs.Select(etf =>
-            {
-                var valueHistory = etfValueHistory.Where(x => x.EtfId == etf.Id);
-
-                var currency = currencies.First(x => x.Id == etf.CurrencyId);
-                var currencyValueHistory = currenciesHistory.Where(x => x.CurrencyId == currency.Id);
-
-                var trades = etfTrades.Where(x => x.Ticker == etf.Ticker).OrderBy(x => x.Date);
-
-                return PrepareEtfData(etf, valueHistory, trades, currencyValueHistory);
-            }).ToList()
-        };
-        etfData.TotalValueCZK = etfData.Etfs.Sum(x => x.ValueCZK ?? 0);
-        etfData.TotalTransactionsCZK = etfData.Etfs.Sum(x => x.CumulativeTransactionsCZK);
+        var currencies = CurrencyDataBuilder.GetData(currencyDtos, currencyHistoryDtos);
+        var etfData = EtfDataBuilder.GetData(etfDtos, etfValueHistoryDtos, etfTrades, currencies);
 
         var accountData = new AccountData
         {
@@ -176,9 +177,9 @@ public class UploadController : BaseController
             {
                 var tradeHistory = accountTrades.Where(x => x.AccountId == account.Id);
                 var currency = currencies.First(x => x.Id == account.CurrencyId);
-                var currencyValueHistory = currenciesHistory.Where(x => x.CurrencyId == currency.Id);
+                var currencyValueHistory = currencyHistoryDtos.Where(x => x.CurrencyId == currency.Id);
 
-                return PrepareAccount(account, tradeHistory, currencyValueHistory);
+                return PrepareAccount(account, tradeHistory, currencyHistoryDtos);
             }).ToList()
         };
         accountData.History = GetTotalAccountsHistory(accountData.Accounts);
@@ -196,10 +197,10 @@ public class UploadController : BaseController
                 var valueHistory = cryptosHistory.Where(x => x.CryptoId == crypto.Id);
 
                 var currency = currencies.First(x => x.Id == crypto.CurrencyId);
-                var currencyValueHistory = currenciesHistory.Where(x => x.CurrencyId == currency.Id);
+                var currencyValueHistory = currencyHistoryDtos.Where(x => x.CurrencyId == currency.Id);
 
 
-                return PrepareCryptoWallet(wallet, tradesHistory, valueHistory, crypto, currencyValueHistory);
+                return PrepareCryptoWallet(wallet, tradesHistory, valueHistory, crypto, currencyHistoryDtos);
             }).ToList()
         };
         cryptoData.History = GetTotalCryptoHistory(cryptoData.CryptoWallets);
@@ -461,103 +462,8 @@ public class UploadController : BaseController
         return result;
     }
 
-    private static EtfDetailWithTrades PrepareEtfData(Etf etf,
-        IEnumerable<Database.Entity.EtfValueHistory> etfValueHistory, IEnumerable<EtfTrade> etfTrades,
-        IEnumerable<Database.Entity.CurrencyValueHistory> currencyValueHistory)
-    {
-        var etfWithTrades = new EtfDetailWithTrades
-        {
-            Id = etf.Id,
-            Name = etf.Name,
-            Ticker = etf.Ticker,
-            ISIN = etf.ISIN,
-            CurrencyId = etf.CurrencyId
-        };
-
-        var history = new List<EtfValueHistoryEnhanced>();
-        var valueBefore = 0m;
-        var unitsTotal = 0;
-        var cumulativeTransactions = 0m;
-        var cumulativeTransactionsCZK = 0m;
-        decimal? lastConversionRate = null;
-
-        if (etfTrades.Any())
-        {
-            var firstTradeDate = etfTrades.First().Date;
-
-            foreach (var valueHistoryRow in etfValueHistory.Where(x => x.Date >= firstTradeDate))
-            {
-                var valueHistoryRowEnhanced = new EtfValueHistoryEnhanced
-                {
-                    Id = valueHistoryRow.Id,
-                    Date = valueHistoryRow.Date,
-                    CurrencyId = etf.CurrencyId,
-                    UnitPrice = valueHistoryRow.Value,
-                };
-
-                var conversionRate = currencyValueHistory.FirstOrDefault(x => x.Date == valueHistoryRow.Date)?.ConversionRate;
-                valueHistoryRowEnhanced.ConversionRate = conversionRate;
-                if (conversionRate != null)
-                    lastConversionRate = conversionRate;
-
-                var tradeHistoryRow = etfTrades.FirstOrDefault(x => x.Date == valueHistoryRow.Date);
-                if (tradeHistoryRow != null)
-                {
-                    valueHistoryRowEnhanced.ValueBefore = valueBefore;
-                    valueHistoryRowEnhanced.ValueBeforeCZK = valueBefore * conversionRate;
-                    valueHistoryRowEnhanced.UnitsChange = tradeHistoryRow.UnitsChange;
-
-                    unitsTotal += tradeHistoryRow.UnitsChange;
-                    valueHistoryRowEnhanced.UnitsTotal = unitsTotal;
-
-                    valueHistoryRowEnhanced.Fee = tradeHistoryRow.Fee;
-                    valueHistoryRowEnhanced.Transaction = tradeHistoryRow.UnitsChange * tradeHistoryRow.UnitPrice;
-                    valueHistoryRowEnhanced.TransactionCZK = tradeHistoryRow.UnitsChange * tradeHistoryRow.UnitPrice * conversionRate ?? 0;
-
-                    valueHistoryRowEnhanced.ValueAfter = unitsTotal * tradeHistoryRow.UnitPrice;
-                    valueHistoryRowEnhanced.ValueAfterCZK = valueHistoryRowEnhanced.ValueAfter * conversionRate;
-
-                    cumulativeTransactions += valueHistoryRowEnhanced.Transaction;
-                    cumulativeTransactionsCZK += valueHistoryRowEnhanced.TransactionCZK;
-                    valueHistoryRowEnhanced.CumulativeTransactions = cumulativeTransactions;
-                    valueHistoryRowEnhanced.CumulativeTransactionsCZK = cumulativeTransactionsCZK;
-
-                    valueBefore = valueHistoryRowEnhanced.ValueAfter;
-                }
-                else
-                {
-                    valueBefore = unitsTotal * valueHistoryRow.Value;
-
-                    valueHistoryRowEnhanced.ValueBefore = valueBefore;
-                    valueHistoryRowEnhanced.ValueBeforeCZK = valueBefore * conversionRate;
-                    valueHistoryRowEnhanced.UnitsChange = 0;
-                    valueHistoryRowEnhanced.UnitsTotal = unitsTotal;
-                    valueHistoryRowEnhanced.Fee = 0;
-                    valueHistoryRowEnhanced.Transaction = 0;
-                    valueHistoryRowEnhanced.TransactionCZK = 0;
-                    valueHistoryRowEnhanced.ValueAfter = valueHistoryRowEnhanced.ValueBefore;
-                    valueHistoryRowEnhanced.ValueAfterCZK = valueHistoryRowEnhanced.ValueBeforeCZK;
-                    valueHistoryRowEnhanced.CumulativeTransactions = cumulativeTransactions;
-                    valueHistoryRowEnhanced.CumulativeTransactionsCZK = cumulativeTransactionsCZK;
-                }
-
-                history.Add(valueHistoryRowEnhanced);
-            }
-        }
-
-        etfWithTrades.History = history.OrderByDescending(x => x.Date).ToList();
-
-        etfWithTrades.Value = valueBefore;
-        etfWithTrades.ValueCZK = valueBefore * lastConversionRate;
-        etfWithTrades.UnitsTotal = unitsTotal;
-        etfWithTrades.CumulativeTransactions = cumulativeTransactions;
-        etfWithTrades.CumulativeTransactionsCZK = cumulativeTransactionsCZK;
-
-        return etfWithTrades;
-    }
-
     private static Contracts.Result.CryptoWallet PrepareCryptoWallet(Excel.Models.CryptoWallet wallet, IEnumerable<Excel.Models.CryptoTrade> walletValueHistory,
-        IEnumerable<Database.Entity.CryptoValueHistory> cryptoValueHistory, Crypto crypto, IEnumerable<Database.Entity.CurrencyValueHistory> currencyValueHistory)
+        IEnumerable<Database.Entity.CryptoValueHistory> cryptoValueHistory, Crypto crypto, IEnumerable<Database.Dtos.CurrencyValueHistory> currencyValueHistory)
     {
         var cryptoWallet = new Contracts.Result.CryptoWallet
         {
@@ -650,7 +556,7 @@ public class UploadController : BaseController
     }
 
     private static Contracts.Result.Account PrepareAccount(Excel.Models.Account acc, IEnumerable<Excel.Models.AccountTrade> accountValueHistory,
-        IEnumerable<Database.Entity.CurrencyValueHistory> currencyValueHistory)
+        IEnumerable<Database.Dtos.CurrencyValueHistory> currencyValueHistory)
     {
         var account = new Contracts.Result.Account
         {
