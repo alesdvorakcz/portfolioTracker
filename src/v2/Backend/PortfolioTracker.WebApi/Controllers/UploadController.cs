@@ -334,7 +334,7 @@ public class UploadController : BaseController
         var lastValue = 0m;
         var lastTransactions = 0m;
 
-        for (var i = 0; i < months; i++)
+        for (var i = 0; i <= months; i++)
         {
             var month = firstMonth.AddMonths(i);
 
