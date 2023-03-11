@@ -1,6 +1,6 @@
-namespace PortfolioTracker.WebApi.Contracts.Result;
+namespace PortfolioTracker.WebApi.Business.Models;
 
-public class Account
+public class AccountWithTrade
 {
     public string Id { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
@@ -8,8 +8,8 @@ public class Account
 
     public IEnumerable<AccountTrade> History { get; set; } = Array.Empty<AccountTrade>();
 
-    public decimal Value { get; set; }
-    public decimal ValueCZK { get; set; }
-    public decimal CumulativeTransactionsCZK { get; set; }
+    // public decimal Value { get; set; }
+    // public decimal ValueCZK { get; set; }
+    // public decimal CumulativeTransactionsCZK { get; set; }
     public decimal CumulativeTransactions { get; set; }
 }

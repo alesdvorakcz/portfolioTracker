@@ -1,4 +1,4 @@
-namespace PortfolioTracker.WebApi.Contracts.Result;
+namespace PortfolioTracker.WebApi.Business.Models;
 
 public class AccountTrade
 {
