@@ -1,6 +1,6 @@
-namespace PortfolioTracker.WebApi.Contracts.Result;
+namespace PortfolioTracker.WebApi.Business.Models;
 
-public class NetWorthHistory
+public class NetWorthHistoryRow
 {
     public DateTime Date { get; set; }
     public decimal? ValueCZK { get; set; }
