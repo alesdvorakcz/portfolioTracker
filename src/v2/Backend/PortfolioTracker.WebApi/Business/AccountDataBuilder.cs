@@ -38,7 +38,7 @@ public static class AccountDataBuilder
             CurrencyId = account.CurrencyId,
         };
 
-        var history = new List<AccountTrade>();
+        var history = new List<AccountHistoryRow>();
 
         var valueAfter = 0m;
         var cumulativeTransactions = 0m;
@@ -47,7 +47,7 @@ public static class AccountDataBuilder
 
         foreach (var valueHistoryRow in accountTrades)
         {
-            var accountTrade = new AccountTrade
+            var accountTrade = new AccountHistoryRow
             {
                 Date = valueHistoryRow.Date,
                 CurrencyId = account.CurrencyId,

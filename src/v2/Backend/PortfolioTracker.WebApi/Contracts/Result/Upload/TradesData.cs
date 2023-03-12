@@ -6,5 +6,5 @@ public class TradesData
     public Business.Models.EtfData EtfData { get; set; } = new Business.Models.EtfData();
     public Business.Models.AccountData AccountData { get; set; } = new Business.Models.AccountData();
     public CryptoData CryptoData { get; set; } = new CryptoData();
-    public RealEstateData RealEstateData { get; set; } = new RealEstateData();
+    public Business.Models.RealEstateData RealEstateData { get; set; } = new Business.Models.RealEstateData();
 }

@@ -1,4 +1,4 @@
-namespace PortfolioTracker.WebApi.Contracts.Result;
+namespace PortfolioTracker.WebApi.Business.Models;
 
 public class RealEstate
 {
@@ -7,7 +7,7 @@ public class RealEstate
     public decimal StartingPrice { get; set; }
     public decimal OwnStartingCapital { get; set; }
 
-    public IEnumerable<RealEstateHistory> History { get; set; } = Array.Empty<RealEstateHistory>();
+    public IEnumerable<RealEstateHistoryRow> History { get; set; } = Array.Empty<RealEstateHistoryRow>();
 
     public decimal OwnValue { get; set; }
     public decimal TotalValue { get; set; }

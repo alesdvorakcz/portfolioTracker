@@ -1,6 +1,6 @@
 namespace PortfolioTracker.WebApi.Business.Models;
 
-public class AccountTrade
+public class AccountHistoryRow
 {
     public DateTime Date { get; set; }
     public string CurrencyId { get; set; } = string.Empty;

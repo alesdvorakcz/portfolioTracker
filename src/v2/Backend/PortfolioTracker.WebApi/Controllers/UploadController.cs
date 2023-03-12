@@ -193,19 +193,7 @@ public class UploadController : BaseController
         cryptoData.TotalValueCZK = cryptoData.CryptoWallets.Sum(x => x.ValueCZK ?? 0);
         cryptoData.TotalTransactionsCZK = cryptoData.CryptoWallets.Sum(x => x.CumulativeTransactionsCZK ?? 0);
 
-        var realEstateData = new RealEstateData
-        {
-            RealEstates = realEstates.Select(realEstate =>
-            {
-                var history = realEstatesHistory.Where(x => x.RealEstateId == realEstate.Id);
-
-                return PrepareRealEstate(realEstate, history);
-            }).ToList()
-        };
-        realEstateData.OwnValue = realEstateData.RealEstates.Sum(x => x.OwnValue);
-        realEstateData.TotalValue = realEstateData.RealEstates.Sum(x => x.TotalValue);
-        realEstateData.RemainingMortage = realEstateData.RealEstates.Sum(x => x.RemainingMortage);
-        realEstateData.TotalIncome = realEstateData.RealEstates.Sum(x => x.TotalIncome);
+        var realEstateData = RealEstateDataBuilder.GetData(realEstates, realEstatesHistory);
 
         var netWorth = new NetWorth()
         {
@@ -486,51 +474,6 @@ public class UploadController : BaseController
         cryptoWallet.StakedUnits = stakedTotal;
 
         return cryptoWallet;
-    }
-
-    public static Contracts.Result.RealEstate PrepareRealEstate(Excel.Models.RealEstate estate, IEnumerable<Excel.Models.RealEstateHistory> estateHistory)
-    {
-        var realEstate = new Contracts.Result.RealEstate
-        {
-            Id = estate.Id,
-            Name = estate.Name,
-            StartingPrice = estate.StartingPrice,
-            OwnStartingCapital = estate.OwnStartingCapital
-        };
-
-        var cumulativeIncome = 0m;
-        var lastPrice = 0m;
-        var lastRemainingMortage = 0m;
-
-        var history = new List<Contracts.Result.RealEstateHistory>();
-        foreach (var historyRow in estateHistory)
-        {
-            var realEstateHistoryRow = new Contracts.Result.RealEstateHistory
-            {
-                Date = historyRow.Date,
-                Income = historyRow.Income,
-                RemainingMortage = historyRow.RemainingMortage,
-                EstimatedPrice = historyRow.EstimatedPrice
-            };
-
-            lastPrice = realEstateHistoryRow.EstimatedPrice;
-            lastRemainingMortage = realEstateHistoryRow.RemainingMortage;
-            cumulativeIncome += realEstateHistoryRow.Income;
-            realEstateHistoryRow.CumulativeIncome = cumulativeIncome;
-            realEstateHistoryRow.OwnValue = realEstateHistoryRow.EstimatedPrice - realEstateHistoryRow.RemainingMortage;
-            realEstateHistoryRow.TotalValueIncludingIncome = realEstateHistoryRow.EstimatedPrice + cumulativeIncome;
-
-            history.Add(realEstateHistoryRow);
-        }
-
-        realEstate.History = history.OrderByDescending(x => x.Date).ToList();
-
-        realEstate.RemainingMortage = lastRemainingMortage;
-        realEstate.OwnValue = lastPrice - lastRemainingMortage; ;
-        realEstate.TotalValue = lastPrice;
-        realEstate.TotalIncome = cumulativeIncome;
-
-        return realEstate;
     }
 
     [HttpPost("export")]

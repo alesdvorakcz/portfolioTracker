@@ -1,6 +1,6 @@
-namespace PortfolioTracker.WebApi.Contracts.Result;
+namespace PortfolioTracker.WebApi.Business.Models;
 
-public class RealEstateHistory
+public class RealEstateHistoryRow
 {
     public DateTime Date { get; set; }
     public decimal Income { get; set; }

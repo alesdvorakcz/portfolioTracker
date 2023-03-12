@@ -6,7 +6,7 @@ public class AccountWithTrade
     public string Name { get; set; } = string.Empty;
     public string CurrencyId { get; set; } = string.Empty;
 
-    public IEnumerable<AccountTrade> History { get; set; } = Array.Empty<AccountTrade>();
+    public IEnumerable<AccountHistoryRow> History { get; set; } = Array.Empty<AccountHistoryRow>();
 
     // public decimal Value { get; set; }
     // public decimal ValueCZK { get; set; }
