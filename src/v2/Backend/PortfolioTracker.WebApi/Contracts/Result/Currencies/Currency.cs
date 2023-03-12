@@ -6,5 +6,5 @@ public class Currency
     public string Id { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
 
-    public CurrencyValueHistory? LastValue { get; set; }
+    public CurrencyValueHistoryRow? LastValue { get; set; }
 }

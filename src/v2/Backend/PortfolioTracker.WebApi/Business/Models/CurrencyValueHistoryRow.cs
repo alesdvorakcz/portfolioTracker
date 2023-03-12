@@ -1,6 +1,6 @@
 namespace PortfolioTracker.WebApi.Business.Models;
 
-public class CurrencyValueHistory
+public class CurrencyValueHistoryRow
 {
     public int Id { get; set; }
     public DateTime Date { get; set; }

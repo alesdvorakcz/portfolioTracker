@@ -1,9 +1,9 @@
 
 namespace PortfolioTracker.WebApi.Contracts.Result;
 
-public class CurrencyValueHistory
+public class EtfValueHistoryRow
 {
     public int Id { get; set; }
     public DateTime Date { get; set; }
-    public decimal ConversionRate { get; set; }
+    public decimal Value { get; set; }
 }

@@ -26,7 +26,7 @@ public class CurrencyController : BaseController
 
         foreach (var currency in currencies)
         {
-            currency.LastValue = await Mapper.ProjectTo<CurrencyValueHistory>(
+            currency.LastValue = await Mapper.ProjectTo<CurrencyValueHistoryRow>(
                     DbContext.CurrencyValueHistory
                         .Where(x => x.CurrencyId == currency.Id)
                         .OrderByDescending(x => x.Date)
@@ -48,7 +48,7 @@ public class CurrencyController : BaseController
         if (currency == null)
             return NotFound();
 
-        var valueHistory = await Mapper.ProjectTo<CurrencyValueHistory>(
+        var valueHistory = await Mapper.ProjectTo<CurrencyValueHistoryRow>(
                 DbContext.CurrencyValueHistory
                     .Where(x => x.CurrencyId == id)
                     .OrderByDescending(x => x.Date)

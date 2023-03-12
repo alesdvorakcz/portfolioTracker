@@ -1,6 +1,6 @@
-namespace PortfolioTracker.WebApi.Contracts.Result;
+namespace PortfolioTracker.WebApi.Business.Models;
 
-public class CryptoWalletTrade
+public class CryptoWalletHistoryRow
 {
     public int Id { get; set; }
     public DateTime Date { get; set; }

@@ -7,5 +7,5 @@ public class CryptoDetail
     public string Name { get; set; } = string.Empty;
     public string CurrencyId { get; set; } = string.Empty;
 
-    public IEnumerable<CryptoValueHistory> History { get; set; } = Array.Empty<CryptoValueHistory>();
+    public IEnumerable<CryptoValueHistoryRow> History { get; set; } = Array.Empty<CryptoValueHistoryRow>();
 }

@@ -8,5 +8,5 @@ public class EtfDetail
     public string ISIN { get; set; } = string.Empty;
     public string CurrencyId { get; set; } = string.Empty;
 
-    public IEnumerable<EtfValueHistory> History { get; set; } = Array.Empty<EtfValueHistory>();
+    public IEnumerable<EtfValueHistoryRow> History { get; set; } = Array.Empty<EtfValueHistoryRow>();
 }

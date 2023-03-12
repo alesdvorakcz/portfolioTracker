@@ -79,7 +79,7 @@ public class UploadController : BaseController
 
         var cryptoWalletTrades = cryptosWs.Table("CryptoTrades").DataRange
             .Rows()
-            .Select(row => new Excel.Models.CryptoTrade
+            .Select(row => new Excel.Models.CryptoWalletTrade
             {
                 Date = row.Field("Date").GetDateTime(),
                 WalletId = row.Field("Wallet").GetString(),
@@ -154,8 +154,8 @@ public class UploadController : BaseController
             .OrderBy(x => x.Date)
             .ToListAsync();
 
-        var cryptos = await DbContext.Cryptos
-            .Select(x => new Crypto
+        var cryptoDtos = await DbContext.Cryptos
+            .Select(x => new Database.Dtos.Crypto
             {
                 Id = x.Id,
                 Ticker = x.Ticker,
@@ -164,7 +164,14 @@ public class UploadController : BaseController
             })
             .ToListAsync();
 
-        var cryptosHistory = await DbContext.CryptoValueHistory
+        var cryptosHistoryDtos = await DbContext.CryptoValueHistory
+            .Select(x => new Database.Dtos.CryptoValueHistory
+            {
+                Id = x.Id,
+                CryptoId = x.CryptoId,
+                Date = x.Date,
+                Value = x.Value
+            })
             .OrderBy(x => x.Date)
             .ToListAsync();
 
@@ -172,26 +179,8 @@ public class UploadController : BaseController
         var etfData = EtfDataBuilder.GetData(etfDtos, etfValueHistoryDtos, etfTrades, currencies);
         var accountData = AccountDataBuilder.GetData(accounts, accountTrades, currencies);
 
-        var cryptoData = new CryptoData
-        {
-            CryptoWallets = cryptoWallets.Select(wallet =>
-            {
-                var tradesHistory = cryptoWalletTrades.Where(x => x.WalletId == wallet.Id);
-                var crypto = cryptos.First(x => x.Ticker == wallet.CryptoTicker);
-
-                var valueHistory = cryptosHistory.Where(x => x.CryptoId == crypto.Id);
-
-                var currency = currencies.First(x => x.Id == crypto.CurrencyId);
-                var currencyValueHistory = currencyHistoryDtos.Where(x => x.CurrencyId == currency.Id);
-
-
-                return PrepareCryptoWallet(wallet, tradesHistory, valueHistory, crypto, currencyHistoryDtos);
-            }).ToList()
-        };
-        cryptoData.History = GetTotalCryptoHistory(cryptoData.CryptoWallets);
-        cryptoData.MonthlyHistory = GetMonthlyHistory(cryptoData.History);
-        cryptoData.TotalValueCZK = cryptoData.CryptoWallets.Sum(x => x.ValueCZK ?? 0);
-        cryptoData.TotalTransactionsCZK = cryptoData.CryptoWallets.Sum(x => x.CumulativeTransactionsCZK ?? 0);
+        var cryptos = CryptoDataBuilder.GetCryptoData(cryptoDtos, cryptosHistoryDtos);
+        var cryptoData = CryptoDataBuilder.GetWalletData(cryptoWallets, cryptoWalletTrades, cryptos, currencies);
 
         var realEstateData = RealEstateDataBuilder.GetData(realEstates, realEstatesHistory);
 
@@ -329,151 +318,6 @@ public class UploadController : BaseController
         }
 
         return result;
-    }
-
-    private static IEnumerable<NetWorthHistory> GetTotalCryptoHistory(IEnumerable<Contracts.Result.CryptoWallet> cryptoWallet)
-    {
-        var result = new List<NetWorthHistory>();
-
-        var valuesByDay = cryptoWallet.SelectMany(x => x.History.Select(h => new { AccountId = x.Id, Value = h })).GroupBy(x => x.Value.Date).OrderBy(x => x.Key);
-        var lastValue = new Dictionary<string, LastHistoryValue>();
-
-        foreach (var dayTrades in valuesByDay)
-        {
-            var value = 0m;
-            var transactions = 0m;
-
-            foreach (var wallet in cryptoWallet)
-            {
-                var walletValue = dayTrades.FirstOrDefault(x => x.AccountId == wallet.Id);
-                if (walletValue != null)
-                {
-                    value += walletValue.Value.ValueAfterCZK ?? 0m;
-                    transactions += walletValue.Value.CumulativeTransactionsCZK;
-
-                    if (lastValue.ContainsKey(wallet.Id))
-                    {
-                        lastValue[wallet.Id].TotalValueCZK = walletValue.Value.ValueAfterCZK ?? 0m;
-                        lastValue[wallet.Id].TotalTransactionsCZK = walletValue.Value.CumulativeTransactionsCZK;
-                    }
-                    else
-                    {
-                        lastValue.Add(wallet.Id, new LastHistoryValue
-                        {
-                            TotalValueCZK = walletValue.Value.ValueAfterCZK ?? 0m,
-                            TotalTransactionsCZK = walletValue.Value.CumulativeTransactionsCZK
-                        });
-                    }
-                }
-                else if (lastValue.ContainsKey(wallet.Id))
-                {
-                    value += lastValue[wallet.Id]?.TotalValueCZK ?? 0m;
-                    transactions += lastValue[wallet.Id]?.TotalTransactionsCZK ?? 0m;
-                }
-            }
-
-            result.Add(new NetWorthHistory
-            {
-                Date = dayTrades.Key,
-                ValueCZK = value,
-                TransactionsCZK = transactions
-            });
-        }
-
-        return result;
-    }
-
-    private static Contracts.Result.CryptoWallet PrepareCryptoWallet(Excel.Models.CryptoWallet wallet, IEnumerable<Excel.Models.CryptoTrade> walletValueHistory,
-        IEnumerable<Database.Entity.CryptoValueHistory> cryptoValueHistory, Crypto crypto, IEnumerable<Database.Dtos.CurrencyValueHistory> currencyValueHistory)
-    {
-        var cryptoWallet = new Contracts.Result.CryptoWallet
-        {
-            Id = wallet.Id,
-            Name = wallet.Name,
-            Crypto = crypto
-        };
-
-        var history = new List<CryptoWalletTrade>();
-
-        var valueBefore = 0m;
-        var unitsTotal = 0m;
-        var cumulativeTransactions = 0m;
-        var cumulativeTransactionsCZK = 0m;
-        var stakedTotal = 0m;
-        decimal? lastConversionRate = null;
-
-        if (walletValueHistory.Any())
-        {
-            var firstWalletValue = walletValueHistory.First().Date;
-
-            foreach (var valueHistoryRow in cryptoValueHistory.Where(x => x.Date >= firstWalletValue.Date))
-            {
-                var walletTrade = new CryptoWalletTrade
-                {
-                    Id = valueHistoryRow.Id,
-                    Date = valueHistoryRow.Date,
-                    CurrencyId = crypto.CurrencyId,
-                    UnitPrice = valueHistoryRow.Value
-                };
-
-                var conversionRate = currencyValueHistory.FirstOrDefault(x => x.Date == valueHistoryRow.Date)?.ConversionRate;
-                walletTrade.ConversionRate = conversionRate;
-                if (conversionRate != null)
-                    lastConversionRate = conversionRate;
-
-                var walletHistoryRow = walletValueHistory.FirstOrDefault(x => x.Date == valueHistoryRow.Date);
-                if (walletHistoryRow != null)
-                {
-                    walletTrade.UnitsChange = walletHistoryRow.UnitsChange;
-                    walletTrade.UnitsTotal = walletHistoryRow.AmountAfter;
-                    walletTrade.StakedUnits = walletTrade.UnitsTotal - unitsTotal - walletTrade.UnitsChange;
-                    walletTrade.CumulativeStakedUnits = stakedTotal + walletTrade.StakedUnits;
-                    unitsTotal = walletTrade.UnitsTotal;
-                    stakedTotal = walletTrade.CumulativeStakedUnits;
-
-                    walletTrade.Transaction = walletHistoryRow.TransactionEur;
-                    walletTrade.TransactionCZK = walletHistoryRow.TransactionEur * conversionRate ?? 0;
-                    walletTrade.ValueAfter = walletTrade.UnitsTotal * valueHistoryRow.Value;
-                    walletTrade.ValueAfterCZK = walletTrade.UnitsTotal * valueHistoryRow.Value * conversionRate;
-
-                    valueBefore = walletTrade.ValueAfter;
-                    cumulativeTransactions += walletTrade.Transaction;
-                    cumulativeTransactionsCZK += walletTrade.TransactionCZK;
-
-                    walletTrade.CumulativeTransactions = cumulativeTransactions;
-                    walletTrade.CumulativeTransactionsCZK = cumulativeTransactionsCZK;
-                }
-                else
-                {
-                    walletTrade.ValueAfter = unitsTotal * valueHistoryRow.Value;
-                    walletTrade.ValueAfterCZK = unitsTotal * valueHistoryRow.Value * conversionRate;
-                    valueBefore = walletTrade.ValueAfter;
-
-                    walletTrade.UnitsChange = 0;
-                    walletTrade.UnitsTotal = unitsTotal;
-                    walletTrade.Transaction = 0;
-                    walletTrade.TransactionCZK = 0;
-                    walletTrade.StakedUnits = 0;
-
-                    walletTrade.CumulativeStakedUnits = stakedTotal;
-                    walletTrade.CumulativeTransactions = cumulativeTransactions;
-                    walletTrade.CumulativeTransactionsCZK = cumulativeTransactionsCZK;
-                }
-
-                history.Add(walletTrade);
-            }
-        }
-
-        cryptoWallet.History = history.OrderByDescending(x => x.Date).ToList();
-
-        cryptoWallet.Value = valueBefore;
-        cryptoWallet.ValueCZK = valueBefore * lastConversionRate;
-        cryptoWallet.UnitsTotal = unitsTotal;
-        cryptoWallet.CumulativeTransactions = cumulativeTransactions;
-        cryptoWallet.CumulativeTransactionsCZK = cumulativeTransactionsCZK;
-        cryptoWallet.StakedUnits = stakedTotal;
-
-        return cryptoWallet;
     }
 
     [HttpPost("export")]

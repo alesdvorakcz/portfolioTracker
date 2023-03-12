@@ -1,6 +1,6 @@
 namespace PortfolioTracker.WebApi.Excel.Models;
 
-public class CryptoTrade
+public class CryptoWalletTrade
 {
     public DateTime Date { get; set; }
     public string WalletId { get; set; } = string.Empty;

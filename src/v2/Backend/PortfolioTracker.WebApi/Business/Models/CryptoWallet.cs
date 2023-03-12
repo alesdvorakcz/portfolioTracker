@@ -1,11 +1,11 @@
-namespace PortfolioTracker.WebApi.Contracts.Result;
+namespace PortfolioTracker.WebApi.Business.Models;
 
 public class CryptoWallet
 {
     public string Id { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public Crypto Crypto { get; set; } = new Crypto();
-    public IEnumerable<CryptoWalletTrade> History { get; set; } = Array.Empty<CryptoWalletTrade>();
+    public IEnumerable<CryptoWalletHistoryRow> History { get; set; } = Array.Empty<CryptoWalletHistoryRow>();
 
     public decimal Value { get; set; }
     public decimal? ValueCZK { get; set; }

@@ -1,4 +1,4 @@
-namespace PortfolioTracker.WebApi.Contracts.Result;
+namespace PortfolioTracker.WebApi.Business.Models;
 
 public class Crypto
 {
@@ -7,5 +7,5 @@ public class Crypto
     public string Name { get; set; } = string.Empty;
     public string CurrencyId { get; set; } = string.Empty;
 
-    public CryptoValueHistoryRow? LastValue { get; set; }
+    public IEnumerable<CryptoValueHistoryRow> History { get; set; } = Array.Empty<CryptoValueHistoryRow>();
 }

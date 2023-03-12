@@ -37,7 +37,7 @@ public class EtfController : BaseController
         if (etf == null)
             return NotFound();
 
-        var valueHistory = await Mapper.ProjectTo<EtfValueHistory>(
+        var valueHistory = await Mapper.ProjectTo<EtfValueHistoryRow>(
                 DbContext.EtfValueHistory
                     .Where(x => x.EtfId == id)
                     .OrderByDescending(x => x.Date)

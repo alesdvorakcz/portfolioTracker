@@ -25,7 +25,7 @@ public class CryptoController : BaseController
 
         foreach (var crypto in cryptos)
         {
-            crypto.LastValue = await Mapper.ProjectTo<CryptoValueHistory>(
+            crypto.LastValue = await Mapper.ProjectTo<CryptoValueHistoryRow>(
                     DbContext.CryptoValueHistory
                         .Where(x => x.CryptoId == crypto.Id)
                         .OrderByDescending(x => x.Date)
@@ -47,7 +47,7 @@ public class CryptoController : BaseController
         if (crypto == null)
             return NotFound();
 
-        var valueHistory = await Mapper.ProjectTo<CryptoValueHistory>(
+        var valueHistory = await Mapper.ProjectTo<CryptoValueHistoryRow>(
                 DbContext.CryptoValueHistory
                     .Where(x => x.CryptoId == id)
                     .OrderByDescending(x => x.Date)

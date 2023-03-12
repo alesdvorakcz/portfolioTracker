@@ -18,7 +18,7 @@ public static class CurrencyDataBuilder
 
             currency.History = currencyValueHistory
                 .Where(x => x.CurrencyId == currency.Id)
-                .Select(x => new Models.CurrencyValueHistory
+                .Select(x => new Models.CurrencyValueHistoryRow
                 {
                     Id = x.Id,
                     Date = x.Date,
