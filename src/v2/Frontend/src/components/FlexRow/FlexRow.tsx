@@ -17,7 +17,7 @@ const FlexRow: React.FC<PropsWithChildren<Props>> = ({
       ? { justifyContent: 'flex-end' }
       : align === 'center'
       ? { justifyContent: 'space-around' }
-      : align === 'full'
+      : align === 'left'
       ? { justifyContent: 'flex-start' }
       : { justifyContent: 'space-between' };
 

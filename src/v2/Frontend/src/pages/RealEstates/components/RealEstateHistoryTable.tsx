@@ -2,7 +2,7 @@ import { Table } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import moment from 'moment';
 
-import { RealEstate, RealEstateHistory } from '../../../api/models';
+import { RealEstate, RealEstateHistoryRow } from '../../../api/models';
 import { Box } from '../../../components';
 import { toCurrencyFormat } from '../../../i18n';
 
@@ -11,7 +11,7 @@ interface Props {
 }
 
 const RealEstateHistoryTable: React.FC<Props> = ({ realEstate }) => {
-  const columns: ColumnType<RealEstateHistory>[] = [
+  const columns: ColumnType<RealEstateHistoryRow>[] = [
     {
       title: 'Date',
       dataIndex: 'date',

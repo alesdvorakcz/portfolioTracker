@@ -2,7 +2,7 @@ import { Table } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import moment from 'moment';
 
-import { CryptoWallet, CryptoWalletTrade } from '../../../api/models';
+import { CryptoWallet, CryptoWalletHistoryRow } from '../../../api/models';
 import { Box } from '../../../components';
 import { toCurrencyFormat, toNumberFormat } from '../../../i18n';
 
@@ -11,7 +11,7 @@ interface Props {
 }
 
 const CryptoWalletHistoryTable: React.FC<Props> = ({ wallet }) => {
-  const columns: ColumnType<CryptoWalletTrade>[] = [
+  const columns: ColumnType<CryptoWalletHistoryRow>[] = [
     {
       title: 'Date',
       dataIndex: 'date',

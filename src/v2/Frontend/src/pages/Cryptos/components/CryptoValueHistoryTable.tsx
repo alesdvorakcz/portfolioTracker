@@ -2,7 +2,7 @@ import { Table } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import moment from 'moment';
 
-import { CryptoDetail, CryptoValueHistory } from '../../../api/models';
+import { CryptoDetail, CryptoValueHistoryRow } from '../../../api/models';
 import { Box } from '../../../components';
 import { toCurrencyFormat } from '../../../i18n';
 
@@ -11,7 +11,7 @@ interface Props {
 }
 
 const CryptoValueHistoryTable: React.FC<Props> = ({ crypto }) => {
-  const columns: ColumnType<CryptoValueHistory>[] = [
+  const columns: ColumnType<CryptoValueHistoryRow>[] = [
     {
       title: 'Date',
       dataIndex: 'date',

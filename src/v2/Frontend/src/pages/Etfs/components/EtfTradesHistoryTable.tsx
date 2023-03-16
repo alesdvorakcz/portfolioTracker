@@ -2,7 +2,7 @@ import { Table } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import moment from 'moment';
 
-import { EtfDetailWithTrades, EtfValueHistoryEnhanced } from '../../../api/models';
+import { EtfDetailHistoryRow, EtfDetailWithTrades } from '../../../api/models';
 import { Box } from '../../../components';
 import { toCurrencyFormat, toNumberFormat } from '../../../i18n';
 
@@ -11,7 +11,7 @@ interface Props {
 }
 
 const EtfTradesHistoryTable: React.FC<Props> = ({ etf }) => {
-  const columns: ColumnType<EtfValueHistoryEnhanced>[] = [
+  const columns: ColumnType<EtfDetailHistoryRow>[] = [
     {
       title: 'Date',
       dataIndex: 'date',

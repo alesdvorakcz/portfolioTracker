@@ -15,11 +15,11 @@ const AccountsHistoryChart: React.FC<Props> = ({ accountData }) => {
     id: account.id,
     name: account.name,
     valueData: account.history.map((item) => ({
-      x: moment.utc(item.date).format('YYYY-MM-DD'),
+      x: moment.utc(item.dateStart).format('YYYY-MM-DD'),
       y: item.valueAfterCZK,
     })),
     transactionsData: account.history.map((item) => ({
-      x: moment.utc(item.date).format('YYYY-MM-DD'),
+      x: moment.utc(item.dateStart).format('YYYY-MM-DD'),
       y: item.cumulativeTransactionsCZK,
     })),
   }));

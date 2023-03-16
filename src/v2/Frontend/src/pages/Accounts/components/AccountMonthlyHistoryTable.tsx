@@ -2,7 +2,7 @@ import { Table } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import moment from 'moment';
 
-import { Account, AccountHistoryRow } from '../../../api/models';
+import { Account, AccountHistoryAggregatedRow } from '../../../api/models';
 import { toCurrencyFormat, toPercentFormat } from '../../../i18n';
 
 interface Props {
@@ -10,13 +10,13 @@ interface Props {
   showInCZK: boolean;
 }
 
-const AccountHistoryTable: React.FC<Props> = ({ account, showInCZK }) => {
-  const columns: ColumnType<AccountHistoryRow>[] = [
+const AccountMonthlyHistoryTable: React.FC<Props> = ({ account, showInCZK }) => {
+  const columns: ColumnType<AccountHistoryAggregatedRow>[] = [
     {
-      title: 'Date',
+      title: 'Month',
       dataIndex: 'dateStart',
-      key: 'date',
-      render: (text: string) => <div>{moment.utc(text).format('l')}</div>,
+      key: 'dateStart',
+      render: (text: string) => <div>{moment.utc(text).format('MMM YYYY')}</div>,
     },
     {
       title: 'Value Before',
@@ -69,12 +69,12 @@ const AccountHistoryTable: React.FC<Props> = ({ account, showInCZK }) => {
     },
   ];
 
-  const columnsCZK: ColumnType<AccountHistoryRow>[] = [
+  const columnsCZK: ColumnType<AccountHistoryAggregatedRow>[] = [
     {
-      title: 'Date',
+      title: 'Month',
       dataIndex: 'dateStart',
-      key: 'date',
-      render: (text: string) => <div>{moment.utc(text).format('l')}</div>,
+      key: 'dateStart',
+      render: (text: string) => <div>{moment.utc(text).format('MMM YYYY')}</div>,
     },
     {
       title: 'Value Before',
@@ -127,7 +127,7 @@ const AccountHistoryTable: React.FC<Props> = ({ account, showInCZK }) => {
     },
   ];
 
-  const trades = account.history;
+  const trades = account.monthlyHistory;
 
   return (
     <Table
@@ -140,4 +140,4 @@ const AccountHistoryTable: React.FC<Props> = ({ account, showInCZK }) => {
   );
 };
 
-export default AccountHistoryTable;
+export default AccountMonthlyHistoryTable;

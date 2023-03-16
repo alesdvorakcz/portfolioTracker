@@ -21,7 +21,7 @@ export interface Crypto {
   ticker: string;
   name: string;
   currencyId: string;
-  lastValue?: CryptoValueHistory;
+  lastValue?: CryptoValueHistoryRow;
 }
 
 export interface CryptoDetail {
@@ -29,10 +29,10 @@ export interface CryptoDetail {
   ticker: string;
   name: string;
   currencyId: string;
-  history: CryptoValueHistory[];
+  history: CryptoValueHistoryRow[];
 }
 
-export interface CryptoValueHistory {
+export interface CryptoValueHistoryRow {
   id: number;
   date: string;
   value: number;
@@ -71,10 +71,10 @@ export interface EtfDetailWithTrades {
   unitsTotal: number;
   cumulativeTransactions: number;
   cumulativeTransactionsCZK: number;
-  history: EtfValueHistoryEnhanced[];
+  history: EtfDetailHistoryRow[];
 }
 
-export interface EtfValueHistoryEnhanced {
+export interface EtfDetailHistoryRow {
   id: number;
   date: string;
   currencyId: string;
@@ -97,15 +97,18 @@ export interface Account {
   id: string;
   name: string;
   currencyId: string;
-  history: AccountTrade[];
+  history: AccountHistoryRow[];
+  monthlyHistory: AccountHistoryAggregatedRow[];
+  yearlyHistory: AccountHistoryAggregatedRow[];
   value: number;
   valueCZK?: number;
   cumulativeTransactionsCZK: number;
   cumulativeTransactions: number;
 }
 
-export interface AccountTrade {
-  date: string;
+export interface AccountHistoryRow {
+  dateStart: string;
+  dateEnd: string;
   currencyId: string;
   conversionRate?: number;
   valueBefore: number;
@@ -116,13 +119,38 @@ export interface AccountTrade {
   valueAfterCZK?: number;
   cumulativeTransactionsCZK: number;
   cumulativeTransactions: number;
+  profit: number;
+  profitCZK?: number;
+  profitPercentage?: number;
+  profitPercentageCZK?: number;
+  cumulativeProfit: number;
+  cumulativeProfitCZK?: number;
+}
+
+export interface AccountHistoryAggregatedRow {
+  dateStart: string;
+  dateEnd: string;
+  valueBefore: number;
+  valueBeforeCZK?: number;
+  transactionCZK: number;
+  transaction: number;
+  valueAfter: number;
+  valueAfterCZK?: number;
+  cumulativeTransactionsCZK: number;
+  cumulativeTransactions: number;
+  profit: number;
+  profitCZK?: number;
+  profitPercentage?: number;
+  profitPercentageCZK?: number;
+  cumulativeProfit: number;
+  cumulativeProfitCZK?: number;
 }
 
 export interface CryptoWallet {
   id: string;
   name: string;
   crypto: Crypto;
-  history: CryptoWalletTrade[];
+  history: CryptoWalletHistoryRow[];
   value: number;
   valueCZK?: number;
   unitsTotal?: number;
@@ -131,7 +159,7 @@ export interface CryptoWallet {
   stakedUnits: number;
 }
 
-export interface CryptoWalletTrade {
+export interface CryptoWalletHistoryRow {
   id: number;
   date: string;
   currencyId: string;
@@ -154,14 +182,14 @@ export interface RealEstate {
   name: string;
   startingPrice: number;
   ownStartingCapital: number;
-  history: RealEstateHistory[];
+  history: RealEstateHistoryRow[];
   ownValue: number;
   totalValue: number;
   remainingMortage: number;
   totalIncome: number;
 }
 
-export interface RealEstateHistory {
+export interface RealEstateHistoryRow {
   date: string;
   income: number;
   remainingMortage: number;

@@ -4,9 +4,9 @@ import moment from 'moment';
 
 import {
   EtfDetail,
+  EtfDetailHistoryRow,
   EtfDetailWithTrades,
   EtfValueHistory,
-  EtfValueHistoryEnhanced,
 } from '../../../api/models';
 import { Box } from '../../../components';
 import { toCurrencyFormat } from '../../../i18n';
@@ -18,7 +18,7 @@ interface Props {
 
 const EtfValueHistoryTable: React.FC<Props> = ({ etf, etfWithTrades }) => {
   if (etfWithTrades) {
-    const columns: ColumnType<EtfValueHistoryEnhanced>[] = [
+    const columns: ColumnType<EtfDetailHistoryRow>[] = [
       {
         title: 'Date',
         dataIndex: 'date',
