@@ -46,12 +46,12 @@ public class ImportController : BaseController
         await ImportCrypto(8, "loopring", "eur", false, true);
         await ImportCrypto(9, "nexoeur", "eur", false, true);
 
-        await ImportEtfLemonMarkets(2, "IE00BK5BQT80", false, lemonMarketsApiKey);
-        await ImportEtfLemonMarkets(3, "IE00B4L5Y983", false, lemonMarketsApiKey);
-        await ImportEtfLemonMarkets(4, "IE00B4L5YC18", false, lemonMarketsApiKey);
-        await ImportEtfLemonMarkets(5, "IE00B1XNHC34", false, lemonMarketsApiKey);
-        await ImportEtfLemonMarkets(6, "IE00BSPLC298", false, lemonMarketsApiKey);
-        await ImportEtfLemonMarkets(7, "IE00BSPLC413", false, lemonMarketsApiKey);
+        await ImportEtfLemonMarkets(2, "IE00BK5BQT80", true, lemonMarketsApiKey);
+        await ImportEtfLemonMarkets(3, "IE00B4L5Y983", true, lemonMarketsApiKey);
+        await ImportEtfLemonMarkets(4, "IE00B4L5YC18", true, lemonMarketsApiKey);
+        await ImportEtfLemonMarkets(5, "IE00B1XNHC34", true, lemonMarketsApiKey);
+        await ImportEtfLemonMarkets(6, "IE00BSPLC298", true, lemonMarketsApiKey);
+        await ImportEtfLemonMarkets(7, "IE00BSPLC413", true, lemonMarketsApiKey);
 
         return NoContent();
     }

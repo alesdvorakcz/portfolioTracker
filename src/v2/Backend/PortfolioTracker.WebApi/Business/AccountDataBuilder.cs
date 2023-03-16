@@ -43,47 +43,195 @@ public static class AccountDataBuilder
         var valueAfter = 0m;
         var cumulativeTransactions = 0m;
         var cumulativeTransactionsCZK = 0m;
-        decimal? lastConversionRate = null;
 
-        foreach (var valueHistoryRow in accountTrades)
+        var lastRow = new AccountHistoryRow();
+
+        foreach (var trade in accountTrades)
         {
-            var accountTrade = new AccountHistoryRow
+            var historyRow = new AccountHistoryRow
             {
-                Date = valueHistoryRow.Date,
+                DateStart = trade.Date,
                 CurrencyId = account.CurrencyId,
             };
 
-            var conversionRate = currency.History.FirstOrDefault(x => x.Date == valueHistoryRow.Date)?.ConversionRate;
-            accountTrade.ConversionRate = conversionRate;
-            if (conversionRate != null)
-                lastConversionRate = conversionRate;
+            var conversionRate = currency.GetConversionDateFor(trade.Date);
+            historyRow.ConversionRate = conversionRate;
 
-            accountTrade.TransactionCZK = valueHistoryRow.TransactionCZK;
-            accountTrade.Transaction = valueHistoryRow.TransactionCZK / conversionRate ?? 0;
-            accountTrade.ValueBefore = valueHistoryRow.BalanceBefore;
-            accountTrade.ValueBeforeCZK = valueHistoryRow.BalanceBefore * conversionRate;
+            historyRow.TransactionCZK = trade.TransactionCZK;
+            historyRow.Transaction = trade.TransactionCZK / conversionRate ?? 0;
+            historyRow.ValueBefore = trade.BalanceBefore;
+            historyRow.ValueBeforeCZK = trade.BalanceBefore * conversionRate;
 
-            accountTrade.ValueAfter = accountTrade.ValueBefore + accountTrade.Transaction;
-            accountTrade.ValueAfterCZK = accountTrade.ValueBeforeCZK + accountTrade.TransactionCZK;
+            valueAfter = historyRow.ValueAfter;
+            cumulativeTransactions += historyRow.Transaction;
+            cumulativeTransactionsCZK += historyRow.TransactionCZK;
 
-            valueAfter = accountTrade.ValueAfter;
-            cumulativeTransactions += accountTrade.Transaction;
-            cumulativeTransactionsCZK += accountTrade.TransactionCZK;
+            historyRow.CumulativeTransactions = cumulativeTransactions;
+            historyRow.CumulativeTransactionsCZK = cumulativeTransactionsCZK;
 
-            accountTrade.CumulativeTransactions = cumulativeTransactions;
-            accountTrade.CumulativeTransactionsCZK = cumulativeTransactionsCZK;
+            lastRow.DateEnd = historyRow.DateStart.AddDays(-1);
+            lastRow.ValueAfter = historyRow.ValueBefore;
+            lastRow.ValueAfterCZK = historyRow.ValueBeforeCZK;
+            lastRow.Profit = lastRow.ValueAfter - lastRow.ValueBefore - lastRow.Transaction;
+            lastRow.ProfitCZK = lastRow.ValueAfterCZK - lastRow.ValueBeforeCZK - lastRow.TransactionCZK;
+            lastRow.ProfitPercentage = (lastRow.ValueBefore + lastRow.Transaction) > 0 ? Convert.ToDouble(lastRow.Profit / (lastRow.ValueBefore + lastRow.Transaction)) : null;
+            lastRow.ProfitPercentageCZK = (lastRow.ValueBeforeCZK + lastRow.TransactionCZK) > 0 ? Convert.ToDouble(lastRow.ProfitCZK / (lastRow.ValueBeforeCZK + lastRow.TransactionCZK)) : null;
+            lastRow.CumulativeProfit = lastRow.ValueAfter - lastRow.CumulativeTransactions;
+            lastRow.CumulativeProfitCZK = lastRow.ValueAfterCZK - lastRow.CumulativeTransactionsCZK;
 
-            history.Add(accountTrade);
+            history.Add(historyRow);
+            lastRow = historyRow;
         }
 
-        accountWithTrades.History = history.OrderByDescending(x => x.Date).ToList();
+        var conversionRateToday = currency.GetConversionDateFor(DateTime.Now.Date);
 
-        // accountWithTrades.Value = valueAfter;
-        // accountWithTrades.ValueCZK = valueAfter * lastConversionRate ?? 0;
-        // accountWithTrades.CumulativeTransactions = cumulativeTransactions;
-        // accountWithTrades.CumulativeTransactionsCZK = cumulativeTransactionsCZK;
+        lastRow.DateEnd = DateTime.Now;
+        lastRow.ValueAfter = lastRow.ValueBefore + lastRow.Transaction;
+        lastRow.ValueAfterCZK = (lastRow.ValueBefore + lastRow.Transaction) * conversionRateToday;
+        lastRow.Profit = lastRow.ValueAfter - lastRow.ValueBefore - lastRow.Transaction;
+        lastRow.ProfitCZK = lastRow.ValueAfterCZK - lastRow.ValueBeforeCZK - lastRow.TransactionCZK;
+        lastRow.ProfitPercentage = (lastRow.ValueBefore + lastRow.Transaction) > 0 ? Convert.ToDouble(lastRow.Profit / (lastRow.ValueBefore + lastRow.Transaction)) : null;
+        lastRow.ProfitPercentageCZK = (lastRow.ValueBeforeCZK + lastRow.TransactionCZK) > 0 ? Convert.ToDouble(lastRow.ProfitCZK / (lastRow.ValueBeforeCZK + lastRow.TransactionCZK)) : null;
+        lastRow.CumulativeProfit = lastRow.ValueAfter - lastRow.CumulativeTransactions;
+        lastRow.CumulativeProfitCZK = lastRow.ValueAfterCZK - lastRow.CumulativeTransactionsCZK;
+
+        accountWithTrades.History = history.OrderByDescending(x => x.DateStart).ToList();
+        accountWithTrades.MonthlyHistory = GetMonthlyHistory(history, currency);
+        accountWithTrades.YearlyHistory = GetYearlyHistory(history, currency);
+
+        var lastHistoryRow = history.LastOrDefault();
+
+        accountWithTrades.Value = lastHistoryRow?.ValueAfter ?? 0;
+        accountWithTrades.ValueCZK = lastHistoryRow?.ValueAfterCZK ?? 0;
+        accountWithTrades.CumulativeTransactions = lastHistoryRow?.CumulativeTransactions ?? 0;
+        accountWithTrades.CumulativeTransactionsCZK = lastHistoryRow?.CumulativeTransactionsCZK ?? 0;
 
         return accountWithTrades;
+    }
+
+    private static IEnumerable<AccountHistoryAggregatedRow> GetMonthlyHistory(IEnumerable<AccountHistoryRow> allHistory, Currency currency)
+    {
+        var monthlyHistory = new List<AccountHistoryAggregatedRow>();
+
+        var firstDate = allHistory.Min(x => x.DateStart);
+        var lastDate = allHistory.Max(x => x.DateStart);
+
+        var firstMonth = new DateTime(firstDate.Year, firstDate.Month, 1);
+        var lastMonth = new DateTime(lastDate.Year, lastDate.Month, 1);
+
+        var months = (lastMonth.Year - firstMonth.Year) * 12 + (lastMonth.Month - firstMonth.Month);
+
+        var lastMonthRow = new AccountHistoryAggregatedRow();
+
+        for (var i = 0; i <= months; i++)
+        {
+            var monthStart = firstMonth.AddMonths(i);
+            var monthEnd = monthStart.AddMonths(1).AddDays(-1);
+            var monthHistoryItems = allHistory.Where(x => x.DateStart.Year == monthStart.Year && x.DateStart.Month == monthStart.Month);
+
+            var conversionRateStart = currency.GetConversionDateFor(monthStart);
+            var conversionRateEnd = currency.GetConversionDateFor(monthEnd, lastIfInFuture: true);
+
+            var valueAfter = lastMonthRow.ValueAfter;
+            var transaction = 0m;
+            var transactionCZK = 0m;
+
+            if (monthHistoryItems.Any())
+            {
+                valueAfter = monthHistoryItems.Last().ValueAfter;
+                transaction = monthHistoryItems.Sum(x => x.Transaction);
+                transactionCZK = monthHistoryItems.Sum(x => x.TransactionCZK);
+            }
+
+            var thisMonthRow = new AccountHistoryAggregatedRow
+            {
+                DateStart = monthStart,
+                DateEnd = monthEnd,
+                ValueBefore = lastMonthRow.ValueAfter,
+                ValueBeforeCZK = lastMonthRow.ValueAfter * conversionRateStart,
+                Transaction = transaction,
+                TransactionCZK = transactionCZK,
+                ValueAfter = valueAfter,
+                ValueAfterCZK = valueAfter * conversionRateEnd,
+                CumulativeTransactions = lastMonthRow.CumulativeTransactions + transaction,
+                CumulativeTransactionsCZK = lastMonthRow.CumulativeTransactionsCZK + transactionCZK
+            };
+
+            thisMonthRow.Profit = thisMonthRow.ValueAfter - thisMonthRow.ValueBefore - thisMonthRow.Transaction;
+            thisMonthRow.ProfitCZK = thisMonthRow.ValueAfterCZK - thisMonthRow.ValueBeforeCZK - thisMonthRow.TransactionCZK;
+            thisMonthRow.ProfitPercentage = monthHistoryItems.Select(x => 1 + x.ProfitPercentage).Aggregate((double?)1d, (a, b) => a * b) - 1; ;
+            thisMonthRow.ProfitPercentageCZK = monthHistoryItems.Select(x => 1 + x.ProfitPercentageCZK).Aggregate((double?)1d, (a, b) => a * b) - 1;
+            thisMonthRow.CumulativeProfit = thisMonthRow.ValueAfter - thisMonthRow.CumulativeTransactions;
+            thisMonthRow.CumulativeProfitCZK = thisMonthRow.ValueAfterCZK - thisMonthRow.CumulativeTransactionsCZK;
+
+            monthlyHistory.Add(thisMonthRow);
+            lastMonthRow = thisMonthRow;
+        }
+
+        return monthlyHistory.OrderByDescending(x => x.DateStart);
+    }
+
+    private static IEnumerable<AccountHistoryAggregatedRow> GetYearlyHistory(IEnumerable<AccountHistoryRow> allHistory, Currency currency)
+    {
+        var yearlyHistory = new List<AccountHistoryAggregatedRow>();
+
+        var firstDate = allHistory.Min(x => x.DateStart);
+        var lastDate = allHistory.Max(x => x.DateStart);
+
+        var firstYear = new DateTime(firstDate.Year, 1, 1);
+        var lastYear = new DateTime(lastDate.Year, 12, 1);
+
+        var years = lastYear.Year - firstYear.Year;
+
+        var currencyHistoryLastDay = currency.History.Max(x => x.Date);
+
+        var lastYearRow = new AccountHistoryAggregatedRow();
+
+        for (var i = 0; i <= years; i++)
+        {
+            var yearStart = firstYear.AddYears(i);
+            var yearEnd = yearStart.AddYears(1).AddDays(-1);
+            var yearHistoryItems = allHistory.Where(x => x.DateStart.Year == yearStart.Year);
+
+            var conversionRateStart = currency.GetConversionDateFor(yearStart);
+            var conversionRateEnd = currency.GetConversionDateFor(yearEnd, lastIfInFuture: true);
+
+            var valueAfter = lastYearRow.ValueAfter;
+            var transaction = 0m;
+            var transactionCZK = 0m;
+
+            if (yearHistoryItems.Any())
+            {
+                valueAfter = yearHistoryItems.Last().ValueAfter;
+                transaction = yearHistoryItems.Sum(x => x.Transaction);
+                transactionCZK = yearHistoryItems.Sum(x => x.TransactionCZK);
+            }
+
+            var thisYearRow = new AccountHistoryAggregatedRow
+            {
+                DateStart = yearStart,
+                DateEnd = yearEnd,
+                ValueBefore = lastYearRow.ValueAfter,
+                ValueBeforeCZK = lastYearRow.ValueAfter * conversionRateStart,
+                Transaction = transaction,
+                TransactionCZK = transactionCZK,
+                ValueAfter = valueAfter,
+                ValueAfterCZK = valueAfter * conversionRateEnd,
+                CumulativeTransactions = lastYearRow.CumulativeTransactions + transaction,
+                CumulativeTransactionsCZK = lastYearRow.CumulativeTransactionsCZK + transactionCZK
+            };
+            thisYearRow.Profit = thisYearRow.ValueAfter - thisYearRow.ValueBefore - thisYearRow.Transaction;
+            thisYearRow.ProfitCZK = thisYearRow.ValueAfterCZK - thisYearRow.ValueBeforeCZK - thisYearRow.TransactionCZK;
+            thisYearRow.ProfitPercentage = yearHistoryItems.Select(x => 1 + x.ProfitPercentage).Aggregate((double?)1d, (a, b) => a * b) - 1; ;
+            thisYearRow.ProfitPercentageCZK = yearHistoryItems.Select(x => 1 + x.ProfitPercentageCZK).Aggregate((double?)1d, (a, b) => a * b) - 1;
+            thisYearRow.CumulativeProfit = thisYearRow.ValueAfter - thisYearRow.CumulativeTransactions;
+            thisYearRow.CumulativeProfitCZK = thisYearRow.ValueAfterCZK - thisYearRow.CumulativeTransactionsCZK;
+
+            yearlyHistory.Add(thisYearRow);
+            lastYearRow = thisYearRow;
+        }
+
+        return yearlyHistory.OrderByDescending(x => x.DateStart);
     }
 
 
