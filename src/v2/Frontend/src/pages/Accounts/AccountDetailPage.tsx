@@ -6,9 +6,10 @@ import { Box, FlexRow, PageWrapper } from '../../components';
 import { useTradesContext } from '../../contexts/tradesContext';
 import AccountDetailInfo from './components/AccountDetailInfo';
 import AccountHistoryChart from './components/AccountHistoryChart';
+import AccountHistoryProfitChart from './components/AccountHistoryProfitChart';
 import AccountHistoryTable from './components/AccountHistoryTable';
 import AccountMonthlyHistoryTable from './components/AccountMonthlyHistoryTable';
-import AccountYearlyHistoryTable from './components/AccountMonthlyYearlyTable';
+import AccountYearlyHistoryTable from './components/AccountYearlyHistoryTable';
 
 interface Props {}
 
@@ -30,6 +31,7 @@ const AccountDetailPage: React.FC<Props> = () => {
   const views = [
     { value: 'table', label: 'Table' },
     { value: 'line-chart', label: 'Line Chart' },
+    { value: 'bar-chart', label: 'Bar Chart' },
   ];
   const [selectedView, setSelectedView] = useState<string>(views[0].value);
 
@@ -78,7 +80,18 @@ const AccountDetailPage: React.FC<Props> = () => {
                 </>
               )}
               {selectedView === 'line-chart' && (
-                <AccountHistoryChart account={account} showInCZK={showInCZK} />
+                <AccountHistoryChart
+                  account={account}
+                  showInCZK={showInCZK}
+                  timeRange={selectedTimeRange}
+                />
+              )}
+              {selectedView === 'bar-chart' && (
+                <AccountHistoryProfitChart
+                  account={account}
+                  showInCZK={showInCZK}
+                  timeRange={selectedTimeRange}
+                />
               )}
             </Box>
           </>

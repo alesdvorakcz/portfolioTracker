@@ -104,6 +104,14 @@ export interface Account {
   valueCZK?: number;
   cumulativeTransactionsCZK: number;
   cumulativeTransactions: number;
+  cumulativeProfit: number;
+  cumulativeProfitCZK: number;
+  profitPercentagePlain: number;
+  profitPercentagePlainCZK: number;
+  profitPercentage?: number;
+  profitPercentageCZK?: number;
+  profitPercentagePa?: number;
+  profitPercentagePaCZK?: number;
 }
 
 export interface AccountHistoryRow {

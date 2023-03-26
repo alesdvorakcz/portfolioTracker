@@ -1,4 +1,5 @@
 export { default as Box } from './Box/Box';
+export { default as BarChart } from './Charts/BarChart';
 export { default as ChartTooltip } from './Charts/ChartTooltip';
 export { default as ChartTooltipItem } from './Charts/ChartTooltipItem';
 export { default as LineChart } from './Charts/LineChart';

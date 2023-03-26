@@ -4,6 +4,7 @@ import moment from 'moment';
 
 import { Account, AccountHistoryAggregatedRow } from '../../../api/models';
 import { toCurrencyFormat, toPercentFormat } from '../../../i18n';
+import { getGainColor, getGainIcon } from '../../../utils/helpers';
 
 interface Props {
   account: Account;
@@ -51,21 +52,35 @@ const AccountYearlyHistoryTable: React.FC<Props> = ({ account, showInCZK }) => {
       dataIndex: 'profit',
       key: 'profit',
       align: 'right',
-      render: (text: string) => <div>{toCurrencyFormat(text, account.currencyId)}</div>,
+      colSpan: 2,
+      render: (text: number) => (
+        <div style={{ color: getGainColor(text) }}>
+          {toCurrencyFormat(text, account.currencyId)}
+        </div>
+      ),
     },
     {
       title: 'Profit %',
       dataIndex: 'profitPercentage',
       key: 'profitPercentage',
       align: 'right',
-      render: (text: number) => <div>{toPercentFormat(text)}</div>,
+      colSpan: 0,
+      render: (text: number) => (
+        <div style={{ color: getGainColor(text) }}>
+          {getGainIcon(text)} {toPercentFormat(text)}
+        </div>
+      ),
     },
     {
       title: 'Cumulative Profit',
       dataIndex: 'cumulativeProfit',
       key: 'cumulativeProfit',
       align: 'right',
-      render: (text: string) => <div>{toCurrencyFormat(text, account.currencyId)}</div>,
+      render: (text: number) => (
+        <div style={{ color: getGainColor(text) }}>
+          {toCurrencyFormat(text, account.currencyId)}
+        </div>
+      ),
     },
   ];
 
@@ -109,21 +124,31 @@ const AccountYearlyHistoryTable: React.FC<Props> = ({ account, showInCZK }) => {
       dataIndex: 'profitCZK',
       key: 'profitCZK',
       align: 'right',
-      render: (text: string) => <div>{toCurrencyFormat(text)}</div>,
+      colSpan: 2,
+      render: (text: number) => (
+        <div style={{ color: getGainColor(text) }}>{toCurrencyFormat(text)}</div>
+      ),
     },
     {
       title: 'Profit %',
       dataIndex: 'profitPercentageCZK',
       key: 'profitPercentageCZK',
       align: 'right',
-      render: (text: number) => <div>{toPercentFormat(text)}</div>,
+      colSpan: 0,
+      render: (text: number) => (
+        <div style={{ color: getGainColor(text) }}>
+          {getGainIcon(text)} {toPercentFormat(text)}
+        </div>
+      ),
     },
     {
       title: 'Cumulative Profit',
       dataIndex: 'cumulativeProfitCZK',
       key: 'cumulativeProfitCZK',
       align: 'right',
-      render: (text: string) => <div>{toCurrencyFormat(text)}</div>,
+      render: (text: number) => (
+        <div style={{ color: getGainColor(text) }}>{toCurrencyFormat(text)}</div>
+      ),
     },
   ];
 

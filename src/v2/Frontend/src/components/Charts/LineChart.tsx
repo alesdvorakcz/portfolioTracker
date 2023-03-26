@@ -73,6 +73,7 @@ const LineChart: React.FC<Props> = ({
         enableCrosshair={false}
         enableArea={true}
         tooltip={tooltip}
+        animate={false}
       />
     </div>
   );

@@ -14,4 +14,13 @@ public class AccountWithTrade
     public decimal ValueCZK { get; set; }
     public decimal CumulativeTransactionsCZK { get; set; }
     public decimal CumulativeTransactions { get; set; }
+    public decimal CumulativeProfit { get; set; }
+    public decimal CumulativeProfitCZK { get; set; }
+
+    public double ProfitPercentagePlain { get; set; }
+    public double ProfitPercentagePlainCZK { get; set; }
+    public double? ProfitPercentage { get; set; }
+    public double? ProfitPercentageCZK { get; set; }
+    public double? ProfitPercentagePa { get; set; }
+    public double? ProfitPercentagePaCZK { get; set; }
 }

@@ -105,6 +105,18 @@ public static class AccountDataBuilder
         accountWithTrades.ValueCZK = lastHistoryRow?.ValueAfterCZK ?? 0;
         accountWithTrades.CumulativeTransactions = lastHistoryRow?.CumulativeTransactions ?? 0;
         accountWithTrades.CumulativeTransactionsCZK = lastHistoryRow?.CumulativeTransactionsCZK ?? 0;
+        accountWithTrades.CumulativeProfit = lastHistoryRow?.CumulativeProfit ?? 0;
+        accountWithTrades.CumulativeProfitCZK = lastHistoryRow?.CumulativeProfitCZK ?? 0;
+        accountWithTrades.ProfitPercentagePlain = Convert.ToDouble(accountWithTrades.Value / accountWithTrades.CumulativeTransactions - 1);
+        accountWithTrades.ProfitPercentagePlainCZK = Convert.ToDouble(accountWithTrades.ValueCZK / accountWithTrades.CumulativeTransactionsCZK - 1);
+        accountWithTrades.ProfitPercentage = accountWithTrades.YearlyHistory.Select(x => 1 + x.ProfitPercentage).Aggregate((double?)1d, (a, b) => a * b) - 1;
+        accountWithTrades.ProfitPercentageCZK = accountWithTrades.YearlyHistory.Select(x => 1 + x.ProfitPercentageCZK).Aggregate((double?)1d, (a, b) => a * b) - 1;
+
+        var firstDay = history.Min(x => x.DateStart);
+        var lastDay = history.Max(x => x.DateEnd);
+        var days = (lastDay - firstDay).TotalDays;
+        accountWithTrades.ProfitPercentagePa = accountWithTrades.ProfitPercentage != null ? Math.Pow(1 + accountWithTrades.ProfitPercentage.Value, 365 / days) - 1 : null;
+        accountWithTrades.ProfitPercentagePaCZK = accountWithTrades.ProfitPercentageCZK != null ? Math.Pow(1 + accountWithTrades.ProfitPercentageCZK.Value, 365 / days) - 1 : null;
 
         return accountWithTrades;
     }
@@ -159,7 +171,7 @@ public static class AccountDataBuilder
 
             thisMonthRow.Profit = thisMonthRow.ValueAfter - thisMonthRow.ValueBefore - thisMonthRow.Transaction;
             thisMonthRow.ProfitCZK = thisMonthRow.ValueAfterCZK - thisMonthRow.ValueBeforeCZK - thisMonthRow.TransactionCZK;
-            thisMonthRow.ProfitPercentage = monthHistoryItems.Select(x => 1 + x.ProfitPercentage).Aggregate((double?)1d, (a, b) => a * b) - 1; ;
+            thisMonthRow.ProfitPercentage = monthHistoryItems.Select(x => 1 + x.ProfitPercentage).Aggregate((double?)1d, (a, b) => a * b) - 1;
             thisMonthRow.ProfitPercentageCZK = monthHistoryItems.Select(x => 1 + x.ProfitPercentageCZK).Aggregate((double?)1d, (a, b) => a * b) - 1;
             thisMonthRow.CumulativeProfit = thisMonthRow.ValueAfter - thisMonthRow.CumulativeTransactions;
             thisMonthRow.CumulativeProfitCZK = thisMonthRow.ValueAfterCZK - thisMonthRow.CumulativeTransactionsCZK;
@@ -222,7 +234,7 @@ public static class AccountDataBuilder
             };
             thisYearRow.Profit = thisYearRow.ValueAfter - thisYearRow.ValueBefore - thisYearRow.Transaction;
             thisYearRow.ProfitCZK = thisYearRow.ValueAfterCZK - thisYearRow.ValueBeforeCZK - thisYearRow.TransactionCZK;
-            thisYearRow.ProfitPercentage = yearHistoryItems.Select(x => 1 + x.ProfitPercentage).Aggregate((double?)1d, (a, b) => a * b) - 1; ;
+            thisYearRow.ProfitPercentage = yearHistoryItems.Select(x => 1 + x.ProfitPercentage).Aggregate((double?)1d, (a, b) => a * b) - 1;
             thisYearRow.ProfitPercentageCZK = yearHistoryItems.Select(x => 1 + x.ProfitPercentageCZK).Aggregate((double?)1d, (a, b) => a * b) - 1;
             thisYearRow.CumulativeProfit = thisYearRow.ValueAfter - thisYearRow.CumulativeTransactions;
             thisYearRow.CumulativeProfitCZK = thisYearRow.ValueAfterCZK - thisYearRow.CumulativeTransactionsCZK;
