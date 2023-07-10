@@ -26,7 +26,8 @@ public static class LemonMarketsHelpers
         { "IE00B4L5YC18" },
         { "IE00BSPLC298" },
         { "IE00BSPLC413" },
-        { "IE00BK5BQT80" }
+        { "IE00BK5BQT80" },
+        { "IE00BKM4GZ66" }
     };
 
     public static bool IsSupportedIsin(string isin)
