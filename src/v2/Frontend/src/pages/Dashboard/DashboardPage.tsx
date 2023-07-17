@@ -2,15 +2,7 @@ import { Tabs } from 'antd';
 
 import { PageWrapper } from '../../components';
 import { useTradesContext } from '../../contexts/tradesContext';
-import AccountsHistoryChart from './components/AccountsHistoryChart';
-import CryptosHistoryChart from './components/CryptosHistoryChart';
-import EtfsHistoryChart from './components/EtfsHistoryChart';
-import TotalAccountsHistoryChart from './components/TotalAccountsHistoryChart';
-import TotalAccountsMonthlyHistoryChart from './components/TotalAccountsMonthlyHistoryChart';
-import TotalCryptosHistoryChart from './components/TotalCryptosHistoryChart';
-import TotalCryptosMonthlyHistoryChart from './components/TotalCryptosMonthlyHistoryChart';
-import TotalHistoryChart from './components/TotalHistoryChart';
-import TotalMonthlyHistoryChart from './components/TotalMonthlyHistoryChart';
+import AccountsStatistics from './components/AccountsStatistics';
 
 const { TabPane } = Tabs;
 
@@ -20,10 +12,19 @@ const tabPaneStyle = { backgroundColor: '#fff', marginTop: -16, padding: 16 };
 
 const DashboardPage: React.FC<Props> = () => {
   const { tradesData } = useTradesContext();
-  const { accountData, etfData, cryptoData, netWorth } = tradesData;
+  const { accountData } = tradesData;
   return (
     <PageWrapper title="Dashboard">
+      <h2>Accounts statistics</h2>
       <Tabs defaultActiveKey="1" type="card">
+        <TabPane tab="Accounts" key="1" style={tabPaneStyle}>
+          <AccountsStatistics accountData={accountData} />
+        </TabPane>
+        <TabPane tab="ETFs" key="2" style={tabPaneStyle}>
+          TODO
+        </TabPane>
+      </Tabs>
+      {/* <Tabs defaultActiveKey="1" type="card">
         <TabPane tab="Accounts History" key="1" style={tabPaneStyle}>
           <AccountsHistoryChart accountData={accountData} />
         </TabPane>
@@ -51,7 +52,7 @@ const DashboardPage: React.FC<Props> = () => {
         <TabPane tab="Total Net Worth Monthly History" key="9" style={tabPaneStyle}>
           <TotalMonthlyHistoryChart netWorth={netWorth} />
         </TabPane>
-      </Tabs>
+      </Tabs> */}
     </PageWrapper>
   );
 };

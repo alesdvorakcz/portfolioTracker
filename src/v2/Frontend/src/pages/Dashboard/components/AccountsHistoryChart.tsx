@@ -3,52 +3,52 @@ import moment from 'moment';
 import React from 'react';
 
 import { ChartTooltip, ChartTooltipItem, LineChart } from '../../../components';
-import { AccountData } from '../../../contexts/tradesContext';
+import { AccountData, NetWorthHistoryAggregated } from '../../../contexts/tradesContext';
 import { DEFAULT_CURRENCY, DEFAULT_LOCALE } from '../../../i18n';
 
 interface Props {
   accountData: AccountData;
+  timeRange: string;
 }
 
-const AccountsHistoryChart: React.FC<Props> = ({ accountData }) => {
-  const accounts = accountData.accounts.map((account) => ({
-    id: account.id,
-    name: account.name,
-    valueData: account.history.map((item) => ({
-      x: moment.utc(item.dateStart).format('YYYY-MM-DD'),
-      y: item.valueAfterCZK,
-    })),
-    transactionsData: account.history.map((item) => ({
-      x: moment.utc(item.dateStart).format('YYYY-MM-DD'),
-      y: item.cumulativeTransactionsCZK,
-    })),
-  }));
+const AccountsHistoryChart: React.FC<Props> = ({ accountData, timeRange }) => {
+  let trades: NetWorthHistoryAggregated[] = [];
+  if (timeRange === 'Yearly') {
+    trades = accountData.yearlyHistory;
+  } else if (timeRange === 'Monthly') {
+    trades = accountData.monthlyHistory;
+  } else {
+    trades = accountData.history;
+  }
 
-  const data = accounts.reduce<Serie[]>((acc, item) => {
-    return [
-      ...acc,
-      { id: `values_${item.id}`, data: item.valueData },
-      { id: `transactions_${item.id}`, data: item.transactionsData },
-    ];
-  }, []);
+  const data: Serie[] = [
+    {
+      id: 'val',
+      data: trades.map((x) => ({
+        x: moment.utc(x.dateStart).format('YYYY-MM-DD'),
+        y: x.valueAfterCZK,
+      })),
+    },
+    {
+      id: 'transactions',
+      data: trades.map((x) => ({
+        x: moment.utc(x.dateStart).format('YYYY-MM-DD'),
+        y: x.cumulativeTransactionsCZK,
+      })),
+    },
+  ];
 
   return (
     <LineChart
       data={data}
       height={500}
       tooltip={({ point }) => {
-        const account = accounts.find(
-          (x) => x.id.toString() === point.serieId.toString().split('_')[1]
-        );
-        if (!account) return <div>Error</div>;
-
         const index = parseInt(point.id.split('.')[1], 10);
-        const value = account.valueData[index].y;
-        const transaction = account.transactionsData[index].y;
+        const value = trades[index].valueAfterCZK;
+        const transaction = trades[index].cumulativeTransactionsCZK;
 
         return (
           <ChartTooltip>
-            <ChartTooltipItem label="Account: " value={account.name} />
             <ChartTooltipItem label="Date: " value={point.data.xFormatted} />
             <ChartTooltipItem
               label="Value: "

@@ -10,41 +10,45 @@ interface Props {
   accountData: AccountData;
 }
 
-const TotalAccountsMonthlyHistoryChart: React.FC<Props> = ({ accountData }) => {
-  const data: Serie[] = [
-    {
-      id: 'val',
-      data: accountData.monthlyHistory.map((x) => ({
-        x: moment.utc(x.date).format('YYYY-MM-DD'),
-        y: x.valueCZK,
-      })),
-    },
-    {
-      id: 'transactions',
-      data: accountData.monthlyHistory.map((x) => ({
-        x: moment.utc(x.date).format('YYYY-MM-DD'),
-        y: x.transactionsCZK,
-      })),
-    },
-  ];
+const SeparateAccountsHistoryChart: React.FC<Props> = ({ accountData }) => {
+  const accounts = accountData.accounts.map((account) => ({
+    id: account.id,
+    name: account.name,
+    valueData: account.history.map((item) => ({
+      x: moment.utc(item.dateStart).format('YYYY-MM-DD'),
+      y: item.valueAfterCZK,
+    })),
+    transactionsData: account.history.map((item) => ({
+      x: moment.utc(item.dateStart).format('YYYY-MM-DD'),
+      y: item.cumulativeTransactionsCZK,
+    })),
+  }));
+
+  const data = accounts.reduce<Serie[]>((acc, item) => {
+    return [
+      ...acc,
+      { id: `values_${item.id}`, data: item.valueData },
+      { id: `transactions_${item.id}`, data: item.transactionsData },
+    ];
+  }, []);
 
   return (
     <LineChart
       data={data}
-      xScale={{ type: 'time', format: '%Y-%m-%d', precision: 'month' }}
-      xFormat={'time:%m.%Y'}
       height={500}
-      axisBottom={{
-        format: '%m/%Y',
-        tickValues: 'every 3 months',
-      }}
       tooltip={({ point }) => {
+        const account = accounts.find(
+          (x) => x.id.toString() === point.serieId.toString().split('_')[1]
+        );
+        if (!account) return <div>Error</div>;
+
         const index = parseInt(point.id.split('.')[1], 10);
-        const value = accountData.monthlyHistory[index].valueCZK;
-        const transaction = accountData.monthlyHistory[index].transactionsCZK;
+        const value = account.valueData[index].y;
+        const transaction = account.transactionsData[index].y;
 
         return (
           <ChartTooltip>
+            <ChartTooltipItem label="Account: " value={account.name} />
             <ChartTooltipItem label="Date: " value={point.data.xFormatted} />
             <ChartTooltipItem
               label="Value: "
@@ -67,4 +71,4 @@ const TotalAccountsMonthlyHistoryChart: React.FC<Props> = ({ accountData }) => {
   );
 };
 
-export default TotalAccountsMonthlyHistoryChart;
+export default SeparateAccountsHistoryChart;

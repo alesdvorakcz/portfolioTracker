@@ -177,7 +177,7 @@ const ImportPage: React.FC<Props> = () => {
             <Statistic
               style={{ margin: 20 }}
               title="Accounts Transactions"
-              value={toCurrencyFormat(tradesData.accountData.totalTransactionsCZK)}
+              value={toCurrencyFormat(tradesData.accountData.cumulativeTransactionsCZK)}
             />
             <Statistic
               style={{ margin: 20 }}

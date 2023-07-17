@@ -14,12 +14,7 @@ const AccountsPage: React.FC<Props> = () => {
   const { tradesData } = useTradesContext();
   const { accountData } = tradesData;
 
-  const gain =
-    accountData.totalValueCZK && accountData.totalTransactionsCZK
-      ? accountData.totalValueCZK / accountData.totalTransactionsCZK - 1
-      : undefined;
-
-  const isGainPositive = gain && gain > 0;
+  const isProfitPositive = accountData.cumulativeProfitCZK > 0;
 
   return (
     <PageWrapper title="Accounts">
@@ -39,15 +34,39 @@ const AccountsPage: React.FC<Props> = () => {
                 <Col md={8}>
                   <Statistic
                     title="Total Transactions"
-                    value={toCurrencyFormat(accountData.totalTransactionsCZK)}
+                    value={toCurrencyFormat(accountData.cumulativeTransactionsCZK)}
                   />
                 </Col>
                 <Col md={8}>
                   <Statistic
+                    title="Total Profit"
+                    value={toCurrencyFormat(accountData.cumulativeProfitCZK)}
+                  />
+                </Col>
+              </Row>
+              <Row>
+                <Col md={8}>
+                  <Statistic
                     title="Profit"
-                    prefix={isGainPositive ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
-                    valueStyle={{ color: isGainPositive ? 'green' : 'red' }}
-                    value={toPercentFormat(gain)}
+                    prefix={isProfitPositive ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
+                    valueStyle={{ color: isProfitPositive ? 'green' : 'red' }}
+                    value={toPercentFormat(accountData.profitPercentageCZK)}
+                  />
+                </Col>
+                <Col md={8}>
+                  <Statistic
+                    title="Profit (plain)"
+                    prefix={isProfitPositive ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
+                    valueStyle={{ color: isProfitPositive ? 'green' : 'red' }}
+                    value={toPercentFormat(accountData.profitPercentagePlainCZK)}
+                  />
+                </Col>
+                <Col md={8}>
+                  <Statistic
+                    title="Profit (pa)"
+                    prefix={isProfitPositive ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
+                    valueStyle={{ color: isProfitPositive ? 'green' : 'red' }}
+                    value={toPercentFormat(accountData.profitPercentagePaCZK)}
                   />
                 </Col>
               </Row>

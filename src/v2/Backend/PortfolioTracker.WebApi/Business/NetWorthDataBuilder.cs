@@ -8,7 +8,7 @@ public static class NetWorthDataBuilder
     {
         var result = new NetWorthData();
         result.TotalValueCZK = accountData.TotalValueCZK + cryptoData.TotalValueCZK;
-        result.TotalTransactionsCZK = accountData.TotalTransactionsCZK + cryptoData.TotalTransactionsCZK;
+        result.TotalTransactionsCZK = accountData.CumulativeTransactionsCZK + cryptoData.TotalTransactionsCZK;
         // netWorth.History = GetTotalHistory(accountData.History, cryptoData.History);
         // result.MonthlyHistory = GetMonthlyHistory(netWorth.History);
 
