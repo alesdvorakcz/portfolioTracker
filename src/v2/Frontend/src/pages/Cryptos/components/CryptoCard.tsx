@@ -3,13 +3,15 @@ import moment from 'moment';
 import { useNavigate } from 'react-router';
 
 import { Crypto } from '../../../api/models';
-import { toCurrencyFormat } from '../../../i18n';
+import { CryptoWithHistory } from '../../../contexts/tradesContext';
+import { toCurrencyFormat, toNumberFormat } from '../../../i18n';
 
 interface Props {
   crypto: Crypto;
+  history?: CryptoWithHistory;
 }
 
-const CryptoCard: React.FC<Props> = ({ crypto }) => {
+const CryptoCard: React.FC<Props> = ({ crypto, history }) => {
   const navigate = useNavigate();
 
   return (
@@ -22,9 +24,18 @@ const CryptoCard: React.FC<Props> = ({ crypto }) => {
     >
       {crypto.lastValue && (
         <Statistic
-          title="Value"
+          title="Coin Value"
           value={toCurrencyFormat(crypto.lastValue?.value, crypto.currencyId)}
         />
+      )}
+      {history && (
+        <>
+          <Statistic
+            title="Portfolio Value"
+            value={toCurrencyFormat(history.value, crypto.currencyId)}
+          />
+          <Statistic title="Units" value={toNumberFormat(history.unitsTotal)} />
+        </>
       )}
     </Card>
   );

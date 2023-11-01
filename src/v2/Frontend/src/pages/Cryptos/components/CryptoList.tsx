@@ -1,12 +1,15 @@
 import { Alert, List } from 'antd';
 
 import { Box, LoadingIndicator } from '../../../components';
+import { CryptoData } from '../../../contexts/tradesContext';
 import { useCryptosQuery } from '../queries';
 import CryptoCard from './CryptoCard';
 
-interface Props {}
+interface Props {
+  cryptoData: CryptoData;
+}
 
-const CryptoList: React.FC<Props> = () => {
+const CryptoList: React.FC<Props> = ({ cryptoData }) => {
   const query = useCryptosQuery();
 
   return (
@@ -27,11 +30,14 @@ const CryptoList: React.FC<Props> = () => {
             }}
             dataSource={query.data}
             rowKey="id"
-            renderItem={(item) => (
-              <List.Item>
-                <CryptoCard crypto={item} />
-              </List.Item>
-            )}
+            renderItem={(item) => {
+              const history = cryptoData.cryptoCurrenciesHistory.find((x) => x.id === item.id);
+              return (
+                <List.Item>
+                  <CryptoCard crypto={item} history={history} />
+                </List.Item>
+              );
+            }}
           />
         )}
       </>

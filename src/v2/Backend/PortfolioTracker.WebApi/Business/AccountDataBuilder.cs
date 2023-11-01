@@ -20,7 +20,7 @@ public static class AccountDataBuilder
         var history = GetAllAccountsHistory(accountWithTrades);
 
         var result = new AccountData();
-        result.Accounts = accountWithTrades;
+        result.Accounts = accountWithTrades.OrderByDescending(x => x.ValueCZK);
         result.History = history.OrderByDescending(x => x.DateStart);
         result.MonthlyHistory = GetAllAccountsMonthlyHistory(history);
         result.YearlyHistory = GetAllAccountsYearlyHistory(history);

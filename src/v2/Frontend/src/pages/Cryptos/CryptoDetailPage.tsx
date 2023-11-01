@@ -2,8 +2,9 @@ import { Alert, Tabs } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { LoadingIndicator, PageWrapper } from '../../components';
-import CryptoValueHistoryChart from './components/CryptoValueHistoryChart';
-import CryptoValueHistoryTable from './components/CryptoValueHistoryTable';
+import { useTradesContext } from '../../contexts/tradesContext';
+import CryptoPortfolioValueDetail from './components/CryptoPortfolioValueDetail';
+import CryptoValueDetail from './components/CryptoValueDetail';
 import { useCryptoDetailQuery } from './queries';
 
 const { TabPane } = Tabs;
@@ -12,11 +13,15 @@ interface Props {}
 
 const CryptoDetailPage: React.FC<Props> = () => {
   const { id } = useParams();
+  const { tradesData } = useTradesContext();
   const navigate = useNavigate();
 
   const query = useCryptoDetailQuery(parseInt(id!, 10));
 
   const crypto = query.data;
+  const cryptoHistory = tradesData.cryptoData.cryptoCurrenciesHistory.find(
+    (x) => x.id === crypto?.id
+  );
 
   return (
     <PageWrapper
@@ -31,11 +36,13 @@ const CryptoDetailPage: React.FC<Props> = () => {
         )}
         {crypto && (
           <Tabs defaultActiveKey="1">
-            <TabPane tab="Table" key="1">
-              <CryptoValueHistoryTable crypto={crypto} />
+            <TabPane tab="Crypto Value" key="1">
+              <CryptoValueDetail crypto={crypto} />
             </TabPane>
-            <TabPane tab="Chart" key="2">
-              <CryptoValueHistoryChart crypto={crypto} />
+            <TabPane tab="Portfolio" key="2">
+              {cryptoHistory && (
+                <CryptoPortfolioValueDetail crypto={crypto} history={cryptoHistory} />
+              )}
             </TabPane>
           </Tabs>
         )}

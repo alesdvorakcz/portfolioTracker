@@ -180,6 +180,7 @@ public class UploadController : BaseController
 
         var cryptos = CryptoDataBuilder.GetCryptoData(cryptoDtos, cryptosHistoryDtos);
         var cryptoData = CryptoDataBuilder.GetWalletData(cryptoWallets, cryptoWalletTrades, cryptos, currencies);
+        CryptoDataBuilder.AggregateWalletToCrypto(cryptos, cryptoData);
 
         var realEstateData = RealEstateDataBuilder.GetData(realEstates, realEstatesHistory);
 

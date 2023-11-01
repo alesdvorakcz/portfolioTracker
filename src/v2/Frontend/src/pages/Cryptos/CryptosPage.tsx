@@ -43,7 +43,7 @@ const CryptoPage: React.FC<Props> = () => {
           </Col>
         </Row>
       </Box>
-      <CryptoList />
+      <CryptoList cryptoData={cryptoData} />
       <CryptoWalletsList cryptoData={cryptoData} />
     </PageWrapper>
   );

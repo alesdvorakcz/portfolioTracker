@@ -25,10 +25,39 @@ export interface AccountData {
 
 export interface CryptoData {
   cryptoWallets: CryptoWallet[];
+  cryptoCurrenciesHistory: CryptoWithHistory[];
   history: NetWorthHistory[];
   monthlyHistory: NetWorthHistory[];
   totalValueCZK: number;
   totalTransactionsCZK: number;
+}
+
+export interface CryptoWithHistory {
+  id: number;
+  unitsTotal: number;
+  value: number;
+  valueCZK: number;
+  cumulativeStakedUnits: number;
+  cumulativeTransactionsCZK: number;
+  cumulativeTransactions: number;
+  allWalletsHistory: CryptoHistoryAggregatedRow[];
+}
+
+export interface CryptoHistoryAggregatedRow {
+  dateStart: string;
+  dateEnd: string;
+  conversionRate?: number;
+  unitPrice: number;
+  unitsChange: number;
+  unitsTotal: number;
+  transaction: number;
+  transactionCZK: number;
+  valueAfter: number;
+  valueAfterCZK?: number;
+  cumulativeTransactions: number;
+  cumulativeTransactionsCZK: number;
+  stakedUnits: number;
+  cumulativeStakedUnits: number;
 }
 
 export interface EtfData {
@@ -102,6 +131,7 @@ const defaultValue: TradesState = {
   },
   cryptoData: {
     cryptoWallets: [],
+    cryptoCurrenciesHistory: [],
     history: [],
     monthlyHistory: [],
     totalTransactionsCZK: 0,

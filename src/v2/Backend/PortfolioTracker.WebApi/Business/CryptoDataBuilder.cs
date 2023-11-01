@@ -148,6 +148,132 @@ public static class CryptoDataBuilder
         return cryptoWallet;
     }
 
+    public static CryptoData AggregateWalletToCrypto(IEnumerable<Crypto> cryptos, CryptoData cryptoData)
+    {
+        var cryptoWithHistory = new List<CryptoWithHistory>();
+
+        foreach (var crypto in cryptos)
+        {
+            var wallets = cryptoData.CryptoWallets.Where(x => x.Crypto.Id == crypto.Id);
+
+            var valuesByDay = wallets
+                .SelectMany(x => x.History.Select(h => new { WalletId = x.Id, Value = h }))
+                .GroupBy(x => x.Value.Date).OrderBy(x => x.Key);
+
+            var linearHistory = new List<CryptoHistoryAggregatedRow>();
+            var lastValue = new Dictionary<string, LastCryptoWalletHistoryValue>();
+
+            foreach (var dayTrades in valuesByDay)
+            {
+                decimal? conversionRate = null;
+                var unitsPrice = 0m;
+
+                var unitsChange = 0m;
+                var unitsTotal = 0m;
+
+                var stakedUnits = 0m;
+                var cumulativeStakedUnits = 0m;
+
+                var transaction = 0m;
+                var transactionCZK = 0m;
+                var cumulativeTransactions = 0m;
+                var cumulativeTransactionsCZK = 0m;
+
+                var valueAfter = 0m;
+                var valueAfterCZK = 0m;
+
+                foreach (var wallet in wallets)
+                {
+                    var walletValue = dayTrades.FirstOrDefault(x => x.WalletId == wallet.Id);
+                    if (walletValue != null)
+                    {
+                        if (walletValue.Value.ConversionRate.HasValue)
+                            conversionRate = walletValue.Value.ConversionRate;
+                        unitsPrice = walletValue.Value.UnitPrice;
+
+                        unitsChange += walletValue.Value.UnitsChange;
+                        unitsTotal += walletValue.Value.UnitsTotal;
+                        stakedUnits += walletValue.Value.StakedUnits;
+                        cumulativeStakedUnits += walletValue.Value.CumulativeStakedUnits;
+                        transaction += walletValue.Value.Transaction;
+                        transactionCZK += walletValue.Value.TransactionCZK;
+                        cumulativeTransactions += walletValue.Value.CumulativeTransactions;
+                        cumulativeTransactionsCZK += walletValue.Value.CumulativeTransactionsCZK;
+                        valueAfter += walletValue.Value.ValueAfter;
+                        valueAfterCZK += walletValue.Value.ValueAfterCZK ?? 0;
+
+                        if (lastValue.ContainsKey(wallet.Id))
+                        {
+                            lastValue[wallet.Id].UnitsTotal = walletValue.Value.UnitsTotal;
+                            lastValue[wallet.Id].CumulativeStakedUnits = walletValue.Value.CumulativeStakedUnits;
+                            lastValue[wallet.Id].ValueAfter = walletValue.Value.ValueAfter;
+                            lastValue[wallet.Id].ValueAfterCZK = walletValue.Value.ValueAfterCZK ?? 0;
+                            lastValue[wallet.Id].CumulativeTransactions = walletValue.Value.CumulativeTransactions;
+                            lastValue[wallet.Id].CumulativeTransactionsCZK = walletValue.Value.CumulativeTransactionsCZK;
+                        }
+                        else
+                        {
+                            lastValue.Add(wallet.Id, new LastCryptoWalletHistoryValue
+                            {
+                                UnitsTotal = walletValue.Value.UnitsTotal,
+                                CumulativeStakedUnits = walletValue.Value.CumulativeStakedUnits,
+                                ValueAfter = walletValue.Value.ValueAfter,
+                                ValueAfterCZK = walletValue.Value.ValueAfterCZK ?? 0,
+                                CumulativeTransactions = walletValue.Value.CumulativeTransactions,
+                                CumulativeTransactionsCZK = walletValue.Value.CumulativeTransactionsCZK,
+                            });
+                        }
+                    }
+                    else if (lastValue.ContainsKey(wallet.Id))
+                    {
+                        unitsTotal += lastValue[wallet.Id].UnitsTotal;
+                        cumulativeStakedUnits += lastValue[wallet.Id].CumulativeStakedUnits;
+                        cumulativeTransactions += lastValue[wallet.Id].CumulativeTransactions;
+                        cumulativeTransactionsCZK += lastValue[wallet.Id].CumulativeTransactionsCZK;
+                        valueAfter += lastValue[wallet.Id].ValueAfter;
+                        valueAfterCZK += lastValue[wallet.Id].ValueAfterCZK;
+                    }
+                }
+
+                linearHistory.Add(new CryptoHistoryAggregatedRow
+                {
+                    DateStart = dayTrades.Key,
+                    DateEnd = dayTrades.Key,
+                    ConversionRate = conversionRate,
+                    UnitPrice = unitsPrice,
+                    UnitsChange = unitsChange,
+                    UnitsTotal = unitsTotal,
+                    StakedUnits = stakedUnits,
+                    CumulativeStakedUnits = cumulativeStakedUnits,
+                    Transaction = transaction,
+                    TransactionCZK = transactionCZK,
+                    CumulativeTransactions = cumulativeTransactions,
+                    CumulativeTransactionsCZK = cumulativeTransactionsCZK,
+                    ValueAfter = valueAfter,
+                    ValueAfterCZK = valueAfterCZK
+                });
+            }
+
+            var lastRow = linearHistory.LastOrDefault();
+
+            cryptoWithHistory.Add(new CryptoWithHistory
+            {
+                Id = crypto.Id,
+                UnitsTotal = lastRow?.UnitsTotal ?? 0,
+                Value = lastRow?.ValueAfter ?? 0,
+                ValueCZK = lastRow?.ValueAfterCZK ?? 0,
+                CumulativeStakedUnits = lastRow?.CumulativeStakedUnits ?? 0,
+                CumulativeTransactions = lastRow?.CumulativeTransactions ?? 0,
+                CumulativeTransactionsCZK = lastRow?.CumulativeTransactionsCZK ?? 0,
+                AllWalletsHistory = linearHistory.OrderByDescending(x => x.DateStart)
+            });
+        }
+
+        cryptoData.CryptoCurrenciesHistory = cryptoWithHistory;
+
+        return cryptoData;
+    }
+
     // private static IEnumerable<NetWorthHistory> GetTotalCryptoHistory(IEnumerable<Contracts.Result.CryptoWallet> cryptoWallet)
     // {
     //     var result = new List<NetWorthHistory>();
